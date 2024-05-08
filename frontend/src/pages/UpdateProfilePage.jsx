@@ -24,6 +24,9 @@ export default function UpdateProfilePage() {
 		email: user.email,
 		bio: user.bio,
 		password: "",
+		location: user.location,
+		occupation: user.occupation,
+		interests: user.interests,
 	});
 	const fileRef = useRef(null);
 	const [updating, setUpdating] = useState(false);
