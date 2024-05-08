@@ -1,5 +1,6 @@
 import { AddIcon } from "@chakra-ui/icons";
 import {
+	Select,
 	Button,
 	CloseButton,
 	Flex,
@@ -17,8 +18,11 @@ import {
 	Textarea,
 	useColorModeValue,
 	useDisclosure,
-	Switch
+	Switch,
+	FormLabel,
+	Checkbox,
 } from "@chakra-ui/react";
+import { StandaloneSearchBox, LoadScript } from "@react-google-maps/api";
 import { useRef, useState } from "react";
 import usePreviewImg from "../hooks/usePreviewImg";
 import { BsFillImageFill } from "react-icons/bs";
@@ -29,6 +33,17 @@ import postsAtom from "../atoms/postsAtom";
 import { useParams } from "react-router-dom";
 
 const MAX_CHAR = 500;
+const timeZones = [
+	{ value: "GMT-12", label: "GMT-12:00" },
+	{ value: "GMT-11", label: "GMT-11:00" },
+	// Add more time zones as needed
+];
+const categories = ["Category 1", "Category 2", "Category 3"]; // Define categories array
+const subcategories = {
+	"Category 1": ["Subcategory 1.1", "Subcategory 1.2", "Subcategory 1.3"],
+	"Category 2": ["Subcategory 2.1", "Subcategory 2.2", "Subcategory 2.3"],
+	"Category 3": ["Subcategory 3.1", "Subcategory 3.2", "Subcategory 3.3"],
+}; // Define subcategories object
 
 const CreatePost = () => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -55,10 +70,22 @@ const CreatePost = () => {
 	const [eventType, setEventType] = useState("");
 	const [category, setCategory] = useState("");
 	const [subCategory, setSubCategory] = useState("");
+	const [meetingLink, setMeetingLink] = useState("");
+	const [isFree, setIsFree] = useState(false); // State to manage free ticket price
+	const [isPrivate, setIsPrivate] = useState(false);
+	const [selectedLocation, setSelectedLocation] = useState(null);
 
+	const handlePlaceChanged = () => {
+		const [place] = inputRef.current.getPlaces();
 
-
-
+		if (place) {
+			setSelectedLocation({
+				lat: place.geometry.location.lat(),
+				lng: place.geometry.location.lng(),
+				formattedAddress: place.formatted_address,
+			});
+		}
+	};
 	const handleTextChange = (e) => {
 		const inputText = e.target.value;
 
@@ -91,11 +118,12 @@ const CreatePost = () => {
 					endTime,
 					timeZone,
 					venue,
-					ticketPrice,
+					ticketPrice: isFree ? 0 : ticketPrice, // Set ticket price as 0 if it's free
 					capacity,
 					eventType,
 					category,
 					subCategory,
+					isPrivate,
 				}),
 			});
 
@@ -123,6 +151,8 @@ const CreatePost = () => {
 			setEventType("");
 			setCategory("");
 			setSubCategory("");
+			setIsFree(false); // Reset free ticket price state
+			setIsPrivate(false); // Reset private post setting state
 		} catch (error) {
 			showToast("Error", error, "error");
 		} finally {
@@ -151,11 +181,15 @@ const CreatePost = () => {
 					<ModalCloseButton />
 					<ModalBody pb={6}>
 						<FormControl>
+							<FormLabel>Event Name</FormLabel>
+							<Input type="text" value={postName} onChange={(e) => setPostName(e.target.value)} />
+							<FormLabel>Description</FormLabel>
 							<Textarea
 								placeholder='Post content goes here..'
 								onChange={handleTextChange}
 								value={postText}
 							/>
+							<FormLabel>Image</FormLabel>
 							<Text fontSize='xs' fontWeight='bold' textAlign={"right"} m={"1"} color={"gray.800"}>
 								{remainingChar}/{MAX_CHAR}
 							</Text>
@@ -167,21 +201,97 @@ const CreatePost = () => {
 								size={16}
 								onClick={() => imageRef.current.click()}
 							/>
-							<Input type="text" placeholder="Event Name" value={postName} onChange={(e) => setPostName(e.target.value)} />
-							<Input type="date" placeholder="Start Date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-							<Input type="time" placeholder="Start Time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
-							<Input type="date" placeholder="End Date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-							<Input type="time" placeholder="End Time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
-							<Input type="text" placeholder="Time Zone" value={timeZone} onChange={(e) => setTimeZone(e.target.value)} />
-							<Input type="text" placeholder="Venue" value={venue} onChange={(e) => setVenue(e.target.value)} />
-							<Input type="number" placeholder="Ticket Price" value={ticketPrice} onChange={(e) => setTicketPrice(e.target.value)} />
-							<Input type="number" placeholder="Capacity" value={capacity} onChange={(e) => setCapacity(e.target.value)} />
-							<Input type="text" placeholder="Event Type" value={eventType} onChange={(e) => setEventType(e.target.value)} />
-							<Input type="text" placeholder="Category" value={category} onChange={(e) => setCategory(e.target.value)} />
-							<Input type="text" placeholder="Sub Category" value={subCategory} onChange={(e) => setSubCategory(e.target.value)} />
-							<Text fontSize={"sm"}>Make Post Privete?</Text>
-							<Switch id='email-alerts' />
+							<FormLabel>Start Time</FormLabel>
+							<Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+							<FormLabel>Start Time</FormLabel>
+							<Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+							<FormLabel>End Date</FormLabel>
+							<Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+							<FormLabel>End Time</FormLabel>
+							<Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+							<FormLabel>Time Zone</FormLabel>
+							<Select value={timeZone} onChange={(e) => setTimeZone(e.target.value)}>
+								<option value="">Select Time Zone</option>
+								{timeZones.map((zone) => (
+									<option key={zone.value} value={zone.value}>
+										{zone.label}
+									</option>
+								))}
+							</Select>
+							<FormLabel>Event Type</FormLabel>
+							<Select value={eventType} onChange={(e) => setEventType(e.target.value)}>
+								<option value="">Select Event Type</option>
+								<option value="Physical">Physical</option>
+								<option value="Virtual">Virtual</option>
+								<option value="Hybrid">Hybrid</option>
+							</Select>
 
+							{/* Conditionally render venue input based on event type */}
+							{["Physical", "Hybrid"].includes(eventType) && (
+								<FormControl>
+								<FormLabel>Venue</FormLabel>
+								<LoadScript googleMapsApiKey="YOUR_API_KEY" libraries={["places"]}>
+									<StandaloneSearchBox onLoad={ref => (inputRef.current = ref)} onPlacesChanged={handlePlaceChanged}>
+										<Input type="text" value={venue} onChange={(e) => setVenue(e.target.value)} />
+									</StandaloneSearchBox>
+								</LoadScript>
+							</FormControl>
+							)}
+
+							{/* Conditionally render meeting link input based on event type */}
+							{["Virtual", "Hybrid"].includes(eventType) && (
+								<FormControl>
+									<FormLabel>Meeting Link</FormLabel>
+									<Input type="text" value={meetingLink} onChange={(e) => setMeetingLink(e.target.value)} />
+								</FormControl>
+							)}
+
+							<FormControl>
+								<FormLabel>Ticket Price</FormLabel>
+								<Checkbox isChecked={isFree} onChange={(e) => setIsFree(e.target.checked)}>
+									Free
+								</Checkbox>
+								{!isFree && (
+									<Input
+										type="number"
+										value={ticketPrice}
+										onChange={(e) => setTicketPrice(e.target.value)}
+									/>
+								)}
+							</FormControl>
+
+							<FormLabel>Capacity</FormLabel>
+							<Input type="number" value={capacity} onChange={(e) => setCapacity(e.target.value)} />
+
+							<FormControl>
+								<FormLabel>Category</FormLabel>
+								<Select value={category} onChange={(e) => setCategory(e.target.value)}>
+									<option value="">Select Category</option>
+									{categories.map((cat) => (
+										<option key={cat} value={cat}>
+											{cat}
+										</option>
+									))}
+								</Select>
+							</FormControl>
+
+							{category && (
+								<FormControl>
+									<FormLabel>Sub Category</FormLabel>
+									<Select value={subCategory} onChange={(e) => setSubCategory(e.target.value)}>
+										<option value="">Select Sub Category</option>
+										{subcategories[category].map((subcat) => (
+											<option key={subcat} value={subcat}>
+												{subcat}
+											</option>
+										))}
+									</Select>
+								</FormControl>
+							)}
+
+							<FormLabel>Do you want to make this Event Private?</FormLabel>
+							<Switch id="private-settings" isChecked={isPrivate} onChange={() => setIsPrivate(!isPrivate)} />
+							<Text>Note: People with link will only be able to know / join this event.</Text>
 						</FormControl>
 
 						{imgUrl && (

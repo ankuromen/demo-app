@@ -65,7 +65,7 @@ const postSchema = mongoose.Schema(
 		},
 		venue: {
 			type: String,
-			required: true,
+			
 		},
 		ticketPrice: {
 			type: Number,
@@ -86,6 +86,11 @@ const postSchema = mongoose.Schema(
 		subCategory: {
 			type: String,
 			required: true,
+		},
+		isPrivate: {
+			type: Boolean,
+			required: true,
+			default: false, // or whatever default value you want
 		},
 	},
 	{

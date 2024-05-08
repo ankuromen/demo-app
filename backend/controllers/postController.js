@@ -4,7 +4,7 @@ import { v2 as cloudinary } from "cloudinary";
 
 const createPost = async (req, res) => {
     try {
-        const { postedBy,name, text, startDate, startTime, endDate, endTime, timeZone, venue, ticketPrice, capacity, eventType, category, subCategory } = req.body;
+        const { postedBy, name, text, startDate, startTime, endDate, endTime, timeZone, venue, ticketPrice, capacity, eventType, category, subCategory, isPrivate } = req.body;
         let { img } = req.body;
 
         if (!postedBy || !text) {
@@ -26,7 +26,7 @@ const createPost = async (req, res) => {
             img = uploadedResponse.secure_url;
         }
 
-        const newPost = new Post({ postedBy,name, text, img, startDate, startTime, endDate, endTime, timeZone, venue, ticketPrice, capacity, eventType, category, subCategory });
+        const newPost = new Post({ postedBy, name, text, img, startDate, startTime, endDate, endTime, timeZone, venue, ticketPrice, capacity, eventType, category, subCategory, isPrivate });
         await newPost.save();
 
         res.status(201).json(newPost);
