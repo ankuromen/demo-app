@@ -24,10 +24,11 @@ export default function UpdateProfilePage() {
 		email: user.email,
 		bio: user.bio,
 		password: "",
-		location: user.location,
-		occupation: user.occupation,
-		interests: user.interests,
+		location:user.location,
+		occupation:user.occupation,
+		instagram:user.instagram
 	});
+	console.log(user);
 	const fileRef = useRef(null);
 	const [updating, setUpdating] = useState(false);
 
