@@ -229,12 +229,14 @@ const CreatePost = () => {
 							{/* Conditionally render venue input based on event type */}
 							{["Physical", "Hybrid"].includes(eventType) && (
 								<FormControl>
-								<FormLabel>Venue</FormLabel>
+									<FormLabel>Venue</FormLabel>
+									<Input type="text" placeholder="Venue" value={venue} onChange={(e) => setVenue(e.target.value)} />
+								{/* <FormLabel>Venue</FormLabel>
 								<LoadScript googleMapsApiKey="YOUR_API_KEY" libraries={["places"]}>
 									<StandaloneSearchBox onLoad={ref => (inputRef.current = ref)} onPlacesChanged={handlePlaceChanged}>
 										<Input type="text" value={venue} onChange={(e) => setVenue(e.target.value)} />
 									</StandaloneSearchBox>
-								</LoadScript>
+								</LoadScript> */}
 							</FormControl>
 							)}
 
