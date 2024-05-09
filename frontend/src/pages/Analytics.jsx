@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useRecoilValue } from "recoil";
+import userAtom from "../atoms/userAtom";
 
 function Analytics() {
+    const user = useRecoilValue(userAtom); // Get the user data from Recoil atom
     const [analyticsData, setAnalyticsData] = useState([]);
 
     useEffect(() => {
-        // Fetch analytics data from backend
-        axios.get("http://localhost:5000//api/analytics")
-            .then(response => {
-                setAnalyticsData(response.data);
-            })
-            .catch(error => {
-                console.error("Error fetching analytics:", error);
-            });
-    }, []);
+        if (user) {
+            // Fetch analytics data from backend using the user's ID
+            axios.get(`/api/analytics/${user._id}`)
+                .then(response => {
+                    setAnalyticsData(response.data);
+                })
+                .catch(error => {
+                    console.error("Error fetching analytics:", error);
+                });
+        }
+    }, [user]); // Fetch analytics data whenever user data changes
 
     return (
         <div>

@@ -74,6 +74,10 @@ const CreatePost = () => {
 	const [isFree, setIsFree] = useState(false); // State to manage free ticket price
 	const [isPrivate, setIsPrivate] = useState(false);
 	const [selectedLocation, setSelectedLocation] = useState(null);
+	const [ticketSalesStartDate, setTicketSalesStartDate] = useState("");
+	const [ticketSalesStartTime, setTicketSalesStartTime] = useState("");
+	const [ticketSalesEndDate, setTicketSalesEndDate] = useState("");
+	const [ticketSalesEndTime, setTicketSalesEndTime] = useState("");
 
 	const handlePlaceChanged = () => {
 		const [place] = inputRef.current.getPlaces();
@@ -123,6 +127,10 @@ const CreatePost = () => {
 					eventType,
 					category,
 					subCategory,
+					ticketSalesStartDate,
+					ticketSalesStartTime,
+					ticketSalesEndDate,
+					ticketSalesEndTime,
 					isPrivate,
 				}),
 			});
@@ -151,6 +159,10 @@ const CreatePost = () => {
 			setEventType("");
 			setCategory("");
 			setSubCategory("");
+			setTicketSalesStartDate("");
+			setTicketSalesStartTime("");
+			setTicketSalesEndDate("");
+			setTicketSalesEndTime("");
 			setIsFree(false); // Reset free ticket price state
 			setIsPrivate(false); // Reset private post setting state
 		} catch (error) {
@@ -231,13 +243,13 @@ const CreatePost = () => {
 								<FormControl>
 									<FormLabel>Venue</FormLabel>
 									<Input type="text" placeholder="Venue" value={venue} onChange={(e) => setVenue(e.target.value)} />
-								{/* <FormLabel>Venue</FormLabel>
+									{/* <FormLabel>Venue</FormLabel>
 								<LoadScript googleMapsApiKey="YOUR_API_KEY" libraries={["places"]}>
 									<StandaloneSearchBox onLoad={ref => (inputRef.current = ref)} onPlacesChanged={handlePlaceChanged}>
 										<Input type="text" value={venue} onChange={(e) => setVenue(e.target.value)} />
 									</StandaloneSearchBox>
 								</LoadScript> */}
-							</FormControl>
+								</FormControl>
 							)}
 
 							{/* Conditionally render meeting link input based on event type */}
@@ -295,7 +307,30 @@ const CreatePost = () => {
 							<Switch id="private-settings" isChecked={isPrivate} onChange={() => setIsPrivate(!isPrivate)} />
 							<Text>Note: People with link will only be able to know / join this event.</Text>
 						</FormControl>
-
+						<FormLabel>Ticket Sales Start Date</FormLabel>
+						<Input
+							type="date"
+							value={ticketSalesStartDate}
+							onChange={(e) => setTicketSalesStartDate(e.target.value)}
+						/>
+						<FormLabel>Ticket Sales Start Time</FormLabel>
+						<Input
+							type="time"
+							value={ticketSalesStartTime}
+							onChange={(e) => setTicketSalesStartTime(e.target.value)}
+						/>
+						<FormLabel>Ticket Sales End Date</FormLabel>
+						<Input
+							type="date"
+							value={ticketSalesEndDate}
+							onChange={(e) => setTicketSalesEndDate(e.target.value)}
+						/>
+						<FormLabel>Ticket Sales End Time</FormLabel>
+						<Input
+							type="time"
+							value={ticketSalesEndTime}
+							onChange={(e) => setTicketSalesEndTime(e.target.value)}
+						/>
 						{imgUrl && (
 							<Flex mt={5} w={"full"} position={"relative"}>
 								<Image src={imgUrl} alt='Selected img' />

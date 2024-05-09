@@ -1,11 +1,12 @@
 import express from "express";
 import Ticket from "../models/ticketModel.js";
 const router = express.Router();
-router.get("/analytics", async (req, res) => {
+
+router.get("/analytics/:userid", async (req, res) => {
     try {
         const { userid } = req.params;
 
-        // Retrieve all tickets associated with the logged-in user's user ID
+        // Retrieve all tickets associated with the specified user ID
         const tickets = await Ticket.find({ userid });
 
         // Group tickets by event ID and calculate the sum of counts for each event
@@ -28,4 +29,5 @@ router.get("/analytics", async (req, res) => {
         res.status(500).json({ error: "Failed to fetch analytics" });
     }
 });
+
 export default router;

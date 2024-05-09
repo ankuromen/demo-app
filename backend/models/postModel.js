@@ -92,6 +92,22 @@ const postSchema = mongoose.Schema(
 			required: true,
 			default: false, // or whatever default value you want
 		},
+		ticketSalesStartDate: {
+            type: Date,
+            required: true,
+        },
+        ticketSalesStartTime: {
+            type: String,
+            required: true,
+        },
+        ticketSalesEndDate: {
+            type: Date,
+            required: true,
+        },
+        ticketSalesEndTime: {
+            type: String,
+            required: true,
+        },
 	},
 	{
 		timestamps: true,
