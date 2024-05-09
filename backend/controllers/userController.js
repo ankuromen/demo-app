@@ -4,15 +4,14 @@ import bcrypt from "bcryptjs";
 import generateTokenAndSetCookie from "../utils/helpers/generateTokenAndSetCookie.js";
 import { v2 as cloudinary } from "cloudinary";
 import mongoose from "mongoose";
+import { ObjectId } from "mongodb";
 
 const getUserProfile = async (req, res) => {
   // We will fetch user profile either with username or userId
   // query is either username or userId
   const { query } = req.params;
-
   try {
     let user;
-
     // query is userId
     if (mongoose.Types.ObjectId.isValid(query)) {
       user = await User.findOne({ _id: query })

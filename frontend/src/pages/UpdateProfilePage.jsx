@@ -24,6 +24,7 @@ export default function UpdateProfilePage() {
 		email: user.email,
 		bio: user.bio,
 		password: "",
+		interests:user.interests,
 		location:user.location,
 		occupation:user.occupation,
 		instagram:user.instagram

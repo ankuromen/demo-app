@@ -153,7 +153,7 @@ const Post = ({ post, postedBy }) => {
 
 					{post.img && (
 						<Box borderRadius={6} overflow={"hidden"} border={"1px solid"} borderColor={"gray.light"}>
-							<Image src={post.img} w={"full"} />
+							<Image src={post.img} w={"full"} maxH={"sm"}/>
 						</Box>
 					)}
 
