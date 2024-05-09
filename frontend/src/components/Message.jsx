@@ -113,6 +113,9 @@ const Message = ({ ownMessage, message }) => {
               borderWidth={"1px"}
               borderRadius={"lg"}
               overflow={"hidden"}
+              border={"1px"}
+              borderColor={"gray.500"}
+              onClick={() => openEventPage(post)}
             >
               {post.img && (
                 <Image
@@ -120,8 +123,7 @@ const Message = ({ ownMessage, message }) => {
                   ms={"auto"}
                   me={"auto"}
                   borderRadius={10}
-                  maxW={"100%"}
-                  maxH={"200px"}
+                  maxH={"150px"}
                   src={post.img}
                   alt={"image"}
                 />
