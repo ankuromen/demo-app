@@ -16,7 +16,6 @@ const Message = ({ ownMessage, message }) => {
     const res = await fetch(`/api/posts/${post._id}`);
     if (res.ok) {
       const data = await res.json();
-      console.log(data);
       navigate(`/${data.postedBy.name}/post/${post._id}`);
     } else {
       console.log("HTTP-Error: " + res.status);
