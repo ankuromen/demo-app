@@ -40,7 +40,7 @@ const MessageInput = ({ setMessages, post }) => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!messageText && !imgUrl) return;
+    if (!messageText && !imgUrl && !sharedPost) return;
     if (isSending) return;
 
     setIsSending(true);

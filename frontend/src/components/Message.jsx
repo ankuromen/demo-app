@@ -25,7 +25,7 @@ const Message = ({ ownMessage, message }) => {
   return (
     <>
       {ownMessage ? (
-        <Flex gap={2} alignSelf={"flex-end"} flexDirection={"column"}>
+        <Flex gap={2} flexDirection={"column"}>
           {message.sharedPost?.map((post) => (
             <Box
               key={post._id}
@@ -33,6 +33,7 @@ const Message = ({ ownMessage, message }) => {
               borderRadius={"lg"}
               overflow={"hidden"}
               border={"1px"}
+              maxW={"50%"}
               borderColor={"gray.500"}
               onClick={() => openEventPage(post)}
             >
@@ -62,8 +63,23 @@ const Message = ({ ownMessage, message }) => {
             </Box>
           ))}
           {message.text && (
-            <Flex bg={"green.800"} maxW={"350px"} p={1} borderRadius={"md"}>
-              <Text color={"white"}>{message.text}</Text>
+            <Flex
+              bg={"green.800"}
+              maxW={"350px"}
+              w={"fit-content"}
+              p={2}
+              borderRadius={"md"}
+            >
+              <Text
+                color={"white"}
+                style={{
+                  wordWrap: "break-word",
+                  maxWidth: "300px",
+                  whiteSpace: "pre-line",
+                }}
+              >
+                {message.text}
+              </Text>
               <Box
                 alignSelf={"flex-end"}
                 ml={1}
@@ -104,7 +120,7 @@ const Message = ({ ownMessage, message }) => {
           <Avatar src={user.profilePic} w="7" h={7} />
         </Flex>
       ) : (
-        <Flex gap={2}>
+        <Flex gap={2} flexDirection={"column"} alignSelf={"flex-end"}>
           <Avatar src={selectedConversation.userProfilePic} w="7" h={7} />
           {message.sharedPost?.map((post) => (
             <Box
@@ -144,11 +160,13 @@ const Message = ({ ownMessage, message }) => {
 
           {message.text && (
             <Text
-              maxW={"350px"}
               bg={"gray.400"}
               p={1}
+              maxW={"330px"}
+              w={"fit-content"}
               borderRadius={"md"}
               color={"black"}
+              
             >
               {message.text}
             </Text>
