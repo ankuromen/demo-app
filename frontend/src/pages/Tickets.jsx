@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom.js";
+import QRCode from "react-qr-code";
 import {
   Box,
   Flex,
@@ -94,18 +95,18 @@ const Tickets = () => {
               <Image h={"100%"} w={"100%"} src={ticket.eventid.img} />
             </Box>
           )}
-          <Modal isOpen={isOpen} onClose={onClose}>
+          <Modal isOpen={isOpen} onClose={onClose} >
             <ModalOverlay />
-            <ModalContent bgGradient="linear(to-l, #7928CA, #FF0080)">
+            <ModalContent bgGradient="linear(to-l, #7928CA, #FF0080)" borderRadius={"1em"}>
               <ModalHeader textAlign={"center"}>Ticket Details</ModalHeader>
-              <ModalCloseButton size={"m"} />
+              <ModalCloseButton size={"md"} />
               <ModalBody>
                 <Box
                   borderWidth={"1px"}
-                  borderRadius={"lg"}
+                  borderRadius={"1em"}
                   overflow={"hidden"}
                   border={"1px"}
-                  borderColor={"gray.600"}
+                  borderColor={"gray.500"}
                 >
                   {selectedTicket && (
                     <Box p={"6"} background={""}>
@@ -115,7 +116,7 @@ const Tickets = () => {
                           h={"200px"}
                           background={"white"}
                           alignSelf={"flex-end"}
-                          borderRadius={"sm"}
+                          borderRadius={"1em"}
                           objectFit={"contain"}
                           overflow={"hidden"}
                           mb={"3"}
@@ -149,14 +150,26 @@ const Tickets = () => {
                         Time : {selectedTicket.ticketDetails.eventtime}
                         <br />
                       </Box>
+                      <QRCode
+                        size={256}
+                        style={{
+                          marginTop: "1em",
+                          height: "auto",
+                          maxWidth: "50%",
+                          marginLeft: "auto",
+                          marginRight: "auto",
+                        }}
+                        value={selectedTicket._id}
+                        viewBox={`0 0 256 256`}
+                      />
                     </Box>
                   )}
                 </Box>
               </ModalBody>
               <ModalFooter>
-                <Button colorScheme="blue" mr={3} onClick={onClose}>
+                {/* <Button colorScheme="blue" mr={3} onClick={onClose}>
                   Close
-                </Button>
+                </Button> */}
               </ModalFooter>
             </ModalContent>
           </Modal>
