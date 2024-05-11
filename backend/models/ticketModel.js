@@ -1,8 +1,9 @@
+import { ref } from 'firebase/database';
 import mongoose from 'mongoose';
 
 const ticketSchema = new mongoose.Schema({
     userid: { type: mongoose.Schema.Types.ObjectId, required: true },
-    eventid: { type: mongoose.Schema.Types.ObjectId, required: true },
+    eventid: { type: mongoose.Schema.Types.ObjectId, required: true ,ref:"Post"},
     ticketDetails: {
         name: { type: String, required: true },
         email: { type: String, required: true },

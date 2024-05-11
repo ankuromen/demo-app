@@ -1,33 +1,28 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom.js";
 import {
   Box,
-  Button,
   Flex,
   Heading,
   Image,
+  Text,
   Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
   ModalBody,
   ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
   useDisclosure,
+  Button,
 } from "@chakra-ui/react";
 
 const Tickets = () => {
   const user = useRecoilValue(userAtom); // Get The user data from Recoil atom
   const [tickets, setTickets] = useState([]);
-  console.log(user._id);
+  const [selectedTicket, setSelectedTicket] = useState();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
@@ -47,83 +42,126 @@ const Tickets = () => {
       fetchTickets();
     }
   }, [user]);
-  // Fetch tickets whenever user data changes
-  console.log(tickets);
+
+  const handleOpenTicket = (ticket) => {
+    setSelectedTicket(ticket);
+    onOpen();
+  };
+  console.log(selectedTicket);
   return (
     <Flex w={"full"} flexDirection={"column"} alignItems={"center"} gap={"4"}>
-      <Heading size={"lg"}>Your Tickets</Heading>
-      <Table size={"sm"}>
-        <Thead>
-          <Tr>
-            <Th>Name</Th>
-            <Th>Email</Th>
-            <Th>Contact No</Th>
-            <Th>Count</Th>
-            <Th>Event Name</Th>
-            <Th>Event Date</Th>
-            <Th>Event Time</Th>
-            <Th>Price</Th>
-            <Th></Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {tickets.map((ticket) => (
-            <Tr key={ticket._id}>
-              <Td>{ticket.ticketDetails.name}</Td>
-              <Td>{ticket.ticketDetails.email}</Td>
-              <Td>{ticket.ticketDetails.contactNo}</Td>
-              <Td>{ticket.ticketDetails.count}</Td>
-              <Td>{ticket.ticketDetails.eventname}</Td>
-              <Td>
-                {new Date(ticket.ticketDetails.eventdate).toLocaleDateString()}
-              </Td>
-              <Td>{ticket.ticketDetails.eventtime}</Td>
-              <Td>{ticket.ticketDetails.ticketprice}</Td>
-              <Td>
-                <Button size={"sm"} colorScheme="blue" onClick={onOpen}>
-                  More
-                </Button>
-              </Td>
-              <Modal
-                isOpen={isOpen}
-                onClose={onClose}
-                ticket={ticket}
-              >
-                <ModalOverlay />
-                <ModalContent>
-                  <ModalHeader textAlign={"center"}>Event Details</ModalHeader>
-                  <ModalCloseButton size={"sm"} />
-                  <ModalBody>
-                    <Box
-                      borderWidth={"1px"}
-                      borderRadius={"lg"}
-                      overflow={"hidden"}
-                      border={"1px"}
-                      borderColor={"gray.500"}
-                    >
-                      <Box p={"6"} background={""}>
-                        <Box mt={"1"} fontWeight={"semibold"} as={"h4"}>
-                          Event Name : {ticket.ticketDetails.eventname}
-                          <br />
-                          Name : {ticket.ticketDetails.name}
-                          <br />
-                          Ticket Price : {ticket.ticketDetails.ticketprice}
+      <Heading size={"lg"}>My Tickets</Heading>
+      {tickets.map((ticket) => (
+        <Flex
+          key={ticket._id}
+          bgGradient="linear(to-r,#ad5389, #3c1053)"
+          h={"fit-content"}
+          p={3}
+          borderRadius={"md"}
+          w={"100%"}
+          justifyContent={"space-between"}
+          onClick={() => handleOpenTicket(ticket)}
+        >
+          <Box>
+            <Text fontSize={"md"} fontWeight={"500"}>
+              Event : {ticket.ticketDetails.eventname}
+            </Text>
+            <Text fontSize={"md"} fontWeight={"500"}>
+              Venue : {ticket.eventid.venue}
+            </Text>
+            <Text fontSize={"md"} fontWeight={"500"}>
+              No.of Tickets : {ticket.ticketDetails.count}
+            </Text>
+            <Text fontSize={"md"} fontWeight={"500"}>
+              Start :{" "}
+              {new Date(ticket.ticketDetails.eventdate).toLocaleDateString([], {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </Text>
+          </Box>
+          {ticket.eventid.img && (
+            <Box
+              w={"25%"}
+              h={"100px "}
+              background={"white"}
+              alignSelf={"flex-end"}
+              borderRadius={"md"}
+              objectFit={"contain"}
+              overflow={"hidden"}
+            >
+              <Image h={"100%"} w={"100%"} src={ticket.eventid.img} />
+            </Box>
+          )}
+          <Modal isOpen={isOpen} onClose={onClose}>
+            <ModalOverlay />
+            <ModalContent bgGradient="linear(to-l, #7928CA, #FF0080)">
+              <ModalHeader textAlign={"center"}>Ticket Details</ModalHeader>
+              <ModalCloseButton size={"m"} />
+              <ModalBody>
+                <Box
+                  borderWidth={"1px"}
+                  borderRadius={"lg"}
+                  overflow={"hidden"}
+                  border={"1px"}
+                  borderColor={"gray.600"}
+                >
+                  {selectedTicket && (
+                    <Box p={"6"} background={""}>
+                      {selectedTicket.eventid.img && (
+                        <Box
+                          w={"100%"}
+                          h={"200px"}
+                          background={"white"}
+                          alignSelf={"flex-end"}
+                          borderRadius={"sm"}
+                          objectFit={"contain"}
+                          overflow={"hidden"}
+                          mb={"3"}
+                        >
+                          <Image
+                            h={"100%"}
+                            w={"100%"}
+                            src={selectedTicket.eventid.img}
+                          />
                         </Box>
+                      )}
+                      <Box mt={"1"} fontWeight={"semibold"} as={"h4"}>
+                        Event Name : {selectedTicket.ticketDetails.eventname}
+                        <br />
+                        User Name : {selectedTicket.ticketDetails.name}
+                        <br />
+                        Ticket Price :{" "}
+                        {selectedTicket.ticketDetails.ticketprice}
+                        <br />
+                        My Contact : {selectedTicket.ticketDetails.contactNo}
+                        <br />
+                        Start :{" "}
+                        {new Date(
+                          selectedTicket.ticketDetails.eventdate
+                        ).toLocaleDateString([], {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                        <br />
+                        Time : {selectedTicket.ticketDetails.eventtime}
+                        <br />
                       </Box>
                     </Box>
-                  </ModalBody>
-
-                  <ModalFooter>
-                    <Button colorScheme="blue" mr={3} onClick={onClose}>
-                      Close
-                    </Button>
-                  </ModalFooter>
-                </ModalContent>
-              </Modal>
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
+                  )}
+                </Box>
+              </ModalBody>
+              <ModalFooter>
+                <Button colorScheme="blue" mr={3} onClick={onClose}>
+                  Close
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        </Flex>
+      ))}
     </Flex>
   );
 };
