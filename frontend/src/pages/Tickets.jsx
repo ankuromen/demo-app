@@ -17,7 +17,6 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-  Button,
 } from "@chakra-ui/react";
 
 const Tickets = () => {
@@ -95,9 +94,12 @@ const Tickets = () => {
               <Image h={"100%"} w={"100%"} src={ticket.eventid.img} />
             </Box>
           )}
-          <Modal isOpen={isOpen} onClose={onClose} >
+          <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
-            <ModalContent bgGradient="linear(to-l, #7928CA, #FF0080)" borderRadius={"1em"}>
+            <ModalContent
+              bgGradient="linear(to-l, #7928CA, #FF0080)"
+              borderRadius={"1em"}
+            >
               <ModalHeader textAlign={"center"}>Ticket Details</ModalHeader>
               <ModalCloseButton size={"md"} />
               <ModalBody>
@@ -148,6 +150,9 @@ const Tickets = () => {
                         })}
                         <br />
                         Time : {selectedTicket.ticketDetails.eventtime}
+                        <br />
+                        Venue : {selectedTicket.eventid.venue} (
+                        {selectedTicket.eventid.eventType})
                         <br />
                       </Box>
                       <QRCode
