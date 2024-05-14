@@ -143,6 +143,7 @@ const loginUser = async (req, res) => {
       location: user.location,
       occupation: user.occupation,
       instagram: user.instagram,
+      soloOrganizer: user.soloOrganizer,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

@@ -11,6 +11,7 @@ import authScreenAtom from "../atoms/authAtom";
 import { BsFillChatQuoteFill } from "react-icons/bs";
 import { MdOutlineSettings } from "react-icons/md";
 import { AiOutlineFileSync } from "react-icons/ai";
+import { CiCalendar } from "react-icons/ci";
 
 const Header = () => {
 	const { colorMode, toggleColorMode } = useColorMode();
@@ -19,18 +20,22 @@ const Header = () => {
 	const setAuthScreen = useSetRecoilState(authScreenAtom);
 
 	return (
-		<Flex justifyContent={"space-between"} mt={6} mb='12'>
+		<Flex justifyContent={"space-between"} mt={6} mb="12">
 			{user && (
-				<Link as={RouterLink} to='/'>
+				<Link as={RouterLink} to="/">
 					<AiFillHome size={24} />
 				</Link>
 			)}
 			{!user && (
-				<Link as={RouterLink} to={"/auth"} onClick={() => setAuthScreen("login")}>
+				<Link
+					as={RouterLink}
+					to={"/auth"}
+					onClick={() => setAuthScreen("login")}
+				>
 					Login
 				</Link>
 			)}
-			<Button colorScheme='white' variant='outline' onClick={toggleColorMode}>
+			<Button colorScheme="white" variant="outline" onClick={toggleColorMode}>
 				Evntiq
 			</Button>
 			{/* 
@@ -52,23 +57,31 @@ const Header = () => {
 						<BsFillChatQuoteFill size={20} />
 					</Link>
 					<Link as={RouterLink} to={`/tickets`}>
-					<AiOutlineFileSync size={20} />
+						<AiOutlineFileSync size={20} />
 					</Link>
 					<Link as={RouterLink} to={`/settings`}>
 						<MdOutlineSettings size={20} />
 					</Link>
-				
-					<Link as={RouterLink} to={'/analytics'}><AiOutlineStock size={20} />
+					<Link as={RouterLink} to={"/analytics"}>
+						<AiOutlineStock size={20} />
 					</Link>
+					{user && (
+						<Link as={RouterLink} to={"/calendar"}>
+							<CiCalendar size={20} />
+						</Link>
+					)}
 					<Button size={"xs"} onClick={logout}>
 						<FiLogOut size={20} />
 					</Button>
-					
 				</Flex>
 			)}
 
 			{!user && (
-				<Link as={RouterLink} to={"/auth"} onClick={() => setAuthScreen("signup")}>
+				<Link
+					as={RouterLink}
+					to={"/auth"}
+					onClick={() => setAuthScreen("signup")}
+				>
 					Sign up
 				</Link>
 			)}

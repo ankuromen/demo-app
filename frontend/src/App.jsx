@@ -13,13 +13,14 @@ import ChatPage from "./pages/ChatPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import Analytics from "./pages/Analytics";
 import Tickets from "./pages/Tickets";
+import CalendarPage from "./pages/CalendarPage";
 
-function App() {
+function  App() {
 	const user = useRecoilValue(userAtom);
 	const { pathname } = useLocation();
 	return (
 		<Box position={"relative"} w='full'>
-			<Container maxW={pathname === "/" ? { base: "620px", md: "900px" } : "620px"}>
+			<Container maxW={pathname === "/" ? { base: "620px", md: "900px" } : "60vw"}>
 				<Header />
 				<Routes>
 					<Route path='/' element={user ? <HomePage /> : <Navigate to='/auth' />} />
@@ -44,6 +45,7 @@ function App() {
 					<Route path='/settings' element={user ? <SettingsPage /> : <Navigate to={"/auth"} />} />
 					<Route path='/analytics' element={user ? <Analytics /> : <Navigate to={"/auth"} />} />
 					<Route path='/tickets' element={user ? <Tickets /> : <Navigate to={"/auth"} />} />
+					<Route path='/calendar' element={user ? <CalendarPage /> : <Navigate to={"/auth"} />} />
 				</Routes>
 			</Container>
 		</Box>
