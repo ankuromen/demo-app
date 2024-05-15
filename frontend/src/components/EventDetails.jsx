@@ -13,7 +13,7 @@ const EventDetails = ({
   isEventDetailsOpen,
   onEventDetailsOpen,
   onEventDetailsClose,
-  selectedEvent
+  selectedEvent,
 }) => {
   return (
     <>
@@ -36,7 +36,7 @@ const EventDetails = ({
             >
               {selectedEvent && (
                 <Box p={"6"} background={""}>
-                  {selectedEvent.eventid.img && (
+                  {selectedEvent.img && (
                     <Box
                       w={"100%"}
                       h={"200px"}
@@ -47,33 +47,29 @@ const EventDetails = ({
                       overflow={"hidden"}
                       mb={"3"}
                     >
-                      <Image
-                        h={"100%"}
-                        w={"100%"}
-                        src={selectedEvent.eventid.img}
-                      />
+                      <Image h={"100%"} w={"100%"} src={selectedEvent.img} />
                     </Box>
                   )}
                   <Box mt={"1"} fontWeight={"semibold"} as={"h4"}>
-                    Event Name : {selectedEvent.ticketDetails.eventname}
+                    Event Name : {selectedEvent.event}
                     <br />
-                    User Name : {selectedEvent.ticketDetails.name}
+                    {selectedEvent.category === "ticket"
+                      ? "User Name"
+                      : "Posted By"}{" "}
+                    : {selectedEvent.name}
                     <br />
-                    Ticket Price : {selectedEvent.ticketDetails.ticketprice}
+                    Ticket Price : {selectedEvent.price}
                     <br />
                     Start :{" "}
-                    {new Date(
-                      selectedEvent.ticketDetails.eventdate
-                    ).toLocaleDateString([], {
+                    {new Date(selectedEvent.start).toLocaleDateString([], {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
                     })}
                     <br />
-                    Time : {selectedEvent.ticketDetails.eventtime}
+                    Time : {selectedEvent.time}
                     <br />
-                    Venue : {selectedEvent.eventid.venue} (
-                    {selectedEvent.eventid.eventType})
+                    Venue : {selectedEvent.venue} ({selectedEvent.type})
                     <br />
                   </Box>
                 </Box>
