@@ -12,7 +12,7 @@ import CreatePost from "./components/CreatePost";
 import ChatPage from "./pages/ChatPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import Analytics from "./pages/Analytics";
-import Tickets from "./pages/Tickets";
+import TicketsPage from "./pages/TicketsPage";
 import CalendarPage from "./pages/CalendarPage";
 
 function  App() {
@@ -44,7 +44,7 @@ function  App() {
 					<Route path='/chat' element={user ? <ChatPage /> : <Navigate to={"/auth"} />} />
 					<Route path='/settings' element={user ? <SettingsPage /> : <Navigate to={"/auth"} />} />
 					<Route path='/analytics' element={user ? <Analytics /> : <Navigate to={"/auth"} />} />
-					<Route path='/tickets' element={user ? <Tickets /> : <Navigate to={"/auth"} />} />
+					<Route path='/tickets' element={user ? <TicketsPage /> : <Navigate to={"/auth"} />} />
 					<Route path='/calendar' element={user ? <CalendarPage /> : <Navigate to={"/auth"} />} />
 				</Routes>
 			</Container>

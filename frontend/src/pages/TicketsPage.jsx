@@ -17,13 +17,17 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
+  Button,
+  Toast,
 } from "@chakra-ui/react";
+import useShowToast from "../hooks/useShowToast.js";
 
-const Tickets = () => {
+const TicketsPage = () => {
   const user = useRecoilValue(userAtom); // Get The user data from Recoil atom
   const [tickets, setTickets] = useState([]);
   const [selectedTicket, setSelectedTicket] = useState();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const showToast = useShowToast();
 
   useEffect(() => {
     if (user) {
@@ -47,7 +51,22 @@ const Tickets = () => {
     setSelectedTicket(ticket);
     onOpen();
   };
-  console.log(selectedTicket);
+
+  const handleCheckIn = async (selectedTicket) => {
+    try {
+      const res = await axios.put(
+        `/api/posts/checkin/${selectedTicket.eventid._id}`,
+        {
+          ticketId: selectedTicket._id,
+        }
+      );
+      const data =await res.data
+      showToast("success",data.message,"success")
+      onClose()
+    } catch (error) {
+      showToast("Error","error");
+    }
+  };
   return (
     <Flex w={"full"} flexDirection={"column"} alignItems={"center"} gap={"4"}>
       <Heading size={"lg"}>My Tickets</Heading>
@@ -94,19 +113,26 @@ const Tickets = () => {
               <Image h={"100%"} w={"100%"} src={ticket.eventid.img} />
             </Box>
           )}
-          <Modal isOpen={isOpen} onClose={onClose}>
+          <Modal isOpen={isOpen} onClose={onClose} mt={0}>
             <ModalOverlay />
             <ModalContent
               bgGradient="linear(to-l, #7928CA, #FF0080)"
               borderRadius={"1em"}
             >
               <ModalHeader textAlign={"center"}>Ticket Details</ModalHeader>
+              <Button
+                colorScheme="green"
+                size={"xs"}
+                mt={"1"}
+                onClick={() => handleCheckIn(selectedTicket)}
+              >
+                Check In
+              </Button>
               <ModalCloseButton size={"md"} />
               <ModalBody>
                 <Box
                   borderWidth={"1px"}
                   borderRadius={"1em"}
-                  overflow={"hidden"}
                   border={"1px"}
                   borderColor={"gray.500"}
                 >
@@ -159,8 +185,8 @@ const Tickets = () => {
                         size={256}
                         style={{
                           marginTop: "1em",
-                          height: "auto",
-                          maxWidth: "50%",
+                          height: "100px",
+                          maxWidth: "60%",
                           marginLeft: "auto",
                           marginRight: "auto",
                         }}
@@ -171,11 +197,7 @@ const Tickets = () => {
                   )}
                 </Box>
               </ModalBody>
-              <ModalFooter>
-                {/* <Button colorScheme="blue" mr={3} onClick={onClose}>
-                  Close
-                </Button> */}
-              </ModalFooter>
+              <ModalFooter></ModalFooter>
             </ModalContent>
           </Modal>
         </Flex>
@@ -184,4 +206,4 @@ const Tickets = () => {
   );
 };
 
-export default Tickets;
+export default TicketsPage;

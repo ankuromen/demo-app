@@ -158,10 +158,11 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
         return;
       }
       showToast("Success", "Post created successfully", "success");
+      onCloseCreate();
       if (username === user.username) {
         setPosts([data, ...posts]);
       }
-      onCloseCreate();
+      
       setPostName("");
       setPostText("");
       setImgUrl("");

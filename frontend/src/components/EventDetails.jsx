@@ -8,13 +8,36 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  Button,
 } from "@chakra-ui/react";
+import useShowToast from "../hooks/useShowToast";
+import axios from "axios";
+
 const EventDetails = ({
   isEventDetailsOpen,
   onEventDetailsOpen,
   onEventDetailsClose,
   selectedEvent,
 }) => {
+  const showToast = useShowToast();
+
+  const handleCheckIn = async (selectedEvent) => {
+    console.log("handlecheckIn");
+    console.log(selectedEvent);
+    try {
+      const res = await axios.put(
+        `/api/posts/checkin/${selectedEvent.eventId}`,
+        {
+          ticketId: selectedEvent.id,
+        }
+      );
+      const data = await res.data;
+      showToast("success", data.message, "success");
+      onEventDetailsClose();
+    } catch (error) {
+      showToast("Error", "error");
+    }
+  };
   return (
     <>
       {" "}
@@ -77,9 +100,20 @@ const EventDetails = ({
             </Box>
           </ModalBody>
           <ModalFooter>
-            {/* <Button colorScheme="blue" mr={3} onClick={onClose}>
-                  Close
-                </Button> */}
+            {selectedEvent?.category && selectedEvent.category=== "ticket" && (
+              <Button
+                colorScheme="blue"
+                alignSelf={"center"}
+                justifySelf={"center"}
+                size={"sm"}
+                mt={"1"}
+                ms={"auto"}
+                color={"white"}
+                onClick={() => handleCheckIn(selectedEvent)}
+              >
+                Check In
+              </Button>
+            )}
           </ModalFooter>
         </ModalContent>
       </Modal>

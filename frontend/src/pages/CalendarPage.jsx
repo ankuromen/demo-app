@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
 import axios from "axios";
-import { Box, Flex, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, useDisclosure } from "@chakra-ui/react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import listPlugin from "@fullcalendar/list";
@@ -19,12 +19,13 @@ const CalendarPage = () => {
   const eventsList = [];
   const [posts, setPosts] = useState([]);
   const [createPostOpen, setCreatePostOpen] = useState(false);
+  
   const {
     isOpen: isEventDetailsOpen,
     onOpen: onEventDetailsOpen,
     onClose: onEventDetailsClose,
   } = useDisclosure();
-
+  
   useEffect(() => {
     if (user) {
       // If user data is available, fetch tickets associated wiTh The user
@@ -53,40 +54,42 @@ const CalendarPage = () => {
         setPosts([]);
       }
     };
-
     getPosts();
   }, [user]);
 
-  console.log("posts", posts);
-
-  for (const ticket of tickets) {
-    const startDate = ticket?.ticketDetails?.eventdate?.split("T")[0];
-    const endDate = ticket?.eventid?.endDate?.split("T")[0]; //eventId is populated with event data
-    const event = {
-      title: ticket?.ticketDetails?.eventname,
-      start: new Date(
-        `${startDate} ${ticket?.ticketDetails?.eventtime}:00.000+00:00`
-      ),
-      end: new Date(`${endDate} ${ticket?.eventid?.endTime}:00.000+00:00`),
-      id: ticket._id,
-      category: "ticket",
-    };
-    eventsList.push(event);
-  }
+  console.log(posts);
   
-  for (const post of posts) {
-    const startDate = post?.startDate?.split("T")[0];
-    const endDate = post?.endDate.split("T")[0];
-    const event = {
-      title: post?.name,
-      start: new Date(`${startDate} ${post?.startTime}:00.000+00:00`),
-      end: new Date(`${endDate} ${post?.endTime}:00.000+00:00`),
-      id: post._id,
-      category: "post",
-      color: "green",
-    };
-    eventsList.push(event);
+  if (tickets) {
+    for (const ticket of tickets) {
+      const startDate = ticket?.ticketDetails?.eventdate?.split("T")[0];
+      const endDate = ticket?.eventid?.endDate?.split("T")[0]; //eventId is populated with event data
+      const event = {
+        title: ticket?.ticketDetails?.eventname,
+        start: new Date(
+          `${startDate} ${ticket?.ticketDetails?.eventtime}:00.000+00:00`
+        ),
+        end: new Date(`${endDate} ${ticket?.eventid?.endTime}:00.000+00:00`),
+        id: ticket._id,
+        category: "ticket",
+      };
+      eventsList.push(event);
+    }
   }
+  console.log(posts);
+  !posts.error &&
+    posts?.map((post) => {
+      const startDate = post?.startDate?.split("T")[0];
+      const endDate = post?.endDate.split("T")[0];
+      const event = {
+        title: post?.name,
+        start: new Date(`${startDate} ${post?.startTime}:00.000+00:00`),
+        end: new Date(`${endDate} ${post?.endTime}:00.000+00:00`),
+        id: post._id,
+        category: "post",
+        color: "green",
+      };
+      eventsList.push(event);
+    });
 
   function handleEventClick(event) {
     let category = event.event._def?.extendedProps.category;
@@ -96,6 +99,8 @@ const CalendarPage = () => {
         (ticket) => ticket._id === event.event._def.publicId
       );
       let selectedEvent = {
+        id:ticket._id,
+        eventId:ticket.eventid._id,
         event: ticket.ticketDetails.eventname,
         name: ticket.ticketDetails.name,
         price: ticket.ticketDetails.ticketprice,
@@ -110,7 +115,6 @@ const CalendarPage = () => {
     }
     if (category === "post") {
       let post = posts.find((post) => post._id === event.event._def.publicId);
-      console.log(post);
       let selectedEvent = {
         event: post.name,
         name: user.name,

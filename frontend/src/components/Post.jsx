@@ -147,6 +147,7 @@ const Post = ({ post, postedBy }) => {
           <Text fontSize={"sm"}>Start Time:{post.startTime}</Text>
           <Text fontSize={"sm"}>End Date:{post.endDate}</Text>
           <Text fontSize={"sm"}>End Time:{post.endTime}</Text>
+          <Text fontSize={"sm"}>Checkins:{post.checkins.length}</Text>
           <Text fontSize={"sm"}>TimeZone:{post.timeZone}</Text>
           <Text fontSize={"sm"}>Venue:{post.venue}</Text>
           <Text fontSize={"sm"}>Rs {post.ticketPrice}</Text>
