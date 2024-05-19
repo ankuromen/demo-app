@@ -7,7 +7,6 @@ import userRoutes from "./routes/userRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import ticketRoutes from "./routes/ticketRoutes.js";
-import analyticsRoutes from "./routes/analyticsRoutes.js"
 import { v2 as cloudinary } from "cloudinary";
 import { app, server } from "./socket/socket.js";
 import job from "./cron/cron.js";
@@ -35,7 +34,6 @@ app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/tickets", ticketRoutes); 
-app.use("/api/analytics",analyticsRoutes ); 
 
 
 

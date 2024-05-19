@@ -56,23 +56,6 @@ function Analytics() {
 
     return (
         <div>
-            <h2>Event Analytics</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Event ID</th>
-                        <th>Total Tickets</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {analyticsData.map(event => (
-                        <tr key={event.eventid}>
-                            <td>{event.eventid}</td>
-                            <td>{event.count}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
             <form onSubmit={handleSubmit}>
                 <FormControl>
                     <FormLabel>Name</FormLabel>
