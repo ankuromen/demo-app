@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useRecoilValue } from "recoil";
-import userAtom from "../atoms/userAtom";
+import React, { useState } from "react";
+
+
 import emailjs from '@emailjs/browser';
 import { FormControl, FormLabel, Input, Textarea, Button } from "@chakra-ui/react";
 
 function Analytics() {
-    const user = useRecoilValue(userAtom); // Get the user data from Recoil atom
-    const [analyticsData, setAnalyticsData] = useState([]);
+
+
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
@@ -41,18 +40,7 @@ function Analytics() {
             });
     }
 
-    useEffect(() => {
-        if (user) {
-            // Fetch analytics data from backend using the user's ID
-            axios.get(`/api/analytics/${user._id}`)
-                .then(response => {
-                    setAnalyticsData(response.data);
-                })
-                .catch(error => {
-                    console.error("Error fetching analytics:", error);
-                });
-        }
-    }, [user]); // Fetch analytics data whenever user data changes
+
 
     return (
         <div>

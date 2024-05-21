@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import saveOrUpdateEventAnalytics from "../routes/analyticsFunction.js";
 
 const ticketSchema = new mongoose.Schema({
   userid: { type: mongoose.Schema.Types.ObjectId, required: true },
@@ -23,6 +24,14 @@ const ticketSchema = new mongoose.Schema({
     checkin: { type: Boolean, default: false },
   },
 });
+ticketSchema.post("save", function (doc) {
+  saveOrUpdateEventAnalytics(doc.eventid);
+});
+
+ticketSchema.post("findOneAndUpdate", function (doc) {
+  saveOrUpdateEventAnalytics(doc.eventid);
+});
+
 
 const ticket = mongoose.model("Ticket", ticketSchema);
 
