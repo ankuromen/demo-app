@@ -14,6 +14,7 @@ import { SettingsPage } from "./pages/SettingsPage";
 import Analytics from "./pages/Analytics";
 import TicketsPage from "./pages/TicketsPage";
 import CalendarPage from "./pages/CalendarPage";
+import QRVerificationPage from "./pages/QRVerificationPage";
 
 function  App() {
 	const user = useRecoilValue(userAtom);
@@ -46,6 +47,7 @@ function  App() {
 					<Route path='/analytics' element={user ? <Analytics /> : <Navigate to={"/auth"} />} />
 					<Route path='/tickets' element={user ? <TicketsPage /> : <Navigate to={"/auth"} />} />
 					<Route path='/calendar' element={user ? <CalendarPage /> : <Navigate to={"/auth"} />} />
+					<Route path='/qr-verification' element={user ? <QRVerificationPage /> : <Navigate to={"/auth"} />} />
 				</Routes>
 			</Container>
 		</Box>

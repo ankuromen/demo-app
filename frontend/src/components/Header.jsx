@@ -70,6 +70,9 @@ const Header = () => {
 							<CiCalendar size={20} />
 						</Link>
 					)}
+					<Link as={RouterLink} to={`/qr-verification`}>
+						<BsFillChatQuoteFill size={20} />
+					</Link>
 					<Button size={"xs"} onClick={logout}>
 						<FiLogOut size={20} />
 					</Button>
