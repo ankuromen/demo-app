@@ -23,6 +23,7 @@ const ticketSchema = new mongoose.Schema({
     interests: [{ type: String }], // Assuming user interests may also be stored in the ticket
     checkin: { type: Boolean, default: false },
   },
+  used: { type: Boolean, default: false },
 });
 ticketSchema.post("save", function (doc) {
   saveOrUpdateEventAnalytics(doc.eventid);
