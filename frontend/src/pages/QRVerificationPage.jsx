@@ -15,7 +15,7 @@ const QRVerificationPage = () => {
       setData(result.text);
       setIsScanning(false);
       try {
-        const response = await axios.post('/verifyTicket', { ticketid: result.text });
+        const response = await axios.post('/api/tickets/verifyTicket', { ticketid: result.text });
         setMessage(response.data.message);
       } catch (error) {
         console.error(error);
