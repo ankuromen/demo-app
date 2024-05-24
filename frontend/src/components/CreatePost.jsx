@@ -80,20 +80,15 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
   const [ticketSalesEndDate, setTicketSalesEndDate] = useState("");
   const [ticketSalesEndTime, setTicketSalesEndTime] = useState("");
 
-  useEffect(() => {
-    openCreate();
-  }, [createPostOpen]);
-  console.log("Create", createPostOpen);
+  if (createPostOpen) {
+    onOpen();
+    setStartDate(date);
+  }
 
-  const openCreate = () => {
-    if (createPostOpen) {
-      onOpen();
-      setStartDate(date);
-    }
-  };
   function onCloseCreate() {
+    console.log("close");
     closeCreate();
-    setCreatePostOpen(false);
+    setCreatePostOpen(!createPostOpen);
   }
 
   const handlePlaceChanged = () => {
@@ -158,11 +153,10 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
         return;
       }
       showToast("Success", "Post created successfully", "success");
-      onCloseCreate();
       if (username === user.username) {
         setPosts([data, ...posts]);
       }
-      
+
       setPostName("");
       setPostText("");
       setImgUrl("");
@@ -188,6 +182,7 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
     } finally {
       setLoading(false);
     }
+    onCloseCreate();
   };
 
   return (

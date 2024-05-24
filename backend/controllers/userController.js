@@ -99,6 +99,11 @@ const signupUser = async (req, res) => {
         course: newUser.course,
         occupation: newUser.occupation,
         instagram: newUser.instagram,
+        linkedin: newUser.linkedin,
+        twitter: newUser.twitter,
+        youtube: newUser.youtube,
+        tiktok: newUser.tiktok,
+        website: newUser.website,
         bio: newUser.bio,
         profilePic: newUser.profilePic,
         notificationsEnabled: newUser.notificationsEnabled,
@@ -143,6 +148,11 @@ const loginUser = async (req, res) => {
       location: user.location,
       occupation: user.occupation,
       instagram: user.instagram,
+      linkedin: user.linkedin,
+      twitter: user.twitter,
+      youtube: user.youtube,
+      tiktok: user.tiktok,
+      website: user.website,
       soloOrganizer: user.soloOrganizer,
     });
   } catch (error) {
@@ -205,9 +215,14 @@ const updateUser = async (req, res) => {
     location,
     occupation,
     instagram,
+    linkedin,
+    twitter,
+    tiktok,
+    youtube,
+    website,
   } = req.body;
   let { profilePic } = req.body;
-
+  console.log(req.body);
   const userId = req.user._id;
   try {
     let user = await User.findById(userId);
@@ -244,6 +259,11 @@ const updateUser = async (req, res) => {
     user.location = location || user.location;
     user.occupation = occupation || user.occupation;
     user.instagram = instagram || user.instagram;
+    user.linkedin = linkedin;
+    user.twitter = twitter;
+    user.youtube = youtube;
+    user.tiktok = tiktok;
+    user.website = website;
 
     user = await user.save();
 

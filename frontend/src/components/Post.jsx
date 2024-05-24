@@ -1,179 +1,244 @@
 import { Avatar } from "@chakra-ui/avatar";
 import { Image } from "@chakra-ui/image";
-import { Box, Flex, Text } from "@chakra-ui/layout";
+import { Box, Flex, Text, Stack } from "@chakra-ui/layout";
 import { Link, useNavigate } from "react-router-dom";
 import Actions from "./Actions";
 import { useEffect, useState } from "react";
 import useShowToast from "../hooks/useShowToast";
 import { formatDistanceToNow } from "date-fns";
-import { DeleteIcon } from "@chakra-ui/icons";
+import { DeleteIcon, TimeIcon } from "@chakra-ui/icons";
+import { CiLocationOn } from "react-icons/ci";
 import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
 import postsAtom from "../atoms/postsAtom";
 
 const Post = ({ post, postedBy }) => {
-	const [user, setUser] = useState(null);
-	const showToast = useShowToast();
-	const currentUser = useRecoilValue(userAtom);
-	const [posts, setPosts] = useRecoilState(postsAtom);
-	const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const showToast = useShowToast();
+  const currentUser = useRecoilValue(userAtom);
+  const [posts, setPosts] = useRecoilState(postsAtom);
+  const navigate = useNavigate();
 
-	useEffect(() => {
-		const getUser = async () => {
-			try {
-				const res = await fetch("/api/users/profile/" + postedBy);
-				const data = await res.json();
-				if (data.error) {
-					showToast("Error", data.error, "error");
-					return;
-				}
-				setUser(data);
-			} catch (error) {
-				showToast("Error", error.message, "error");
-				setUser(null);
-			}
-		};
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const res = await fetch("/api/users/profile/" + postedBy);
+        const data = await res.json();
+        if (data.error) {
+          showToast("Error", data.error, "error");
+          return;
+        }
+        setUser(data);
+      } catch (error) {
+        showToast("Error", error.message, "error");
+        setUser(null);
+      }
+    };
 
-		getUser();
-	}, [postedBy, showToast]);
+    getUser();
+  }, [postedBy, showToast]);
 
-	const handleDeletePost = async (e) => {
-		try {
-			e.preventDefault();
-			if (!window.confirm("Are you sure you want to delete this post?")) return;
+  const handleDeletePost = async (e) => {
+    try {
+      e.preventDefault();
+      if (!window.confirm("Are you sure you want to delete this post?")) return;
 
-			const res = await fetch(`/api/posts/${post._id}`, {
-				method: "DELETE",
-			});
-			const data = await res.json();
-			if (data.error) {
-				showToast("Error", data.error, "error");
-				return;
-			}
-			showToast("Success", "Post deleted", "success");
-			setPosts(posts.filter((p) => p._id !== post._id));
-		} catch (error) {
-			showToast("Error", error.message, "error");
-		}
-	};
+      const res = await fetch(`/api/posts/${post._id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+      showToast("Success", "Post deleted", "success");
+      setPosts(posts.filter((p) => p._id !== post._id));
+    } catch (error) {
+      showToast("Error", error.message, "error");
+    }
+  };
 
-	if (!user) return null;
-	return (
-    <Link to={`/${user.username}/post/${post._id}`}>
-      <Flex gap={3} mb={4} py={5}>
-        <Flex flexDirection={"column"} alignItems={"center"}>
-          <Avatar
-            size="md"
-            name={user.name}
-            src={user?.profilePic}
-            onClick={(e) => {
-              e.preventDefault();
-              navigate(`/${user.username}`);
-            }}
-          />
-          <Box w="1px" h={"full"} bg="gray.light" my={2}></Box>
-          <Box position={"relative"} w={"full"}>
-            {post.replies.length === 0 && <Text textAlign={"center"}>🥱</Text>}
-            {post.replies[0] && (
-              <Avatar
-                size="xs"
-                name="John doe"
-                src={post.replies[0].userProfilePic}
-                position={"absolute"}
-                top={"0px"}
-                left="15px"
-                padding={"2px"}
-              />
-            )}
-
-            {post.replies[1] && (
-              <Avatar
-                size="xs"
-                name="John doe"
-                src={post.replies[1].userProfilePic}
-                position={"absolute"}
-                bottom={"0px"}
-                right="-5px"
-                padding={"2px"}
-              />
-            )}
-
-            {post.replies[2] && (
-              <Avatar
-                size="xs"
-                name="John doe"
-                src={post.replies[2].userProfilePic}
-                position={"absolute"}
-                bottom={"0px"}
-                left="4px"
-                padding={"2px"}
-              />
-            )}
-          </Box>
-        </Flex>
-        <Flex flex={1} flexDirection={"column"} gap={2}>
-          <Flex justifyContent={"space-between"} w={"full"}>
-            <Flex w={"full"} alignItems={"center"}>
-              <Text
-                fontSize={"sm"}
-                fontWeight={"bold"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate(`/${user.username}`);
-                }}
-              >
-                {user?.username}
+  if (!user) return null;
+  return (
+    <>
+      <Link to={`/${user.username}/post/${post._id}`}>
+        <Stack borderTop={"1px"} borderBottom={"1px"} borderColor={"gray.300"} padding={2}>
+          <Flex>
+            <Text fontWeight={"medium"}>
+              {new Date(post.startDate).getDate()}&nbsp;
+              {new Date(post.startDate).toLocaleDateString([], {
+                month: "long",
+              })}
+            </Text>
+            <Text fontWeight={"small"} color={"gray.500"}>
+              &nbsp;/&nbsp;
+              {new Date(post.startDate).toLocaleDateString([], {
+                weekday: "long",
+              })}
+            </Text>
+          </Flex>
+          <Flex
+            flex={""}
+            overflow={"hidden"}
+            paddingTop={"0.5em"}
+            paddingBottom={"0.5em"}
+            gap={5}
+          >
+            {post.img && (
+              <Box overflow={"hidden"} borderRadius={5} w={"10em"} h={'fit-content'}>
+                <Image src={post.img} />
+              </Box>
+            )} 
+            <Flex flexDirection={"column"} flexGrow={1}>
+              <Flex alignItems={"center"} gap={1}>
+                <Avatar
+                  size="2xs"
+                  name={user.name}
+                  src={user?.profilePic}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate(`/${user.username}`);
+                  }}
+                />
+                <Text fontSize={"xs"}>{user.name}</Text>
+              </Flex>
+              <Text fontWeight={"medium"} fontSize={"xl"}>
+                {post.name}
               </Text>
-              <Image src="/verified.png" w={4} h={4} ml={1} />
+              <Flex flexGrow={1} justifyContent={"space-between"}>
+                <Flex alignItems={"center"}>
+                  <TimeIcon color="gray.400" size="sm" />
+                  {post.startTime}
+                </Flex>
+                <Flex alignItems={"center"}>
+                  <CiLocationOn size={18} />
+                  {post.venue}
+                </Flex>
+              </Flex>
+              <Actions post={post} />
             </Flex>
-            <Flex gap={4} alignItems={"center"}>
-              <Text
-                fontSize={"xs"}
-                width={36}
-                textAlign={"right"}
-                color={"gray.light"}
-              >
-                {formatDistanceToNow(new Date(post.createdAt))} ago
-              </Text>
-
-              {currentUser?._id === user._id && (
-                <DeleteIcon size={20} onClick={handleDeletePost} />
+          </Flex>
+        </Stack>
+      </Link>
+{/* 
+      <Link to={`/${user.username}/post/${post._id}`}>
+        <Flex gap={3} mb={4} py={5}>
+          <Flex flexDirection={"column"} alignItems={"center"}>
+            <Avatar
+              size="md"
+              name={user.name}
+              src={user?.profilePic}
+              onClick={(e) => {
+                e.preventDefault();
+                navigate(`/${user.username}`);
+              }}
+            />
+            <Box w="1px" h={"full"} bg="gray.light" my={2}></Box>
+            <Box position={"relative"} w={"full"}>
+              {post.replies.length === 0 && (
+                <Text textAlign={"center"}>🥱</Text>
               )}
+              {post.replies[0] && (
+                <Avatar
+                  size="xs"
+                  name="John doe"
+                  src={post.replies[0].userProfilePic}
+                  position={"absolute"}
+                  top={"0px"}
+                  left="15px"
+                  padding={"2px"}
+                />
+              )}
+
+              {post.replies[1] && (
+                <Avatar
+                  size="xs"
+                  name="John doe"
+                  src={post.replies[1].userProfilePic}
+                  position={"absolute"}
+                  bottom={"0px"}
+                  right="-5px"
+                  padding={"2px"}
+                />
+              )}
+
+              {post.replies[2] && (
+                <Avatar
+                  size="xs"
+                  name="John doe"
+                  src={post.replies[2].userProfilePic}
+                  position={"absolute"}
+                  bottom={"0px"}
+                  left="4px"
+                  padding={"2px"}
+                />
+              )}
+            </Box>
+          </Flex>
+          <Flex flex={1} flexDirection={"column"} gap={2}>
+            <Flex justifyContent={"space-between"} w={"full"}>
+              <Flex w={"full"} alignItems={"center"}>
+                <Text
+                  fontSize={"sm"}
+                  fontWeight={"bold"}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate(`/${user.username}`);
+                  }}
+                >
+                  {user?.username}
+                </Text>
+                <Image src="/verified.png" w={4} h={4} ml={1} />
+              </Flex>
+              <Flex gap={4} alignItems={"center"}>
+                <Text
+                  fontSize={"xs"}
+                  width={36}
+                  textAlign={"right"}
+                  color={"gray.light"}
+                >
+                  {formatDistanceToNow(new Date(post.createdAt))} ago
+                </Text>
+
+                {currentUser?._id === user._id && (
+                  <DeleteIcon size={20} onClick={handleDeletePost} />
+                )}
+              </Flex>
+            </Flex>
+            <Text fontSize={"sm"}>Event Name: {post.name}</Text>
+            <Text fontSize={"sm"}>About:{post.text}</Text>
+            <Text fontSize={"sm"}>Start Date:{post.startDate}</Text>
+            <Text fontSize={"sm"}>Start Time:{post.startTime}</Text>
+            <Text fontSize={"sm"}>End Date:{post.endDate}</Text>
+            <Text fontSize={"sm"}>End Time:{post.endTime}</Text>
+            <Text fontSize={"sm"}>Checkins:{post.checkins.length}</Text>
+            <Text fontSize={"sm"}>TimeZone:{post.timeZone}</Text>
+            <Text fontSize={"sm"}>Venue:{post.venue}</Text>
+            <Text fontSize={"sm"}>Rs {post.ticketPrice}</Text>
+            <Text fontSize={"sm"}>Tickets Available:{post.capacity}</Text>
+            <Text fontSize={"sm"}>Event Type: {post.eventType}</Text>
+            <Text fontSize={"sm"}>Category:{post.category}</Text>
+            <Text fontSize={"sm"}>Tags:#{post.subCategory}</Text>
+
+            {post.img && (
+              <Box
+                borderRadius={6}
+                overflow={"hidden"}
+                border={"1px solid"}
+                borderColor={"gray.light"}
+                maxW={"sm"}
+              >
+                <Image src={post.img} w={"full"} maxH={"sm"} />
+              </Box>
+            )}
+
+            <Flex gap={3} my={1}>
+              <Actions post={post} />
             </Flex>
           </Flex>
-          <Text fontSize={"sm"}>Event Name: {post.name}</Text>
-          <Text fontSize={"sm"}>About:{post.text}</Text>
-          <Text fontSize={"sm"}>Start Date:{post.startDate}</Text>
-          <Text fontSize={"sm"}>Start Time:{post.startTime}</Text>
-          <Text fontSize={"sm"}>End Date:{post.endDate}</Text>
-          <Text fontSize={"sm"}>End Time:{post.endTime}</Text>
-          <Text fontSize={"sm"}>Checkins:{post.checkins.length}</Text>
-          <Text fontSize={"sm"}>TimeZone:{post.timeZone}</Text>
-          <Text fontSize={"sm"}>Venue:{post.venue}</Text>
-          <Text fontSize={"sm"}>Rs {post.ticketPrice}</Text>
-          <Text fontSize={"sm"}>Tickets Available:{post.capacity}</Text>
-          <Text fontSize={"sm"}>Event Type: {post.eventType}</Text>
-          <Text fontSize={"sm"}>Category:{post.category}</Text>
-          <Text fontSize={"sm"}>Tags:#{post.subCategory}</Text>
-
-          {post.img && (
-            <Box
-              borderRadius={6}
-              overflow={"hidden"}
-              border={"1px solid"}
-              borderColor={"gray.light"}
-              maxW={"sm"}
-            >
-              <Image src={post.img} w={"full"} maxH={"sm"} />
-            </Box>
-          )}
-
-          <Flex gap={3} my={1}>
-            <Actions post={post} />
-          </Flex>
         </Flex>
-      </Flex>
-    </Link>
+      </Link> */}
+    </>
   );
 };
 

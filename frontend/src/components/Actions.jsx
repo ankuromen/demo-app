@@ -210,12 +210,12 @@ const Actions = ({ post }) => {
 
   return (
     <Flex flexDirection="column">
-      <Flex gap={8} my={2} onClick={(e) => e.preventDefault()}>
+      <Flex gap={8} my={2} onClick={(e) => e.preventDefault()} alignItems={"center"}>
         <svg
           aria-label="Like"
           color={liked ? "rgb(237, 73, 86)" : ""}
           fill={liked ? "rgb(237, 73, 86)" : "transparent"}
-          height="19"
+          height="15"
           role="img"
           viewBox="0 0 24 22"
           width="20"
@@ -232,7 +232,7 @@ const Actions = ({ post }) => {
           aria-label="Comment"
           color=""
           fill=""
-          height="20"
+          height="15"
           role="img"
           viewBox="0 0 24 24"
           width="20"
@@ -253,7 +253,7 @@ const Actions = ({ post }) => {
           aria-label="Share"
           color=""
           fill="rgb(243, 245, 247)"
-          height="20"
+          height="15"
           role="img"
           viewBox="0 0 24 24"
           width="20"
@@ -279,7 +279,7 @@ const Actions = ({ post }) => {
           ></polygon>
         </svg>
 
-        <Button colorScheme="blue" size="sm" onClick={handleJoinEvent}>
+        <Button colorScheme="blue" size="xs" onClick={handleJoinEvent}>
           Join Event
         </Button>
       </Flex>
@@ -414,7 +414,7 @@ const RepostSVG = () => {
       aria-label="Repost"
       color="currentColor"
       fill="currentColor"
-      height="20"
+      height="15"
       role="img"
       viewBox="0 0 24 24"
       width="20"

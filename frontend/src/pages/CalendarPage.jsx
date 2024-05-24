@@ -57,7 +57,6 @@ const CalendarPage = () => {
     getPosts();
   }, [user]);
 
-  console.log(posts);
   
   if (tickets) {
     for (const ticket of tickets) {
@@ -75,7 +74,6 @@ const CalendarPage = () => {
       eventsList.push(event);
     }
   }
-  console.log(posts);
   !posts.error &&
     posts?.map((post) => {
       const startDate = post?.startDate?.split("T")[0];
