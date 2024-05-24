@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose"; // Ensure mongoose is imported
 import Ticket from "../models/ticketModel.js";
 
 const router = express.Router();
@@ -46,10 +47,12 @@ router.post("/createTicket", async (req, res) => {
 
     res.status(201).json({ message: "Ticket created successfully" });
   } catch (error) {
-    console.error(error);
+    console.error("Error creating ticket:", error);
     res.status(500).json({ error: "Failed to create ticket" });
   }
 });
+
+// Route for verifying a ticket
 router.post("/verifyTicket", async (req, res) => {
   try {
     const { ticketid } = req.body;
@@ -73,19 +76,22 @@ router.post("/verifyTicket", async (req, res) => {
 
     res.status(200).json({ message: "Ticket used successfully" });
   } catch (error) {
-    console.error(error);
+    console.error("Error verifying ticket:", error);
     res.status(500).json({ error: "Failed to verify ticket" });
   }
 });
+
+// Route for fetching tickets by user ID
 router.get("/gettickets/:userid", async (req, res) => {
   try {
     const { userid } = req.params;
     console.log(userid);
+
     // Use Mongoose's find method to query tickets with the provided userid
     const tickets = await Ticket.find({ userid: userid }).populate("eventid");
     res.json(tickets);
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching tickets:", error);
     res.status(500).json({ error: "Failed to fetch tickets" });
   }
 });
