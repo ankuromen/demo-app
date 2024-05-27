@@ -85,8 +85,8 @@ const PostPage = (post) => {
   return (
     <>
       <Grid
-        gridTemplateColumns={"1fr 2fr"}
-        maxW={"60%"}
+        gridTemplateColumns={{ base: "1fr", md: "1fr 2fr" }}
+        maxW={{ base: "95%", lg: "60%" }}
         margin={"auto"}
         alignItems={"start"}
       >
@@ -97,7 +97,7 @@ const PostPage = (post) => {
             <Box
               borderRadius={15}
               overflow={"hidden"}
-              w={320}
+              w={{ base: "full", md: 320 }}
               h={310}
               alignItems={"center"}
               justifyContent={"center"}
@@ -106,7 +106,7 @@ const PostPage = (post) => {
               <Image src={currentPost.img} w={"full"} h={"full"} />
             </Box>
           )}
-          <Box>
+          <Box display={{ base: "none", lg: "block" }}>
             <Text
               color={"gray.500"}
               pt={5}
@@ -129,7 +129,7 @@ const PostPage = (post) => {
               </Text>
             </Flex>
           </Box>
-          <Box pb={5}>
+          <Box pb={5} display={{ base: "none", lg: "block" }}>
             <Text
               color={"gray.500"}
               pt={5}
@@ -164,99 +164,106 @@ const PostPage = (post) => {
               Alejandro, Azia To and 70 others
             </Text>
           </Box>
-          <Text
-            pt={2}
-            fontWeight={500}
-            color={"gray.400"}
-            transition={"ease-in-out 0.5s"}
-            _hover={{
-              color: "gray.500",
-            }}
-          >
-            Contact the Host
-          </Text>
-          <Text
-            pt={2}
-            fontWeight={500}
-            color={"gray.400"}
-            transition={"ease-in-out 0.5s"}
-            _hover={{
-              color: "gray.500",
-            }}
-          >
-            Report Event
-          </Text>
+          <Box display={{ base: "none", lg: "block" }}>
+            <Text
+              pt={2}
+              fontWeight={500}
+              color={"gray.400"}
+              transition={"ease-in-out 0.5s"}
+              _hover={{
+                color: "gray.500",
+              }}
+            >
+              Contact the Host
+            </Text>
+            <Text
+              pt={2}
+              fontWeight={500}
+              color={"gray.400"}
+              transition={"ease-in-out 0.5s"}
+              _hover={{
+                color: "gray.500",
+              }}
+            >
+              Report Event
+            </Text>
+          </Box>
         </Flex>
 
         {/* Right side */}
 
         <Flex w="100%" ps={3} direction={"column"}>
           <Text
-            fontSize={48}
+            fontSize={{ base: "35", md: 48 }}
             color={"gray.700"}
             fontWeight={600}
             wordBreak={"break-word"}
           >
             {currentPost.name}
           </Text>
-          <Flex gap={5} color={"gray.600"} pt={1}>
-            <Box
-              w={"2.5em"}
-              h={"2.5em"}
-              borderRadius={8}
-              border={"1px solid"}
-              borderColor={"gray.300"}
-              overflow={"hidden"}
-              color={"gray.600"}
-            >
-              <Text
-                fontSize={"2xs"}
-                fontWeight={"bold"}
-                h={"fit-content"}
-                bg={"gray.300"}
-                textAlign={"center"}
+          <Flex
+            flexDirection={{ base: "row", md: "column" }}
+            gap={{ base: 5, md: "none" }}
+          >
+            {" "}
+            <Flex gap={5} color={"gray.600"} pt={1}>
+              <Box
+                w={"2.5em"}
+                h={"2.5em"}
+                borderRadius={8}
+                border={"1px solid"}
+                borderColor={"gray.300"}
+                overflow={"hidden"}
+                color={"gray.600"}
               >
-                {new Date(currentPost.startDate).toLocaleDateString([], {
-                  month: "long",
-                })}
-              </Text>
-              <Text textAlign={"center"} fontSize={15} fontWeight={"bold"}>
-                {new Date(currentPost.startDate).getDate()}
-              </Text>
-            </Box>
-            <Box>
-              <Text fontWeight={"500"} fontSize={18}>
-                {new Date(currentPost.startDate).toLocaleDateString([], {
-                  weekday: "long",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </Text>
-              <Text fontSize={15}>6:00 PM - 8:00 PM EDT</Text>
-            </Box>
-          </Flex>
-
-          <Flex gap={5} color={"gray.600"} pt={1}>
-            <Box
-              w={"2.5em"}
-              h={"2.5em"}
-              borderRadius={8}
-              border={"1px solid"}
-              borderColor={"gray.300"}
-              overflow={"hidden"}
-              color={"gray.600"}
-              display={"flex"}
-              justifyContent={"center"}
-              alignItems={"center"}
-            >
-              <SlLocationPin size={25} />
-            </Box>
-            <Box>
-              <Text fontWeight={"500"} fontSize={18}>
-                {currentPost.venue}
-              </Text>
-              <Text fontSize={15}></Text>
-            </Box>
+                <Text
+                  fontSize={"2xs"}
+                  fontWeight={"bold"}
+                  h={"fit-content"}
+                  bg={"gray.300"}
+                  textAlign={"center"}
+                >
+                  {new Date(currentPost.startDate).toLocaleDateString([], {
+                    month: "long",
+                  })}
+                </Text>
+                <Text textAlign={"center"} fontSize={15} fontWeight={"bold"}>
+                  {new Date(currentPost.startDate).getDate()}
+                </Text>
+              </Box>
+              <Box>
+                <Text fontWeight={"500"} fontSize={18}>
+                  {new Date(currentPost.startDate).toLocaleDateString([], {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </Text>
+                <Text fontSize={15}>6:00 PM - 8:00 PM EDT</Text>
+              </Box>
+            </Flex>
+            <Flex gap={5} color={"gray.600"} pt={1}>
+              <Box
+                w={"2.5em"}
+                h={"2.5em"}
+                borderRadius={8}
+                border={"1px solid"}
+                borderColor={"gray.300"}
+                overflow={"hidden"}
+                color={"gray.600"}
+                display={"flex"}
+                justifyContent={"center"}
+                alignItems={"center"}
+              >
+                <SlLocationPin size={25} />
+              </Box>
+              <Box>
+                <Text fontWeight={"500"} fontSize={18}>
+                  {currentPost.venue}
+                </Text>
+                <Text fontSize={15}></Text>
+              </Box>
+            </Flex>
           </Flex>
 
           {/* Registration */}
@@ -386,7 +393,7 @@ const PostPage = (post) => {
                 className="Location"
                 title="location"
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2800.311159147775!2d-75.68934432245015!3d45.423228571073366!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4cce05071ad36a51%3A0x67afbd9897dba9de!2s50%20Laurier%20Ave%20E%2C%20Ottawa%2C%20ON%20K1N%201H7%2C%20Canada!5e0!3m2!1sen!2sin!4v1713060247916!5m2!1sen!2sin"
-                width="80%"
+                width="100%"
                 height="300"
                 allowfullscreen=""
                 loading="lazy"
@@ -394,7 +401,88 @@ const PostPage = (post) => {
               />
             </Box>
           </Box>
-
+          <Box display={{ base: "block", lg: "none" }}>
+            <Text
+              color={"gray.500"}
+              pt={5}
+              pb={2}
+              fontSize={"sm"}
+              fontWeight={"500"}
+              borderBottom={"1px solid"}
+              borderBottomColor={"gray.300"}
+            >
+              Hosted By
+            </Text>
+            <Flex gap={3} pt={2} align={"center"}>
+              <Avatar
+                src={user.profilePic}
+                size={"xs"}
+                name="Mark Zuckerberg"
+              />
+              <Text fontSize={20} fontWeight={"500"} color={"gray.600"}>
+                {user.username}
+              </Text>
+            </Flex>
+          </Box>
+          <Box pb={5} display={{ base: "block", lg: "none" }}>
+            <Text
+              color={"gray.500"}
+              pt={5}
+              pb={2}
+              fontSize={"sm"}
+              fontWeight={"500"}
+              borderBottom={"1px solid"}
+              borderBottomColor={"gray.300"}
+            >
+              72 Going
+            </Text>
+            <Flex pt={2}>
+              <Avatar
+                src={user.profilePic}
+                size={"xs"}
+                name="Mark Zuckerberg"
+              />
+              <Avatar
+                src={user.profilePic}
+                size={"xs"}
+                name="Mark Zuckerberg"
+                ms={-2}
+              />
+              <Avatar
+                src={user.profilePic}
+                size={"xs"}
+                name="Mark Zuckerberg"
+                ms={-2}
+              />
+            </Flex>
+            <Text fontSize={"xs"} color={"gray.400"}>
+              Alejandro, Azia To and 70 others
+            </Text>
+          </Box>
+          <Box display={{ base: "block", lg: "none" }}>
+            <Text
+              pt={2}
+              fontWeight={500}
+              color={"gray.400"}
+              transition={"ease-in-out 0.5s"}
+              _hover={{
+                color: "gray.500",
+              }}
+            >
+              Contact the Host
+            </Text>
+            <Text
+              pt={2}
+              fontWeight={500}
+              color={"gray.400"}
+              transition={"ease-in-out 0.5s"}
+              _hover={{
+                color: "gray.500",
+              }}
+            >
+              Report Event
+            </Text>
+          </Box>
           {currentUser?._id === user._id && (
             <Button
               colorScheme="red"
