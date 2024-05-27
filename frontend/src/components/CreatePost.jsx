@@ -79,6 +79,7 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
   const [ticketSalesStartTime, setTicketSalesStartTime] = useState("");
   const [ticketSalesEndDate, setTicketSalesEndDate] = useState("");
   const [ticketSalesEndTime, setTicketSalesEndTime] = useState("");
+  const inputRef = useRef();
 
   if (createPostOpen) {
     onOpen();
@@ -95,13 +96,21 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
     const [place] = inputRef.current.getPlaces();
 
     if (place) {
-      setSelectedLocation({
-        lat: place.geometry.location.lat(),
-        lng: place.geometry.location.lng(),
-        formattedAddress: place.formatted_address,
-      });
+      console.log(place.geometry.location.lat());
+      console.log(place.geometry.location.lng());
+      setVenue(place.formatted_address);
     }
   };
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.addListener("places_changed", handlePlaceChanged);
+    }
+    return () => {
+      if (inputRef.current) {
+        inputRef.current.removeListener("places_changed", handlePlaceChanged);
+      }
+    };
+  }, []);
   const handleTextChange = (e) => {
     const inputText = e.target.value;
 
@@ -292,18 +301,28 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
               {["Physical", "Hybrid"].includes(eventType) && (
                 <FormControl>
                   <FormLabel>Venue</FormLabel>
-                  <Input
+                  {/* <Input
                     type="text"
                     placeholder="Venue"
                     value={venue}
                     onChange={(e) => setVenue(e.target.value)}
-                  />
-                  {/* <FormLabel>Venue</FormLabel>
-								<LoadScript googleMapsApiKey="YOUR_API_KEY" libraries={["places"]}>
-									<StandaloneSearchBox onLoad={ref => (inputRef.current = ref)} onPlacesChanged={handlePlaceChanged}>
-										<Input type="text" value={venue} onChange={(e) => setVenue(e.target.value)} />
-									</StandaloneSearchBox>
-								</LoadScript> */}
+                  /> */}
+                  <LoadScript
+                    googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY}
+                    libraries={["places"]}
+                  >
+                    <StandaloneSearchBox
+                      onLoad={(ref) => (inputRef.current = ref)}
+                    >
+                      <Input
+                        placeholder="Your location"
+                        value={venue}
+                        onChange={(e) => setVenue(e.target.value)}
+                        _placeholder={{ color: "gray.500" }}
+                        type="text"
+                      />
+                    </StandaloneSearchBox>
+                  </LoadScript>
                 </FormControl>
               )}
 

@@ -1,24 +1,25 @@
 import {
-	Button,
-	Flex,
-	FormControl,
-	FormLabel,
-	Heading,
-	Input,
-	Stack,
-	useColorModeValue,
-	Avatar,
-	Center,
+  Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Stack,
+  useColorModeValue,
+  Avatar,
+  Center,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
 import usePreviewImg from "../hooks/usePreviewImg";
 import useShowToast from "../hooks/useShowToast";
+import { LoadScript, StandaloneSearchBox } from "@react-google-maps/api";
 
 export default function UpdateProfilePage() {
-	const [user, setUser] = useRecoilState(userAtom);
-	const [inputs, setInputs] = useState({
+  const [user, setUser] = useRecoilState(userAtom);
+  const [inputs, setInputs] = useState({
     name: user.name,
     username: user.username,
     email: user.email,
@@ -34,41 +35,55 @@ export default function UpdateProfilePage() {
     tiktok: user.tiktok,
     website: user.website,
   });
-	console.log(user);
-	const fileRef = useRef(null);
-	const [updating, setUpdating] = useState(false);
+  console.log(user);
+  const fileRef = useRef(null);
+  const [updating, setUpdating] = useState(false);
+  const showToast = useShowToast();
+  const { handleImageChange, imgUrl } = usePreviewImg();
+  const inputRef = useRef();
+  const handlePlaceChanged = () => {
 
-	const showToast = useShowToast();
+    const [place] = inputRef.current.getPlaces();
 
-	const { handleImageChange, imgUrl } = usePreviewImg();
-
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		if (updating) return;
-		setUpdating(true);
-		try {
-			const res = await fetch(`/api/users/update/${user._id}`, {
-				method: "PUT",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ ...inputs, profilePic: imgUrl }),
-			});
-			const data = await res.json(); // updated user object
-			if (data.error) {
-				showToast("Error", data.error, "error");
-				return;
-			}
-			showToast("Success", "Profile updated successfully", "success");
-			setUser(data);
-			localStorage.setItem("user-threads", JSON.stringify(data));
-		} catch (error) {
-			showToast("Error", error, "error");
-		} finally {
-			setUpdating(false);
-		}
-	};
-	return (
+    if (place) {
+      console.log(place.geometry.location.lat());
+      console.log(place.geometry.location.lng());
+      setInputs({
+        ...inputs,
+        location: place.formatted_address,
+        // Optionally, you can also store latitude and longitude
+        // latitude: location.lat(),
+        // longitude: location.lng(),
+      });
+    }
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (updating) return;
+    setUpdating(true);
+    try {
+      const res = await fetch(`/api/users/update/${user._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...inputs, profilePic: imgUrl }),
+      });
+      const data = await res.json(); // updated user object
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+      showToast("Success", "Profile updated successfully", "success");
+      setUser(data);
+      localStorage.setItem("user-threads", JSON.stringify(data));
+    } catch (error) {
+      showToast("Error", error, "error");
+    } finally {
+      setUpdating(false);
+    }
+  };
+  return (
     <form onSubmit={handleSubmit}>
       <Flex align={"center"} justify={"center"} my={6}>
         <Stack
@@ -159,18 +174,30 @@ export default function UpdateProfilePage() {
               type="text"
             />
           </FormControl>
-          <FormControl>
+
+          <FormControl isRequired>
             <FormLabel>Location</FormLabel>
-            <Input
-              placeholder="Your location"
-              value={inputs.location}
-              onChange={(e) =>
-                setInputs({ ...inputs, location: e.target.value })
-              }
-              _placeholder={{ color: "gray.500" }}
-              type="text"
-            />
+            <LoadScript
+              googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY}
+              libraries={["places"]}
+            >
+              <StandaloneSearchBox
+                onLoad={(ref) => (inputRef.current = ref)}
+                onPlacesChanged={handlePlaceChanged}
+              >
+                <Input
+                  placeholder="Your location"
+                  value={inputs.location}
+                  onChange={(e) =>
+                    setInputs({ ...inputs, location: e.target.value })
+                  }
+                  _placeholder={{ color: "gray.500" }}
+                  type="text"
+                />
+              </StandaloneSearchBox>
+            </LoadScript>
           </FormControl>
+
           <FormControl>
             <FormLabel>Occupation</FormLabel>
             <Input
@@ -224,9 +251,7 @@ export default function UpdateProfilePage() {
             <Input
               placeholder="Your Tiktok Profile"
               value={inputs.tiktok}
-              onChange={(e) =>
-                setInputs({ ...inputs, tiktok: e.target.value })
-              }
+              onChange={(e) => setInputs({ ...inputs, tiktok: e.target.value })}
               _placeholder={{ color: "gray.500" }}
               type="text"
             />

@@ -141,7 +141,7 @@ const CalendarPage = () => {
 
   console.log(createPostOpen);
   return (
-    <Box w={"100%"}>
+    <Box w={"80%"} m={"auto"}>
       {/* <Flex alignItems={"center"} gap={"5"}>
         <Box bg={"blue"} w={"12px"} h={"12px"} borderRadius={"full"}></Box>
         <Text>Tickets</Text>

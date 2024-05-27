@@ -68,7 +68,7 @@ const TicketsPage = () => {
     }
   };
   return (
-    <Flex w={"full"} flexDirection={"column"} alignItems={"center"} gap={"4"}>
+    <Flex w={"100%"} flexDirection={"column"} alignItems={"center"} gap={"4"}>
       <Heading size={"lg"}>My Tickets</Heading>
       {tickets.map((ticket) => (
         <Flex
@@ -76,8 +76,8 @@ const TicketsPage = () => {
           bgGradient="linear(to-r,#ad5389, #3c1053)"
           h={"fit-content"}
           p={3}
+          w={{sm:'90%',md:"80%",lg:'60%'}}
           borderRadius={"md"}
-          w={"100%"}
           justifyContent={"space-between"}
           onClick={() => handleOpenTicket(ticket)}
         >

@@ -1,16 +1,28 @@
 import { Avatar } from "@chakra-ui/avatar";
 import { Image } from "@chakra-ui/image";
 import { Box, Flex, Text, Stack } from "@chakra-ui/layout";
+import {
+  Drawer,
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import Actions from "./Actions";
 import { useEffect, useState } from "react";
 import useShowToast from "../hooks/useShowToast";
 import { formatDistanceToNow } from "date-fns";
 import { DeleteIcon, TimeIcon } from "@chakra-ui/icons";
+import { FaExpand } from "react-icons/fa6";
 import { CiLocationOn } from "react-icons/ci";
 import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
 import postsAtom from "../atoms/postsAtom";
+import React from "react";
 
 const Post = ({ post, postedBy }) => {
   const [user, setUser] = useState(null);
@@ -18,6 +30,8 @@ const Post = ({ post, postedBy }) => {
   const currentUser = useRecoilValue(userAtom);
   const [posts, setPosts] = useRecoilState(postsAtom);
   const navigate = useNavigate();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const btnRef = React.useRef();
 
   useEffect(() => {
     const getUser = async () => {
@@ -62,21 +76,34 @@ const Post = ({ post, postedBy }) => {
   return (
     <>
       <Link to={`/${user.username}/post/${post._id}`}>
-        <Stack borderTop={"1px"} borderBottom={"1px"} borderColor={"gray.300"} padding={2}>
-          <Flex>
-            <Text fontWeight={"medium"}>
-              {new Date(post.startDate).getDate()}&nbsp;
-              {new Date(post.startDate).toLocaleDateString([], {
-                month: "long",
-              })}
-            </Text>
-            <Text fontWeight={"small"} color={"gray.500"}>
-              &nbsp;/&nbsp;
-              {new Date(post.startDate).toLocaleDateString([], {
-                weekday: "long",
-              })}
-            </Text>
+        <Stack
+          borderTop={"1px"}
+          borderBottom={"1px"}
+          borderColor={"gray.300"}
+          padding={2}
+          w={"80%"}
+          m={"auto"}
+        >
+          <Flex alignItems={"center"} justifyContent={"space-between"}>
+            <Flex>
+              <Text fontWeight={"medium"}>
+                {new Date(post.startDate).getDate()}&nbsp;
+                {new Date(post.startDate).toLocaleDateString([], {
+                  month: "long",
+                })}
+              </Text>
+              <Text fontWeight={"small"} color={"gray.500"}>
+                &nbsp;/&nbsp;
+                {new Date(post.startDate).toLocaleDateString([], {
+                  weekday: "long",
+                })}
+              </Text>
+            </Flex>
+            {currentUser?._id === user._id && (
+              <DeleteIcon size={20} onClick={handleDeletePost} />
+            )}
           </Flex>
+
           <Flex
             flex={""}
             overflow={"hidden"}
@@ -85,10 +112,15 @@ const Post = ({ post, postedBy }) => {
             gap={5}
           >
             {post.img && (
-              <Box overflow={"hidden"} borderRadius={5} w={"10em"} h={'fit-content'}>
+              <Box
+                overflow={"hidden"}
+                borderRadius={5}
+                w={"10em"}
+                h={"fit-content"}
+              >
                 <Image src={post.img} />
               </Box>
-            )} 
+            )}
             <Flex flexDirection={"column"} flexGrow={1}>
               <Flex alignItems={"center"} gap={1}>
                 <Avatar
@@ -120,124 +152,31 @@ const Post = ({ post, postedBy }) => {
           </Flex>
         </Stack>
       </Link>
-{/* 
-      <Link to={`/${user.username}/post/${post._id}`}>
-        <Flex gap={3} mb={4} py={5}>
-          <Flex flexDirection={"column"} alignItems={"center"}>
-            <Avatar
-              size="md"
-              name={user.name}
-              src={user?.profilePic}
-              onClick={(e) => {
-                e.preventDefault();
-                navigate(`/${user.username}`);
-              }}
-            />
-            <Box w="1px" h={"full"} bg="gray.light" my={2}></Box>
-            <Box position={"relative"} w={"full"}>
-              {post.replies.length === 0 && (
-                <Text textAlign={"center"}>🥱</Text>
-              )}
-              {post.replies[0] && (
-                <Avatar
-                  size="xs"
-                  name="John doe"
-                  src={post.replies[0].userProfilePic}
-                  position={"absolute"}
-                  top={"0px"}
-                  left="15px"
-                  padding={"2px"}
-                />
-              )}
+      <Drawer
+        isOpen={isOpen}
+        placement="right"
+        onClose={onClose}
+        finalFocusRef={btnRef}
+        size={{ sm: "full", lg: "md" }}
+      >
+        <DrawerOverlay />
+        <DrawerContent>
+          <FaExpand size={20} />
+          <DrawerCloseButton />
+          <DrawerHeader>Create your account</DrawerHeader>
 
-              {post.replies[1] && (
-                <Avatar
-                  size="xs"
-                  name="John doe"
-                  src={post.replies[1].userProfilePic}
-                  position={"absolute"}
-                  bottom={"0px"}
-                  right="-5px"
-                  padding={"2px"}
-                />
-              )}
+          {/* <DrawerBody>
+            <Input placeholder="Type here..." />
+          </DrawerBody>
 
-              {post.replies[2] && (
-                <Avatar
-                  size="xs"
-                  name="John doe"
-                  src={post.replies[2].userProfilePic}
-                  position={"absolute"}
-                  bottom={"0px"}
-                  left="4px"
-                  padding={"2px"}
-                />
-              )}
-            </Box>
-          </Flex>
-          <Flex flex={1} flexDirection={"column"} gap={2}>
-            <Flex justifyContent={"space-between"} w={"full"}>
-              <Flex w={"full"} alignItems={"center"}>
-                <Text
-                  fontSize={"sm"}
-                  fontWeight={"bold"}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate(`/${user.username}`);
-                  }}
-                >
-                  {user?.username}
-                </Text>
-                <Image src="/verified.png" w={4} h={4} ml={1} />
-              </Flex>
-              <Flex gap={4} alignItems={"center"}>
-                <Text
-                  fontSize={"xs"}
-                  width={36}
-                  textAlign={"right"}
-                  color={"gray.light"}
-                >
-                  {formatDistanceToNow(new Date(post.createdAt))} ago
-                </Text>
-
-                {currentUser?._id === user._id && (
-                  <DeleteIcon size={20} onClick={handleDeletePost} />
-                )}
-              </Flex>
-            </Flex>
-            <Text fontSize={"sm"}>Event Name: {post.name}</Text>
-            <Text fontSize={"sm"}>About:{post.text}</Text>
-            <Text fontSize={"sm"}>Start Date:{post.startDate}</Text>
-            <Text fontSize={"sm"}>Start Time:{post.startTime}</Text>
-            <Text fontSize={"sm"}>End Date:{post.endDate}</Text>
-            <Text fontSize={"sm"}>End Time:{post.endTime}</Text>
-            <Text fontSize={"sm"}>Checkins:{post.checkins.length}</Text>
-            <Text fontSize={"sm"}>TimeZone:{post.timeZone}</Text>
-            <Text fontSize={"sm"}>Venue:{post.venue}</Text>
-            <Text fontSize={"sm"}>Rs {post.ticketPrice}</Text>
-            <Text fontSize={"sm"}>Tickets Available:{post.capacity}</Text>
-            <Text fontSize={"sm"}>Event Type: {post.eventType}</Text>
-            <Text fontSize={"sm"}>Category:{post.category}</Text>
-            <Text fontSize={"sm"}>Tags:#{post.subCategory}</Text>
-
-            {post.img && (
-              <Box
-                borderRadius={6}
-                overflow={"hidden"}
-                border={"1px solid"}
-                borderColor={"gray.light"}
-                maxW={"sm"}
-              >
-                <Image src={post.img} w={"full"} maxH={"sm"} />
-              </Box>
-            )}
-
-            <Flex gap={3} my={1}>
-              <Actions post={post} />
-            </Flex>
-          </Flex>
-        </Flex>
-      </Link> */}
+          <DrawerFooter>
+            <Button variant="outline" mr={3} onClick={onClose}>
+              Cancel
+            </Button>
+            <Button colorScheme="blue">Save</Button>
+          </DrawerFooter> */}
+        </DrawerContent>
+      </Drawer>
     </>
   );
 };
