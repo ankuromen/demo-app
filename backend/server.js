@@ -7,6 +7,8 @@ import userRoutes from "./routes/userRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import ticketRoutes from "./routes/ticketRoutes.js";
+import sendAccessCodesRoute from './routes/sendAccessCodes.js';
+import emailRoutes from './routes/emailRoutes.js';
 import { v2 as cloudinary } from "cloudinary";
 import { app, server } from "./socket/socket.js";
 import job from "./cron/cron.js";
@@ -34,6 +36,8 @@ app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/tickets", ticketRoutes); 
+app.use('/api', sendAccessCodesRoute);
+app.use('/api/emails', emailRoutes);
 
 
 
