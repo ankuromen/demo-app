@@ -91,7 +91,6 @@ const CalendarPage = () => {
 
   function handleEventClick(event) {
     let category = event.event._def?.extendedProps.category;
-    console.log(category);
     if (category === "ticket") {
       let ticket = tickets.find(
         (ticket) => ticket._id === event.event._def.publicId
@@ -138,8 +137,7 @@ const CalendarPage = () => {
       console.log("Not allowed to edit");
     }
   }
-
-  console.log(createPostOpen);
+  
   return (
     <Box w={"80%"} m={"auto"}>
       {/* <Flex alignItems={"center"} gap={"5"}>

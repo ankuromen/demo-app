@@ -3,7 +3,6 @@ import {
   Button,
   Flex,
   FormControl,
-  FormLabel,
   Input,
   Modal,
   ModalBody,
@@ -21,6 +20,7 @@ import userAtom from "../atoms/userAtom";
 import useShowToast from "../hooks/useShowToast";
 import postsAtom from "../atoms/postsAtom";
 import { useNavigate } from "react-router-dom";
+import JoinEvent from "./JoinEvent";
 
 const Actions = ({ post }) => {
   const user = useRecoilValue(userAtom);
@@ -31,16 +31,6 @@ const Actions = ({ post }) => {
   const [reply, setReply] = useState("");
   const [joinModalOpen, setJoinModalOpen] = useState(false);
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    tickets: 1,
-    name: "",
-    email: "",
-    contactNo: "",
-    age: "",
-    males: 0,
-    females: 0,
-  });
-
   const showToast = useShowToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -127,6 +117,10 @@ const Actions = ({ post }) => {
       setIsReplying(false);
     }
   };
+
+  const handlesharePost = async () => {
+    navigate("/chat", { state: { post: post } });
+  };
   const handleJoinEvent = async () => {
     // Open the join event modal
     setJoinModalOpen(true);
@@ -141,76 +135,15 @@ const Actions = ({ post }) => {
     // 		throw new Error('Failed to fetch post details');
     // 	}
   };
-  const handlesharePost = async () => {
-    navigate("/chat", { state: { post: post } });
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async () => {
-    // Fetch post details before submitting ticket
-    const fetchPostDetails = async () => {
-      try {
-        const response = await fetch(`/api/posts/${post._id}`); // Assuming there's an endpoint to fetch post details by ID
-        if (!response.ok) {
-          throw new Error("Failed to fetch post details");
-        }
-        const postData = await response.json();
-        return postData;
-      } catch (error) {
-        throw new Error("Failed to fetch post details");
-      }
-    };
-
-    try {
-      // Fetch post details
-      const postData = await fetchPostDetails();
-
-      // Submit ticket creation form with post details
-      const res = await fetch("/api/tickets/createTicket", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userid: user._id,
-          eventid: post._id,
-          name: formData.name,
-          email: formData.email,
-          contactNo: formData.contactNo,
-          age: formData.age,
-          tickets: formData.tickets,
-          males: formData.males,
-          females: formData.females,
-          eventname: postData.name, // Use fetched post data instead of post.name
-          eventdate: postData.startDate, // Use fetched post data instead of post.startDate
-          eventtime: postData.startTime, // Use fetched post data instead of post.startTime
-          ticketprice: postData.ticketPrice, // Use fetched post data instead of post.ticketPrice
-        }),
-      });
-
-      if (res.ok) {
-        showToast("Success", "Ticket created successfully", "success");
-        setJoinModalOpen(false);
-      } else {
-        const data = await res.json();
-        showToast("Error", data.error, "error");
-      }
-    } catch (error) {
-      showToast("Error", "Failed to create ticket", "error");
-      console.log(error);
-    }
-  };
 
   return (
     <Flex flexDirection="column">
-      <Flex gap={8} my={2} onClick={(e) => e.preventDefault()} alignItems={"center"}>
+      <Flex
+        gap={8}
+        my={2}
+        onClick={(e) => e.preventDefault()}
+        alignItems={"center"}
+      >
         <svg
           aria-label="Like"
           color={liked ? "rgb(237, 73, 86)" : ""}
@@ -283,7 +216,8 @@ const Actions = ({ post }) => {
           Join Event
         </Button>
       </Flex>
-
+      {<JoinEvent user={user} post={post} joinModalOpen={joinModalOpen} setJoinModalOpen={setJoinModalOpen}/>}
+     
       <Flex gap={2} alignItems={"center"}>
         <Text color={"gray.light"} fontSize="sm">
           {post.replies.length} replies
@@ -293,86 +227,8 @@ const Actions = ({ post }) => {
           {post.likes.length} likes
         </Text>
       </Flex>
+
       {/* Modal for Join Event */}
-      <Modal isOpen={joinModalOpen} onClose={() => setJoinModalOpen(false)}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Join Event</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody pb={6}>
-            <FormControl mt={4}>
-              <FormLabel>Name</FormLabel>
-              <Input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-              />
-            </FormControl>
-            <FormControl mt={4}>
-              <FormLabel>Email</FormLabel>
-              <Input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </FormControl>
-            <FormControl mt={4}>
-              <FormLabel>Contact Number</FormLabel>
-              <Input
-                type="text"
-                name="contactNo"
-                value={formData.contactNo}
-                onChange={handleChange}
-              />
-            </FormControl>
-            <FormControl mt={4}>
-              <FormLabel>Age</FormLabel>
-              <Input
-                type="number"
-                name="age"
-                value={formData.age}
-                onChange={handleChange}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Number of Tickets</FormLabel>
-              <Input
-                type="number"
-                name="tickets"
-                value={formData.tickets}
-                onChange={handleChange}
-              />
-            </FormControl>
-
-            <FormControl mt={4}>
-              <FormLabel>Number of Males</FormLabel>
-              <Input
-                type="number"
-                name="males"
-                value={formData.males}
-                onChange={handleChange}
-              />
-            </FormControl>
-            <FormControl mt={4}>
-              <FormLabel>Number of Females</FormLabel>
-              <Input
-                type="number"
-                name="females"
-                value={formData.females}
-                onChange={handleChange}
-              />
-            </FormControl>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button colorScheme="blue" size="sm" mr={3} onClick={handleSubmit}>
-              Pay
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />

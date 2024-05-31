@@ -80,14 +80,14 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
   const [ticketSalesEndDate, setTicketSalesEndDate] = useState("");
   const [ticketSalesEndTime, setTicketSalesEndTime] = useState("");
   const inputRef = useRef();
-
-  if (createPostOpen) {
-    onOpen();
-    setStartDate(date);
-  }
+  useEffect(() => {
+    if (createPostOpen) {
+      onOpen();
+      setStartDate(date);
+    }
+  }, [createPostOpen]);
 
   function onCloseCreate() {
-    console.log("close");
     closeCreate();
     setCreatePostOpen(!createPostOpen);
   }

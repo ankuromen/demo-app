@@ -10,9 +10,7 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import Actions from "../components/Actions";
-import { useEffect } from "react";
-import Comment from "../components/Comment";
+import { useEffect, useState } from "react";
 import useGetUserProfile from "../hooks/useGetUserProfile";
 import useShowToast from "../hooks/useShowToast";
 import { useNavigate, useParams } from "react-router-dom";
@@ -23,12 +21,14 @@ import { DeleteIcon } from "@chakra-ui/icons";
 import { SlLocationPin } from "react-icons/sl";
 import { MdOutlineEventAvailable } from "react-icons/md";
 import postsAtom from "../atoms/postsAtom";
+import JoinEvent from "../components/JoinEvent";
 
 const PostPage = (post) => {
   const { user, loading } = useGetUserProfile();
   const [posts, setPosts] = useRecoilState(postsAtom);
   const showToast = useShowToast();
   const { pid } = useParams();
+  const [joinModalOpen, setJoinModalOpen] = useState(false);
   const currentUser = useRecoilValue(userAtom);
   const navigate = useNavigate();
 
@@ -80,6 +80,7 @@ const PostPage = (post) => {
   }
 
   if (!currentPost) return null;
+
   console.log("currentPost", currentPost);
 
   return (
@@ -313,12 +314,20 @@ const PostPage = (post) => {
                 variant="solid"
                 w={"full"}
                 letterSpacing={1}
+                onClick={() => setJoinModalOpen(true)}
               >
                 Join Waitlist
               </Button>
             </Box>
           </Box>
-
+          {joinModalOpen && (
+            <JoinEvent
+              user={currentUser}
+              post={currentPost}
+              joinModalOpen={joinModalOpen}
+              setJoinModalOpen={setJoinModalOpen}
+            />
+          )}
           {/* event details */}
 
           <Box>
