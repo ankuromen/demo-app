@@ -4,7 +4,19 @@ import bcrypt from "bcryptjs";
 import generateTokenAndSetCookie from "../utils/helpers/generateTokenAndSetCookie.js";
 import { v2 as cloudinary } from "cloudinary";
 import mongoose from "mongoose";
+import nodemailer from "nodemailer";
 import { ObjectId } from "mongodb";
+
+
+
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select('-password -updatedAt').lean();
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 const getUserProfile = async (req, res) => {
   // We will fetch user profile either with username or userId
@@ -335,6 +347,36 @@ const freezeAccount = async (req, res) => {
   }
 };
 
+const sendEmails = async (req, res) => {
+  const { userIds } = req.body;
+
+  try {
+    const users = await User.find({ _id: { $in: userIds } }).select("email name");
+
+    // Configure nodemailer
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: process.env.MassEmail,
+        pass: process.env.MassPass,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.MassEmail,
+      to: users.map((user) => user.email),
+      subject: "Mass Email",
+      text: "This is a mass email.",
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: "Emails sent successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+    console.log("Error in sendEmails:", error.message);
+  }
+};
 export {
   signupUser,
   loginUser,
@@ -344,4 +386,6 @@ export {
   getUserProfile,
   getSuggestedUsers,
   freezeAccount,
+  getAllUsers,
+  sendEmails, 
 };
