@@ -41,9 +41,9 @@ export default function UpdateProfilePage() {
   const showToast = useShowToast();
   const { handleImageChange, imgUrl } = usePreviewImg();
   const inputRef = useRef();
-  const handlePlaceChanged =async () => {
+  const handlePlaceChanged = () => {
 
-    const [place] =await inputRef.current.getPlaces();
+    const [place] = inputRef.current.getPlaces();
 
     if (place) {
       console.log(place.geometry.location.lat());
@@ -57,7 +57,6 @@ export default function UpdateProfilePage() {
       });
     }
   };
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (updating) return;

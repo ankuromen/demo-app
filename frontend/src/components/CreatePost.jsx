@@ -21,15 +21,9 @@ import {
   Switch,
   FormLabel,
   Checkbox,
-  PopoverTrigger,
-  Popover,
-  PopoverContent,
-  PopoverArrow,
-  PopoverHeader,
-  PopoverBody,
 } from "@chakra-ui/react";
 import { StandaloneSearchBox, LoadScript } from "@react-google-maps/api";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import usePreviewImg from "../hooks/usePreviewImg";
 import { BsFillImageFill } from "react-icons/bs";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -37,37 +31,20 @@ import userAtom from "../atoms/userAtom";
 import useShowToast from "../hooks/useShowToast";
 import postsAtom from "../atoms/postsAtom";
 import { useParams } from "react-router-dom";
-import { debounce } from "lodash";
+import { GiTriquetra } from "react-icons/gi";
 
 const MAX_CHAR = 500;
 const timeZones = [
-  { value: "GMT-12", label: "Baker Island Time (BIKT)" },
-  { value: "GMT-11", label: "Samoa Time (SST)" },
-  { value: "GMT-10", label: "Hawaii-Aleutian Time (HST)" },
-  { value: "GMT-9", label: "Alaska Time (AKST)" },
-  { value: "GMT-8", label: "Pacific Time (PST)" },
-  { value: "GMT-7", label: "Mountain Time (MST)" },
-  { value: "GMT-6", label: "Central Time (CST)" },
-  { value: "GMT-5", label: "Eastern Time (EST)" },
-  { value: "GMT-4", label: "Atlantic Time (AST)" },
-  { value: "GMT-3.5", label: "Newfoundland Time (NST)" },
-  { value: "GMT-3", label: "West Africa Time (WAT)" },
-  { value: "GMT-2", label: "Mid-Atlantic Time (MAT)" },
-  { value: "GMT-1", label: "Western European Time (WET)" },
-  { value: "GMT+1", label: "Central European Time (CET)" },
-  { value: "GMT+2", label: "Eastern European Time (EET)" },
-  { value: "GMT+3", label: "Moscow Time (MSK)" },
-  { value: "GMT+4", label: "Astrakhan Time (Astrakhan Time)" },
-  { value: "GMT+5", label: "Pakistan Time (PKT)" },
-  { value: "GMT+5.5", label: "India Time (IST)" },
-  { value: "GMT+6", label: "Bangladesh Time (BDT)" },
-  { value: "GMT+7", label: "Krasnoyarsk Time (KRAT)" },
-  { value: "GMT+8", label: "China Standard Time (CST)" },
-  { value: "GMT+9", label: "Japan Standard Time (JST)" },
-  { value: "GMT+12", label: "Kiribati Time (Kiritimati Time)" },
+  { value: "GMT-12", label: "GMT-12:00" },
+  { value: "GMT-11", label: "GMT-11:00" },
+  // Add more time zones as needed
 ];
-
-// const categories = ["Category 1", "Category 2", "Category 3"]; // Define categories array
+const categories = ["Category 1", "Category 2", "Category 3"]; // Define categories array
+const subcategories = {
+  "Category 1": ["Subcategory 1.1", "Subcategory 1.2", "Subcategory 1.3"],
+  "Category 2": ["Subcategory 2.1", "Subcategory 2.2", "Subcategory 2.3"],
+  "Category 3": ["Subcategory 3.1", "Subcategory 3.2", "Subcategory 3.3"],
+}; // Define subcategories object
 
 const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
   const { isOpen, onOpen, onClose: closeCreate } = useDisclosure();
@@ -92,18 +69,17 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
   const [ticketPrice, setTicketPrice] = useState("");
   const [capacity, setCapacity] = useState("");
   const [eventType, setEventType] = useState("");
-  // const [category, setCategory] = useState("");
-  // const [subCategory, setSubCategory] = useState("");
+  const [category, setCategory] = useState("");
+  const [subCategory, setSubCategory] = useState("");
   const [meetingLink, setMeetingLink] = useState("");
-  const [isFree, setIsFree] = useState(true); // State to manage free ticket price
+  const [isFree, setIsFree] = useState(false); // State to manage free ticket price
   const [isPrivate, setIsPrivate] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
   const [ticketSalesStartDate, setTicketSalesStartDate] = useState("");
   const [ticketSalesStartTime, setTicketSalesStartTime] = useState("");
-  const [requireApproval, setRequireApproval] = useState(false);
-  const [isUnlimited, setIsUnlimited] = useState(true);
+  const [ticketSalesEndDate, setTicketSalesEndDate] = useState("");
+  const [ticketSalesEndTime, setTicketSalesEndTime] = useState("");
   const inputRef = useRef();
-  const libraries = ["places"];
-
   useEffect(() => {
     if (createPostOpen) {
       onOpen();
@@ -111,28 +87,13 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
     }
   }, [createPostOpen]);
 
-  useEffect(() => {
-    if (isUnlimited) {
-      setCapacity(9999);
-    }
-  }, [isUnlimited]);
-
-  useEffect(() => {
-    if (!ticketSalesStartDate) {
-      setTicketSalesStartDate(new Date().toJSON().split("T")[0]);
-      setTicketSalesStartTime(
-        `${new Date().getHours()}:${new Date().getMinutes()}`
-      );
-    }
-  }, [ticketSalesStartDate]);
-
   function onCloseCreate() {
     closeCreate();
     setCreatePostOpen(!createPostOpen);
   }
 
-  const handlePlaceChanged = async () => {
-    const [place] = await inputRef.current.getPlaces()[0];
+  const handlePlaceChanged = () => {
+    const [place] = inputRef.current.getPlaces();
 
     if (place) {
       console.log(place.geometry.location.lat());
@@ -140,29 +101,16 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
       setVenue(place.formatted_address);
     }
   };
-
-  const debouncedHandlePlaceChanged = useCallback(
-    debounce(handlePlaceChanged, 300),
-    []
-  );
-
   useEffect(() => {
     if (inputRef.current) {
-      inputRef.current.addListener(
-        "places_changed",
-        debouncedHandlePlaceChanged
-      );
+      inputRef.current.addListener("places_changed", handlePlaceChanged);
     }
     return () => {
       if (inputRef.current) {
-        inputRef.current.removeListener(
-          "places_changed",
-          debouncedHandlePlaceChanged
-        );
+        inputRef.current.removeListener("places_changed", handlePlaceChanged);
       }
     };
-  }, [debouncedHandlePlaceChanged]);
-
+  }, []);
   const handleTextChange = (e) => {
     const inputText = e.target.value;
 
@@ -175,20 +123,8 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
       setRemainingChar(MAX_CHAR - inputText.length);
     }
   };
+
   const handleCreatePost = async () => {
-    if ((eventType === "Hybrid" || eventType === "Physical") && !venue) {
-      showToast("Error", "Please provide a venue for the event.", "error");
-      showToast();
-      return;
-    }
-    if ((eventType === "Hybrid" || eventType === "Virtual") && !meetingLink) {
-      showToast(
-        "Error",
-        "Please provide a meeting link for the event.",
-        "error"
-      );
-      return;
-    }
     setLoading(true);
     try {
       const res = await fetch("/api/posts/create", {
@@ -207,14 +143,16 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
           endTime,
           timeZone,
           venue,
-          meetingLink,
           ticketPrice: isFree ? 0 : ticketPrice, // Set ticket price as 0 if it's free
           capacity,
           eventType,
+          category,
+          subCategory,
           ticketSalesStartDate,
           ticketSalesStartTime,
+          ticketSalesEndDate,
+          ticketSalesEndTime,
           isPrivate,
-          requireApproval,
         }),
       });
 
@@ -237,15 +175,17 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
       setEndTime("");
       setTimeZone("");
       setVenue("");
-      setMeetingLink("");
       setTicketPrice("");
       setCapacity("");
       setEventType("");
+      setCategory("");
+      setSubCategory("");
       setTicketSalesStartDate("");
       setTicketSalesStartTime("");
+      setTicketSalesEndDate("");
+      setTicketSalesEndTime("");
       setIsFree(false); // Reset free ticket price state
       setIsPrivate(false); // Reset private post setting state
-      setRequireApproval(false);
     } catch (error) {
       showToast("Error", error, "error");
     } finally {
@@ -271,7 +211,7 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
         <ModalOverlay />
 
         <ModalContent>
-          <ModalHeader>Create Event</ModalHeader>
+          <ModalHeader>Create Post</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <FormControl>
@@ -313,13 +253,12 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
               <FormLabel>Start Time</FormLabel>
               <Input
                 type="date"
-                w={"60%"}
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
               />
+              <FormLabel>Start Time</FormLabel>
               <Input
                 type="time"
-                w={"40%"}
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
               />
@@ -327,13 +266,12 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
               <Input
                 type="date"
                 value={endDate}
-                w={"60%"}
                 onChange={(e) => setEndDate(e.target.value)}
               />
+              <FormLabel>End Time</FormLabel>
               <Input
                 type="time"
                 value={endTime}
-                w={"40%"}
                 onChange={(e) => setEndTime(e.target.value)}
               />
               <FormLabel>Time Zone</FormLabel>
@@ -361,20 +299,27 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
 
               {/* Conditionally render venue input based on event type */}
               {["Physical", "Hybrid"].includes(eventType) && (
-                <FormControl isRequired>
-                  <FormLabel>Location</FormLabel>
+                <FormControl>
+                  <FormLabel>Venue</FormLabel>
+                  {/* <Input
+                    type="text"
+                    placeholder="Venue"
+                    value={venue}
+                    onChange={(e) => setVenue(e.target.value)}
+                  /> */}
                   <LoadScript
                     googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY}
-                    libraries={libraries}
+                    libraries={["places"]}
                   >
                     <StandaloneSearchBox
                       onLoad={(ref) => (inputRef.current = ref)}
-                      onPlacesChanged={handlePlaceChanged}
                     >
                       <Input
-                        type="text"
-                        placeholder=""
+                        placeholder="Your location"
+                        value={venue}
                         onChange={(e) => setVenue(e.target.value)}
+                        _placeholder={{ color: "gray.500" }}
+                        type="text"
                       />
                     </StandaloneSearchBox>
                   </LoadScript>
@@ -383,7 +328,7 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
 
               {/* Conditionally render meeting link input based on event type */}
               {["Virtual", "Hybrid"].includes(eventType) && (
-                <FormControl isRequired>
+                <FormControl>
                   <FormLabel>Meeting Link</FormLabel>
                   <Input
                     type="text"
@@ -395,59 +340,58 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
 
               <FormControl>
                 <FormLabel>Ticket Price</FormLabel>
-                <Popover placement="right">
-                  <PopoverTrigger>
-                    <Button
-                      size={"xs"}
-                      bg="rgba(218, 218, 218, 0.68)"
-                      _hover={{ bg: "blue.600", color: "white" }}
-                    >
-                      Free
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <PopoverArrow />
-                    <PopoverHeader fontSize={"xl"}>
-                      Accept Payments
-                    </PopoverHeader>
-                    <PopoverBody>
-                      <Text fontSize={"md"}>
-                        We use <span color="red">Stripe</span> to process
-                        payments. Connect or setup a Stripe account to start
-                        accepting payments.it usually takes less than 5 minutes
-                      </Text>
-                      <Button
-                        w={"full"}
-                        mt={2}
-                        _hover={{ bg: "blue.600", color: "white" }}
-                      >
-                        Connect Stripe
-                      </Button>
-                    </PopoverBody>
-                  </PopoverContent>
-                </Popover>
-                {/* {!isFree && (
+                <Checkbox
+                  isChecked={isFree}
+                  onChange={(e) => setIsFree(e.target.checked)}
+                >
+                  Free
+                </Checkbox>
+                {!isFree && (
                   <Input
                     type="number"
                     value={ticketPrice}
                     onChange={(e) => setTicketPrice(e.target.value)}
                   />
-                )} */}
+                )}
               </FormControl>
 
               <FormLabel>Capacity</FormLabel>
-              <Checkbox
-                isChecked={isUnlimited}
-                onChange={(e) => setIsUnlimited(e.target.checked)}
-              >
-                Unlimited
-              </Checkbox>
-              {!isUnlimited && (
-                <Input
-                  type="number"
-                  value={capacity}
-                  onChange={(e) => setCapacity(e.target.value)}
-                />
+              <Input
+                type="number"
+                value={capacity}
+                onChange={(e) => setCapacity(e.target.value)}
+              />
+
+              <FormControl>
+                <FormLabel>Category</FormLabel>
+                <Select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                >
+                  <option value="">Select Category</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+
+              {category && (
+                <FormControl>
+                  <FormLabel>Sub Category</FormLabel>
+                  <Select
+                    value={subCategory}
+                    onChange={(e) => setSubCategory(e.target.value)}
+                  >
+                    <option value="">Select Sub Category</option>
+                    {subcategories[category].map((subcat) => (
+                      <option key={subcat} value={subcat}>
+                        {subcat}
+                      </option>
+                    ))}
+                  </Select>
+                </FormControl>
               )}
 
               <FormLabel>Do you want to make this Event Private?</FormLabel>
@@ -460,27 +404,31 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
                 Note: People with link will only be able to know / join this
                 event.
               </Text>
-              <FormLabel>Require Approval</FormLabel>
-              <Switch
-                id="private-settings"
-                isChecked={requireApproval}
-                onChange={() => setRequireApproval(!requireApproval)}
-              />
             </FormControl>
             <FormLabel>Ticket Sales Start Date</FormLabel>
             <Input
               type="date"
               value={ticketSalesStartDate}
-              w={"60%"}
               onChange={(e) => setTicketSalesStartDate(e.target.value)}
             />
+            <FormLabel>Ticket Sales Start Time</FormLabel>
             <Input
               type="time"
               value={ticketSalesStartTime}
-              w={"40%"}
               onChange={(e) => setTicketSalesStartTime(e.target.value)}
             />
-
+            <FormLabel>Ticket Sales End Date</FormLabel>
+            <Input
+              type="date"
+              value={ticketSalesEndDate}
+              onChange={(e) => setTicketSalesEndDate(e.target.value)}
+            />
+            <FormLabel>Ticket Sales End Time</FormLabel>
+            <Input
+              type="time"
+              value={ticketSalesEndTime}
+              onChange={(e) => setTicketSalesEndTime(e.target.value)}
+            />
             {imgUrl && (
               <Flex mt={5} w={"full"} position={"relative"}>
                 <Image src={imgUrl} alt="Selected img" />

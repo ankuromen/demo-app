@@ -53,9 +53,11 @@ const postSchema = mongoose.Schema(
     },
     endDate: {
       type: Date,
+      required: true,
     },
     endTime: {
       type: String,
+      required: true,
     },
     timeZone: {
       type: String,
@@ -76,10 +78,14 @@ const postSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    // category: {
-    //   type: String,
-    //   required: true,
-    // },
+    category: {
+      type: String,
+      required: true,
+    },
+    subCategory: {
+      type: String,
+      required: true,
+    },
     isPrivate: {
       type: Boolean,
       required: true,
@@ -87,19 +93,24 @@ const postSchema = mongoose.Schema(
     },
     ticketSalesStartDate: {
       type: Date,
+      required: true,
     },
     ticketSalesStartTime: {
       type: String,
+      required: true,
     },
-    
+    ticketSalesEndDate: {
+      type: Date,
+      required: true,
+    },
+    ticketSalesEndTime: {
+      type: String,
+      required: true,
+    },
     checkins: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Tickets",
       default: [],
-    },
-    requireApproval: {
-      type: Boolean,
-      required: true,
     },
   },
   {

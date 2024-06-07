@@ -23,7 +23,8 @@ const createPost = async (req, res) => {
       isPrivate,
       ticketSalesStartDate,
       ticketSalesStartTime,
-      requireApproval
+      ticketSalesEndDate,
+      ticketSalesEndTime,
     } = req.body;
     let { img } = req.body;
 
@@ -69,7 +70,8 @@ const createPost = async (req, res) => {
       isPrivate,
       ticketSalesStartDate,
       ticketSalesStartTime,
-      requireApproval
+      ticketSalesEndDate,
+      ticketSalesEndTime,
     });
     await newPost.save();
 

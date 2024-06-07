@@ -7,7 +7,7 @@ import { BsGlobe2, BsInstagram } from "react-icons/bs";
 import { CgMoreO } from "react-icons/cg";
 import { useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import useFollowUnfollow from "../hooks/useFollowUnfollow";
 import { AtSignIcon } from "@chakra-ui/icons";
 import { AiFillCompass, AiFillFlag, AiTwotoneHeart } from "react-icons/ai";
@@ -17,7 +17,6 @@ const UserHeader = ({ user }) => {
   const toast = useToast();
   const currentUser = useRecoilValue(userAtom); // logged in user
   const { handleFollowUnfollow, following, updating } = useFollowUnfollow(user);
-  const Navigate = useNavigate()
 
   const copyURL = () => {
     const currentURL = window.location.href;
@@ -164,7 +163,7 @@ const UserHeader = ({ user }) => {
         <Button size={"sm"}>Create Campaign</Button>
 
         {/* Create Story button */}
-        <Button size={"sm"} onClick={()=>Navigate('/create')}>Create Event</Button>
+        <Button size={"sm"}>Create Reels</Button>
 
         {/* Create Story button */}
         <Button size={"sm"}>Create Story</Button>
