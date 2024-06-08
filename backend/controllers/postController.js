@@ -18,20 +18,17 @@ const createPost = async (req, res) => {
       ticketPrice,
       capacity,
       eventType,
-      category,
-      subCategory,
       isPrivate,
       ticketSalesStartDate,
       ticketSalesStartTime,
-      ticketSalesEndDate,
-      ticketSalesEndTime,
+      requireApproval
     } = req.body;
     let { img } = req.body;
 
-    if (!postedBy || !text) {
+    if (!postedBy ) {
       return res
         .status(400)
-        .json({ error: "Postedby and text fields are required" });
+        .json({ error: "Postedby fields are required" });
     }
 
     const user = await User.findById(postedBy);
@@ -65,13 +62,10 @@ const createPost = async (req, res) => {
       ticketPrice,
       capacity,
       eventType,
-      category,
-      subCategory,
       isPrivate,
       ticketSalesStartDate,
       ticketSalesStartTime,
-      ticketSalesEndDate,
-      ticketSalesEndTime,
+      requireApproval
     });
     await newPost.save();
 

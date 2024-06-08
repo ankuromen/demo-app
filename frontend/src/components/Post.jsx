@@ -3,8 +3,6 @@ import { Image } from "@chakra-ui/image";
 import { Box, Flex, Text, Stack } from "@chakra-ui/layout";
 import {
   Drawer,
-  DrawerBody,
-  DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
   DrawerContent,
@@ -15,7 +13,6 @@ import { Link, useNavigate } from "react-router-dom";
 import Actions from "./Actions";
 import { useEffect, useState } from "react";
 import useShowToast from "../hooks/useShowToast";
-import { formatDistanceToNow } from "date-fns";
 import { DeleteIcon, TimeIcon } from "@chakra-ui/icons";
 import { FaExpand } from "react-icons/fa6";
 import { CiLocationOn } from "react-icons/ci";
@@ -30,7 +27,6 @@ const Post = ({ post, postedBy }) => {
   const currentUser = useRecoilValue(userAtom);
   const [posts, setPosts] = useRecoilState(postsAtom);
   const navigate = useNavigate();
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = React.useRef();
 
   useEffect(() => {
@@ -152,31 +148,7 @@ const Post = ({ post, postedBy }) => {
           </Flex>
         </Stack>
       </Link>
-      <Drawer
-        isOpen={isOpen}
-        placement="right"
-        onClose={onClose}
-        finalFocusRef={btnRef}
-        size={{ sm: "full", lg: "md" }}
-      >
-        <DrawerOverlay />
-        <DrawerContent>
-          <FaExpand size={20} />
-          <DrawerCloseButton />
-          <DrawerHeader>Create your account</DrawerHeader>
-
-          {/* <DrawerBody>
-            <Input placeholder="Type here..." />
-          </DrawerBody>
-
-          <DrawerFooter>
-            <Button variant="outline" mr={3} onClick={onClose}>
-              Cancel
-            </Button>
-            <Button colorScheme="blue">Save</Button>
-          </DrawerFooter> */}
-        </DrawerContent>
-      </Drawer>
+     
     </>
   );
 };

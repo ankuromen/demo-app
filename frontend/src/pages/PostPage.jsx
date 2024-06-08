@@ -2,10 +2,8 @@ import {
   Avatar,
   Box,
   Button,
-  Center,
   Flex,
   Grid,
-  GridItem,
   Image,
   Spinner,
   Text,
@@ -14,10 +12,8 @@ import { useEffect, useState } from "react";
 import useGetUserProfile from "../hooks/useGetUserProfile";
 import useShowToast from "../hooks/useShowToast";
 import { useNavigate, useParams } from "react-router-dom";
-import { formatDistanceToNow } from "date-fns";
 import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
-import { DeleteIcon } from "@chakra-ui/icons";
 import { SlLocationPin } from "react-icons/sl";
 import { MdOutlineEventAvailable } from "react-icons/md";
 import postsAtom from "../atoms/postsAtom";

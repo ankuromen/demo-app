@@ -15,43 +15,82 @@ import Analytics from "./pages/Analytics";
 import TicketsPage from "./pages/TicketsPage";
 import CalendarPage from "./pages/CalendarPage";
 import QRVerificationPage from "./pages/QRVerificationPage";
+import CreateEventPage from "./pages/CreateEventPage";
 
-function  App() {
-	const user = useRecoilValue(userAtom);
-	const { pathname } = useLocation();
-	return (
-		<Box position={"relative"} w={'full'}>
-			<Container maxW={'full'}>
-				<Header />
-				<Routes>
-					<Route path='/' element={user ? <HomePage /> : <Navigate to='/auth' />} />
-					<Route path='/auth' element={!user ? <AuthPage /> : <Navigate to='/' />} />
-					<Route path='/update' element={user ? <UpdateProfilePage /> : <Navigate to='/auth' />} />
+function App() {
+  const user = useRecoilValue(userAtom);
+  const { pathname } = useLocation();
+  console.log(user);
+  return (
+    <Box position={"relative"} w={"full"}>
+      <Container maxW={"full"}>
+        <Header />
+        <Routes>
+          <Route
+            path="/"
+            element={user ? <HomePage /> : <Navigate to="/auth" />}
+          />
+          <Route
+            path="/auth"
+            element={!user ? <AuthPage /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/update"
+            element={user ? <UpdateProfilePage /> : <Navigate to="/auth" />}
+          />
 
-					<Route
-						path='/:username'
-						element={
-							user ? (
-								<>
-									<UserPage />
-									<CreatePost />
-								</>
-							) : (
-								<UserPage />
-							)
-						}
-					/>
-					<Route path='/:username/post/:pid' element={<PostPage />} />
-					<Route path='/chat' element={user ? <ChatPage /> : <Navigate to={"/auth"} />} />
-					<Route path='/settings' element={user ? <SettingsPage /> : <Navigate to={"/auth"} />} />
-					<Route path='/analytics' element={user ? <Analytics /> : <Navigate to={"/auth"} />} />
-					<Route path='/tickets' element={user ? <TicketsPage /> : <Navigate to={"/auth"} />} />
-					<Route path='/calendar' element={user ? <CalendarPage /> : <Navigate to={"/auth"} />} />
-					<Route path='/qr-verification' element={user ? <QRVerificationPage /> : <Navigate to={"/auth"} />} />
-				</Routes>
-			</Container>
-		</Box>
-	);
+          <Route
+            path="/:username"
+            element={
+              user ? (
+                <>
+                  <UserPage />
+                  <CreatePost />
+                </>
+              ) : (
+                <UserPage />
+              )
+            }
+          />
+          <Route path="/:username/post/:pid" element={<PostPage />} />
+          <Route
+            path="/chat"
+            element={user ? <ChatPage /> : <Navigate to={"/auth"} />}
+          />
+          <Route
+            path="/settings"
+            element={user ? <SettingsPage /> : <Navigate to={"/auth"} />}
+          />
+          <Route
+            path="/analytics"
+            element={user ? <Analytics /> : <Navigate to={"/auth"} />}
+          />
+          <Route
+            path="/tickets"
+            element={user ? <TicketsPage /> : <Navigate to={"/auth"} />}
+          />
+          <Route
+            path="/calendar"
+            element={user ? <CalendarPage /> : <Navigate to={"/auth"} />}
+          />
+          <Route
+            path="/qr-verification"
+            element={user ? <QRVerificationPage /> : <Navigate to={"/auth"} />}
+          />
+          <Route
+            path="/create"
+            element={
+              user?.soloOrganizer ? (
+                <CreateEventPage />
+              ) : (
+                <Navigate to={"/auth"} />
+              )
+            }
+          />
+        </Routes>
+      </Container>
+    </Box>
+  );
 }
 
 export default App;

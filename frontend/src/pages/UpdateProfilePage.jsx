@@ -16,6 +16,7 @@ import userAtom from "../atoms/userAtom";
 import usePreviewImg from "../hooks/usePreviewImg";
 import useShowToast from "../hooks/useShowToast";
 import { LoadScript, StandaloneSearchBox } from "@react-google-maps/api";
+import { useNavigate } from "react-router-dom";
 
 export default function UpdateProfilePage() {
   const [user, setUser] = useRecoilState(userAtom);
@@ -41,9 +42,10 @@ export default function UpdateProfilePage() {
   const showToast = useShowToast();
   const { handleImageChange, imgUrl } = usePreviewImg();
   const inputRef = useRef();
-  const handlePlaceChanged = () => {
+  const navigate =useNavigate()
+  const handlePlaceChanged =async () => {
 
-    const [place] = inputRef.current.getPlaces();
+    const [place] =await inputRef.current.getPlaces();
 
     if (place) {
       console.log(place.geometry.location.lat());
@@ -57,6 +59,7 @@ export default function UpdateProfilePage() {
       });
     }
   };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (updating) return;
@@ -77,6 +80,7 @@ export default function UpdateProfilePage() {
       showToast("Success", "Profile updated successfully", "success");
       setUser(data);
       localStorage.setItem("user-threads", JSON.stringify(data));
+      navigate(`/${user.name}`)
     } catch (error) {
       showToast("Error", error, "error");
     } finally {
@@ -300,6 +304,7 @@ export default function UpdateProfilePage() {
               _hover={{
                 bg: "red.500",
               }}
+              onClick={()=>navigate(`/${user.name}`)}
             >
               Cancel
             </Button>
