@@ -77,7 +77,7 @@ const CalendarPage = () => {
   !posts.error &&
     posts?.map((post) => {
       const startDate = post?.startDate?.split("T")[0];
-      const endDate = post?.endDate.split("T")[0];
+      const endDate = post?.endDate?.split("T")[0];
       const event = {
         title: post?.name,
         start: new Date(`${startDate} ${post?.startTime}:00.000+00:00`),

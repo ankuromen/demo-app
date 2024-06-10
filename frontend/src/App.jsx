@@ -16,6 +16,7 @@ import TicketsPage from "./pages/TicketsPage";
 import CalendarPage from "./pages/CalendarPage";
 import QRVerificationPage from "./pages/QRVerificationPage";
 import CreateEventPage from "./pages/CreateEventPage";
+import Signupnew from "./components/Signupnew";
 
 function App() {
   const user = useRecoilValue(userAtom);

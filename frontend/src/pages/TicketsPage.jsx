@@ -60,148 +60,156 @@ const TicketsPage = () => {
           ticketId: selectedTicket._id,
         }
       );
-      const data =await res.data
-      showToast("success",data.message,"success")
-      onClose()
+      const data = await res.data;
+      showToast("success", data.message, "success");
+      onClose();
     } catch (error) {
-      showToast("Error","error");
+      showToast("Error", "error");
     }
   };
+  console.log(tickets);
   return (
     <Flex w={"100%"} flexDirection={"column"} alignItems={"center"} gap={"4"}>
       <Heading size={"lg"}>My Tickets</Heading>
-      {tickets.map((ticket) => (
-        <Flex
-          key={ticket._id}
-          bgGradient="linear(to-r,#ad5389, #3c1053)"
-          h={"fit-content"}
-          p={3}
-          w={{sm:'90%',md:"80%",lg:'60%'}}
-          borderRadius={"md"}
-          justifyContent={"space-between"}
-          onClick={() => handleOpenTicket(ticket)}
-        >
-          <Box>
-            <Text fontSize={"md"} fontWeight={"500"}>
-              Event : {ticket.ticketDetails.eventname}
-            </Text>
-            <Text fontSize={"md"} fontWeight={"500"}>
-              Venue : {ticket.eventid.venue}
-            </Text>
-            <Text fontSize={"md"} fontWeight={"500"}>
-              No.of Tickets : {ticket.ticketDetails.count}
-            </Text>
-            <Text fontSize={"md"} fontWeight={"500"}>
-              Start :{" "}
-              {new Date(ticket.ticketDetails.eventdate).toLocaleDateString([], {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </Text>
-          </Box>
-          {ticket.eventid.img && (
-            <Box
-              w={"25%"}
-              h={"100px "}
-              background={"white"}
-              alignSelf={"flex-end"}
-              borderRadius={"md"}
-              objectFit={"contain"}
-              overflow={"hidden"}
-            >
-              <Image h={"100%"} w={"100%"} src={ticket.eventid.img} />
+      {tickets.length < 1 ? (
+        <Text>No Tickets Found</Text>
+      ) : (
+        tickets?.map((ticket) => (
+          <Flex
+            key={ticket._id}
+            bgGradient="linear(to-r,#ad5389, #3c1053)"
+            h={"fit-content"}
+            p={3}
+            w={{ sm: "90%", md: "80%", lg: "60%" }}
+            borderRadius={"md"}
+            justifyContent={"space-between"}
+            onClick={() => handleOpenTicket(ticket)}
+          >
+            <Box>
+              <Text fontSize={"md"} fontWeight={"500"}>
+                Event : {ticket.ticketDetails.eventname}
+              </Text>
+              <Text fontSize={"md"} fontWeight={"500"}>
+                Venue : {ticket.eventid?.venue}
+              </Text>
+              <Text fontSize={"md"} fontWeight={"500"}>
+                No.of Tickets : {ticket.ticketDetails.count}
+              </Text>
+              <Text fontSize={"md"} fontWeight={"500"}>
+                Start :{" "}
+                {new Date(ticket.ticketDetails.eventdate).toLocaleDateString(
+                  [],
+                  {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  }
+                )}
+              </Text>
             </Box>
-          )}
-          <Modal isOpen={isOpen} onClose={onClose} mt={0}>
-            <ModalOverlay />
-            <ModalContent
-              bgGradient="linear(to-l, #7928CA, #FF0080)"
-              borderRadius={"1em"}
-            >
-              <ModalHeader textAlign={"center"}>Ticket Details</ModalHeader>
-              <Button
-                colorScheme="green"
-                size={"xs"}
-                mt={"1"}
-                onClick={() => handleCheckIn(selectedTicket)}
+            {ticket.eventid.img && (
+              <Box
+                w={"25%"}
+                h={"100px "}
+                background={"white"}
+                alignSelf={"flex-end"}
+                borderRadius={"md"}
+                objectFit={"contain"}
+                overflow={"hidden"}
               >
-                Check In
-              </Button>
-              <ModalCloseButton size={"md"} />
-              <ModalBody>
-                <Box
-                  borderWidth={"1px"}
-                  borderRadius={"1em"}
-                  border={"1px"}
-                  borderColor={"gray.500"}
+                <Image h={"100%"} w={"100%"} src={ticket.eventid.img} />
+              </Box>
+            )}
+            <Modal isOpen={isOpen} onClose={onClose} mt={0}>
+              <ModalOverlay />
+              <ModalContent
+                bgGradient="linear(to-l, #7928CA, #FF0080)"
+                borderRadius={"1em"}
+              >
+                <ModalHeader textAlign={"center"}>Ticket Details</ModalHeader>
+                <Button
+                  colorScheme="green"
+                  size={"xs"}
+                  mt={"1"}
+                  onClick={() => handleCheckIn(selectedTicket)}
                 >
-                  {selectedTicket && (
-                    <Box p={"6"} background={""}>
-                      {selectedTicket.eventid.img && (
-                        <Box
-                          w={"100%"}
-                          h={"200px"}
-                          background={"white"}
-                          alignSelf={"flex-end"}
-                          borderRadius={"1em"}
-                          objectFit={"contain"}
-                          overflow={"hidden"}
-                          mb={"3"}
-                        >
-                          <Image
-                            h={"100%"}
+                  Check In
+                </Button>
+                <ModalCloseButton size={"md"} />
+                <ModalBody>
+                  <Box
+                    borderWidth={"1px"}
+                    borderRadius={"1em"}
+                    border={"1px"}
+                    borderColor={"gray.500"}
+                  >
+                    {selectedTicket && (
+                      <Box p={"6"} background={""}>
+                        {selectedTicket.eventid.img && (
+                          <Box
                             w={"100%"}
-                            src={selectedTicket.eventid.img}
-                          />
+                            h={"200px"}
+                            background={"white"}
+                            alignSelf={"flex-end"}
+                            borderRadius={"1em"}
+                            objectFit={"contain"}
+                            overflow={"hidden"}
+                            mb={"3"}
+                          >
+                            <Image
+                              h={"100%"}
+                              w={"100%"}
+                              src={selectedTicket.eventid.img}
+                            />
+                          </Box>
+                        )}
+                        <Box mt={"1"} fontWeight={"semibold"} as={"h4"}>
+                          Event Name : {selectedTicket.ticketDetails.eventname}
+                          <br />
+                          User Name : {selectedTicket.ticketDetails.name}
+                          <br />
+                          Ticket Price :{" "}
+                          {selectedTicket.ticketDetails.ticketprice}
+                          <br />
+                          My Contact : {selectedTicket.ticketDetails.contactNo}
+                          <br />
+                          Start :{" "}
+                          {new Date(
+                            selectedTicket.ticketDetails.eventdate
+                          ).toLocaleDateString([], {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
+                          <br />
+                          Time : {selectedTicket.ticketDetails.eventtime}
+                          <br />
+                          Venue : {selectedTicket.eventid.venue} (
+                          {selectedTicket.eventid.eventType})
+                          <br />
                         </Box>
-                      )}
-                      <Box mt={"1"} fontWeight={"semibold"} as={"h4"}>
-                        Event Name : {selectedTicket.ticketDetails.eventname}
-                        <br />
-                        User Name : {selectedTicket.ticketDetails.name}
-                        <br />
-                        Ticket Price :{" "}
-                        {selectedTicket.ticketDetails.ticketprice}
-                        <br />
-                        My Contact : {selectedTicket.ticketDetails.contactNo}
-                        <br />
-                        Start :{" "}
-                        {new Date(
-                          selectedTicket.ticketDetails.eventdate
-                        ).toLocaleDateString([], {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                        <br />
-                        Time : {selectedTicket.ticketDetails.eventtime}
-                        <br />
-                        Venue : {selectedTicket.eventid.venue} (
-                        {selectedTicket.eventid.eventType})
-                        <br />
+                        <QRCode
+                          size={256}
+                          style={{
+                            marginTop: "1em",
+                            height: "100px",
+                            maxWidth: "60%",
+                            marginLeft: "auto",
+                            marginRight: "auto",
+                          }}
+                          value={selectedTicket._id}
+                          viewBox={`0 0 256 256`}
+                        />
                       </Box>
-                      <QRCode
-                        size={256}
-                        style={{
-                          marginTop: "1em",
-                          height: "100px",
-                          maxWidth: "60%",
-                          marginLeft: "auto",
-                          marginRight: "auto",
-                        }}
-                        value={selectedTicket._id}
-                        viewBox={`0 0 256 256`}
-                      />
-                    </Box>
-                  )}
-                </Box>
-              </ModalBody>
-              <ModalFooter></ModalFooter>
-            </ModalContent>
-          </Modal>
-        </Flex>
-      ))}
+                    )}
+                  </Box>
+                </ModalBody>
+                <ModalFooter></ModalFooter>
+              </ModalContent>
+            </Modal>
+          </Flex>
+        ))
+      )}
     </Flex>
   );
 };
