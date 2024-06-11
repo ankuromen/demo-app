@@ -5,11 +5,13 @@ import Post from "../components/Post";
 import { useRecoilState } from "recoil";
 import postsAtom from "../atoms/postsAtom";
 import SuggestedUsers from "../components/SuggestedUsers";
+import userAtom from "../atoms/userAtom";
 const HomePage = () => {
   const [posts, setPosts] = useRecoilState(postsAtom);
+  const [user] = useRecoilState(userAtom);
   const [loading, setLoading] = useState(true);
   const showToast = useShowToast();
-
+  console.log(user);
   useEffect(() => {
     const getFeedPosts = async () => {
       setLoading(true);
@@ -21,7 +23,11 @@ const HomePage = () => {
           showToast("Error", data.error, "error");
           return;
         }
-        setPosts(data);
+        const userId = user._id;
+        const filteredPosts = await data.filter(
+          (post) => post.postedBy === userId || !post.isPrivate
+        );
+        setPosts(filteredPosts);
       } catch (error) {
         showToast("Error", error.message, "error");
       } finally {
@@ -30,7 +36,7 @@ const HomePage = () => {
     };
     getFeedPosts();
   }, [showToast, setPosts]);
-
+  console.log(posts);
   return (
     <Flex gap="10" alignItems={"flex-start"} w={"80%"} m={"auto"}>
       <Box flex={70}>
@@ -43,10 +49,11 @@ const HomePage = () => {
             <Spinner size="xl" />
           </Flex>
         )}
-        
-        {!loading && posts?.map((post) => (
-          <Post key={post._id} post={post} postedBy={post.postedBy} />
-        ))}
+
+        {!loading &&
+          posts?.map((post) => (
+            <Post key={post._id} post={post} postedBy={post.postedBy} />
+          ))}
       </Box>
       <Box
         flex={30}

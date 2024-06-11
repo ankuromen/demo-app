@@ -84,8 +84,8 @@ const Signupnew = () => {
       <Box
         maxW="md"
         mx="auto"
+        bg={useColorModeValue("white", "gray.dark")}
         mt={10}
-        bg={"white"}
         p={6}
         borderWidth={1}
         borderRadius="lg"
@@ -323,9 +323,7 @@ const Signupnew = () => {
                     icon={showPassword ? <ViewIcon /> : <ViewOffIcon />}
                     style={{
                       position: "absolute",
-                      right: "5px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
+                      right: "2px",
                     }}
                   />
                   <ErrorMessage

@@ -40,6 +40,7 @@ import { useParams } from "react-router-dom";
 import { debounce } from "lodash";
 
 const MAX_CHAR = 500;
+const MAX_NAME = 100;
 const timeZones = [
   { value: "GMT-12", label: "Baker Island Time (BIKT)" },
   { value: "GMT-11", label: "Samoa Time (SST)" },
@@ -75,6 +76,7 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
   const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
   const imageRef = useRef(null);
   const [remainingChar, setRemainingChar] = useState(MAX_CHAR);
+  const [remainingName, setRemainingName] = useState(MAX_NAME);
   const user = useRecoilValue(userAtom);
   const showToast = useShowToast();
   const [loading, setLoading] = useState(false);
@@ -175,6 +177,18 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
       setRemainingChar(MAX_CHAR - inputText.length);
     }
   };
+  const handleNameChange = (e) => {
+    const inputText = e.target.value;
+
+    if (inputText.length > MAX_NAME) {
+      const truncatedText = inputText.slice(0, MAX_CHAR);
+      setPostName(truncatedText);
+      setRemainingName(0);
+    } else {
+      setPostName(inputText);
+      setRemainingName(MAX_NAME - inputText.length);
+    }
+  };
   const handleCreatePost = async () => {
     if ((eventType === "Hybrid" || eventType === "Physical") && !venue) {
       showToast("Error", "Please provide a venue for the event.", "error");
@@ -253,7 +267,6 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
     }
     onCloseCreate();
   };
-
   return (
     <>
       <Button
@@ -276,18 +289,22 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
           <ModalBody pb={6}>
             <FormControl>
               <FormLabel>Event Name</FormLabel>
-              <Input
-                type="text"
-                value={postName}
-                onChange={(e) => setPostName(e.target.value)}
-              />
+              <Input type="text" value={postName} onChange={handleNameChange} />
+              <Text
+                fontSize="xs"
+                fontWeight="bold"
+                textAlign={"right"}
+                m={"1"}
+                color={"gray.800"}
+              >
+                {remainingName}/{MAX_NAME}
+              </Text>
               <FormLabel>Description</FormLabel>
               <Textarea
                 placeholder="Post content goes here.."
                 onChange={handleTextChange}
                 value={postText}
               />
-              <FormLabel>Image</FormLabel>
               <Text
                 fontSize="xs"
                 fontWeight="bold"
@@ -297,6 +314,7 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
               >
                 {remainingChar}/{MAX_CHAR}
               </Text>
+              <FormLabel>Image</FormLabel>
 
               <Input
                 type="file"
@@ -315,6 +333,7 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
                 type="date"
                 w={"60%"}
                 value={startDate}
+                min={new Date().toISOString().split("T")[0]}
                 onChange={(e) => setStartDate(e.target.value)}
               />
               <Input
@@ -327,6 +346,7 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
               <Input
                 type="date"
                 value={endDate}
+                min={startDate}
                 w={"60%"}
                 onChange={(e) => setEndDate(e.target.value)}
               />

@@ -11,6 +11,15 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverFooter,
+  PopoverHeader,
+  PopoverTrigger,
+  Portal,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -21,6 +30,7 @@ import useShowToast from "../hooks/useShowToast";
 import postsAtom from "../atoms/postsAtom";
 import { useNavigate } from "react-router-dom";
 import JoinEvent from "./JoinEvent";
+import { isAfter, parseISO } from "date-fns";
 
 const Actions = ({ post }) => {
   const user = useRecoilValue(userAtom);
@@ -33,6 +43,13 @@ const Actions = ({ post }) => {
   const navigate = useNavigate();
   const showToast = useShowToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const currentDate = parseISO(new Date().toISOString());
+  const eventDate = new Date(post.startDate);
+  eventDate.setMinutes(post.startTime.split(":")[1]);
+  const isEventAfter = isAfter(eventDate, currentDate);
+  // console.log(isEventAfter);
+  // console.log(eventDate);
+  // console.log(currentDate);
 
   const handleLikeAndUnlike = async () => {
     if (!user)
@@ -211,13 +228,38 @@ const Actions = ({ post }) => {
             strokeWidth="2"
           ></polygon>
         </svg>
-
-        <Button colorScheme="blue" size="xs" onClick={handleJoinEvent}>
-          Join Event
-        </Button>
+        {isEventAfter ? (
+          <Button colorScheme="blue" size="xs" onClick={handleJoinEvent}>
+            Join Event
+          </Button>
+        ) : (
+          <Popover>
+            <PopoverTrigger>
+              <Button colorScheme="red" size="xs">
+                Event Started
+              </Button>
+            </PopoverTrigger>
+            <Portal>
+              <PopoverContent>
+                <PopoverArrow />
+                <PopoverCloseButton />
+                <PopoverBody>
+                  <Text>Event has been Started Already</Text>
+                </PopoverBody>
+              </PopoverContent>
+            </Portal>
+          </Popover>
+        )}
       </Flex>
-      {<JoinEvent user={user} post={post} joinModalOpen={joinModalOpen} setJoinModalOpen={setJoinModalOpen}/>}
-     
+      {
+        <JoinEvent
+          user={user}
+          post={post}
+          joinModalOpen={joinModalOpen}
+          setJoinModalOpen={setJoinModalOpen}
+        />
+      }
+
       <Flex gap={2} alignItems={"center"}>
         <Text color={"gray.light"} fontSize="sm">
           {post.replies.length} replies
