@@ -22,8 +22,6 @@ const EventDetails = ({
   const showToast = useShowToast();
 
   const handleCheckIn = async (selectedEvent) => {
-    console.log("handlecheckIn");
-    console.log(selectedEvent);
     try {
       const res = await axios.put(
         `/api/posts/checkin/${selectedEvent.eventId}`,

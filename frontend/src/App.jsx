@@ -21,7 +21,6 @@ import Signupnew from "./components/Signupnew";
 function App() {
   const user = useRecoilValue(userAtom);
   const { pathname } = useLocation();
-  console.log(user);
   return (
     <Box position={"relative"} w={"full"}>
       <Container maxW={"full"}>

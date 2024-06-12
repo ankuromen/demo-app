@@ -11,7 +11,6 @@ const HomePage = () => {
   const [user] = useRecoilState(userAtom);
   const [loading, setLoading] = useState(true);
   const showToast = useShowToast();
-  console.log(user);
   useEffect(() => {
     const getFeedPosts = async () => {
       setLoading(true);
@@ -36,7 +35,6 @@ const HomePage = () => {
     };
     getFeedPosts();
   }, [showToast, setPosts]);
-  console.log(posts);
   return (
     <Flex gap="10" alignItems={"flex-start"} w={"80%"} m={"auto"}>
       <Box flex={70}>

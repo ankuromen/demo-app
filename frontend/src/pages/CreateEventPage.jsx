@@ -19,15 +19,21 @@ import {
   PopoverArrow,
   PopoverBody,
   PopoverContent,
+  PopoverHeader,
   PopoverTrigger,
   Select,
+  Switch,
   Text,
   VStack,
   border,
   useDisclosure,
 } from "@chakra-ui/react";
 import { RiGitRepositoryPrivateFill } from "react-icons/ri";
-import { CiGlobe, CiLocationOn, CiStickyNote } from "react-icons/ci";
+import { CiGlobe, CiLocationOn, CiStickyNote, CiEdit } from "react-icons/ci";
+import { PiSeatbelt } from "react-icons/pi";
+import { MdOutlineVerifiedUser } from "react-icons/md";
+import { IoTicketOutline } from "react-icons/io5";
+import { FcPicture } from "react-icons/fc";
 import { StandaloneSearchBox, LoadScript } from "@react-google-maps/api";
 import { useCallback, useEffect, useRef, useState } from "react";
 import usePreviewImg from "../hooks/usePreviewImg";
@@ -35,8 +41,9 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
 import useShowToast from "../hooks/useShowToast";
 import postsAtom from "../atoms/postsAtom";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { debounce } from "lodash";
+import { BsFillImageFill } from "react-icons/bs";
 
 const MAX_CHAR = 500;
 const timeZones = [
@@ -76,6 +83,7 @@ const CreateEventPage = () => {
   const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useRecoilState(postsAtom);
   const { username } = useParams();
+  console.log(user);
 
   // Additional Fields
   const [postName, setPostName] = useState("");
@@ -99,10 +107,16 @@ const CreateEventPage = () => {
   const [isUnlimited, setIsUnlimited] = useState(true);
   const inputRef = useRef();
   const libraries = ["places"];
+  const [isEventTypeOpen, setIsEventTypeOpen] = useState(false);
   const {
     isOpen: isOpenEditDescmodal,
     onOpen: openEditDescModal,
     onClose: closeEditDescModal,
+  } = useDisclosure();
+  const {
+    isOpen: isOPenCapacitySet,
+    onOpen: onOpenCapcaitySet,
+    onClose: OnCloseCapacitySet,
   } = useDisclosure();
 
   useEffect(() => {
@@ -214,6 +228,7 @@ const CreateEventPage = () => {
         return;
       }
       showToast("Success", "Event created successfully", "success");
+
       if (username === user.username) {
         setPosts([data, ...posts]);
       }
@@ -242,6 +257,11 @@ const CreateEventPage = () => {
       setLoading(false);
     }
   };
+
+  const handlePrivacyClick = (val) => {
+    setIsPrivate(val);
+    setIsEventTypeOpen(false);
+  };
   return (
     <>
       <Grid
@@ -258,9 +278,34 @@ const CreateEventPage = () => {
             w={{ base: "full", md: 300 }}
             h={310}
             alignItems={"center"}
+            position={"relative"}
             justifyContent={"center"}
             margin={"auto"}
+            onClick={() => imageRef.current.click()}
           >
+            <Input
+              type="file"
+              position={"absolute"}
+              hidden
+              height={"full"}
+              top={0}
+              left={0}
+              right={0}
+              bottom={0}
+              ref={imageRef}
+              onChange={handleImageChange}
+            />
+            <FcPicture
+              style={{
+                marginLeft: "5px",
+                cursor: "pointer",
+                position: "absolute",
+                bottom: 2,
+                right: 5,
+                borderRadius: "50%",
+              }}
+              size={50}
+            />
             <Image
               src={
                 imgUrl
@@ -277,15 +322,26 @@ const CreateEventPage = () => {
         <Flex w="100%" p={3} direction={"column"}>
           {/* Public/Private  */}
           <Flex alignItems={"end"} justifyContent={"end"}>
-            <Popover>
+            <Popover isOpen={isEventTypeOpen}>
               <PopoverTrigger>
                 <Button
                   size={"xs"}
-                  bg="rgba(218, 218, 218, 0.68)"
+                  gap={2}
+                  bg="rgba(218, 218, 218, 0.77)"
                   _hover={{ bg: "blue.600", color: "white" }}
+                  onClick={() => setIsEventTypeOpen(true)}
                 >
-                  <RiGitRepositoryPrivateFill />
-                  Private
+                  {isPrivate ? (
+                    <>
+                      <RiGitRepositoryPrivateFill />
+                      Private
+                    </>
+                  ) : (
+                    <>
+                      <CiGlobe />
+                      Public
+                    </>
+                  )}
                 </Button>
               </PopoverTrigger>
               <PopoverContent boxShadow="md" w={"2xs"}>
@@ -298,6 +354,9 @@ const CreateEventPage = () => {
                     gap={2}
                     borderRadius={"lg"}
                     _hover={{ bg: "gray.100" }}
+                    onClick={() => {
+                      handlePrivacyClick(false);
+                    }}
                   >
                     <CiGlobe />
                     Public
@@ -309,6 +368,9 @@ const CreateEventPage = () => {
                     borderRadius={"lg"}
                     gap={2}
                     _hover={{ bg: "gray.100" }}
+                    onClick={() => {
+                      handlePrivacyClick(true);
+                    }}
                   >
                     <RiGitRepositoryPrivateFill />
                     Private
@@ -383,6 +445,7 @@ const CreateEventPage = () => {
                       <Input
                         type="date"
                         value={startDate}
+                        min={new Date().toISOString().split("T")[0]}
                         onChange={(e) => setStartDate(e.target.value)}
                         size="md"
                       />
@@ -400,6 +463,7 @@ const CreateEventPage = () => {
                       <Input
                         type="date"
                         value={endDate}
+                        min={startDate}
                         onChange={(e) => setEndDate(e.target.value)}
                         size="md"
                       />
@@ -416,7 +480,12 @@ const CreateEventPage = () => {
               </Box>
             </Flex>
 
-            <Flex bg={"gray.200"} borderRadius={"md"}>
+            <Flex
+              bg={"gray.200"}
+              borderRadius={"md"}
+              flexDirection={"column"}
+              justifyContent={"center"}
+            >
               <Select
                 bg={"gray.200"}
                 borderRadius={"md"}
@@ -430,7 +499,7 @@ const CreateEventPage = () => {
                 icon={"none"}
                 onChange={(e) => setTimeZone(e.target.value)}
               >
-                <option value="">Time Zone</option>
+                <option value="">GMT</option>
                 {timeZones.map((zone) => (
                   <option key={zone.value} value={zone.value}>
                     {zone.label}
@@ -538,8 +607,7 @@ const CreateEventPage = () => {
               </Text>
             </Flex>
             <Flex ps={6}>
-              <Text>{postText? postText:""}</Text>
-
+              <Text>{postText ? postText : ""}</Text>
             </Flex>
           </Flex>
           <Modal
@@ -557,7 +625,15 @@ const CreateEventPage = () => {
                 onChange={handleTextChange}
                 value={postText}
               />
-
+              <Text
+                fontSize="xs"
+                fontWeight="bold"
+                textAlign={"right"}
+                m={"1"}
+                color={"gray.800"}
+              >
+                {remainingChar}/{MAX_CHAR}
+              </Text>
               <ModalFooter>
                 <Button colorScheme="blue" mr={3} onClick={closeEditDescModal}>
                   Save
@@ -566,8 +642,170 @@ const CreateEventPage = () => {
             </ModalContent>
           </Modal>
 
-        {/* EventOptions */}
-        <Text fontSize={'lg'} mt={3} fontWeight={500} color={'gray.600'}>Event Options</Text>
+          {/* EventOptions */}
+          <Text fontSize={"lg"} mt={3} fontWeight={500} color={"gray.600"}>
+            Event Options
+          </Text>
+
+          {/* Tickets */}
+          <Flex
+            bg={"gray.200"}
+            borderRadius={"md"}
+            mt={2}
+            flexDir={"row"}
+            p={2}
+            gap={2}
+            w="full"
+            justifyContent={"space-between"}
+          >
+            <Flex alignItems={"center"} gap={2}>
+              <IoTicketOutline size={20} />
+              <Text fontSize={"lg"} fontWeight={400} color={"gray.600"}>
+                Tickets
+              </Text>
+            </Flex>
+            <Flex alignItems={"center"} gap={2}>
+              <Text fontSize={"lg"} fontWeight={500} color={"gray.400"}>
+                Free
+              </Text>
+              <Popover>
+                <PopoverTrigger>
+                  <Button size={"sm"}>
+                    <CiEdit size={20} />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent isCentered>
+                  <PopoverArrow />
+                  <PopoverHeader fontSize={"xl"}>Accept Payments</PopoverHeader>
+                  <PopoverBody>
+                    <Text fontSize={"md"}>
+                      We use <span color="red">Stripe</span> to process
+                      payments. Connect or setup a Stripe account to start
+                      accepting payments.it usually takes less than 5 minutes
+                    </Text>
+                    <Button
+                      w={"full"}
+                      mt={2}
+                      _hover={{ bg: "blue.600", color: "white" }}
+                    >
+                      Connect Stripe
+                    </Button>
+                  </PopoverBody>
+                </PopoverContent>
+              </Popover>
+            </Flex>
+          </Flex>
+
+          {/* Require Approval */}
+          <Flex
+            bg={"gray.200"}
+            borderRadius={"md"}
+            mt={2}
+            flexDir={"row"}
+            p={2}
+            gap={2}
+            w="full"
+            justifyContent={"space-between"}
+            alignItems={"center"}
+          >
+            <Flex alignItems={"center"} gap={2}>
+              <MdOutlineVerifiedUser size={20} />
+              <Text fontSize={"lg"} fontWeight={400} color={"gray.600"}>
+                Require Approval
+              </Text>
+            </Flex>
+            <Switch
+              id="private-settings"
+              isChecked={requireApproval}
+              onChange={() => setRequireApproval(!requireApproval)}
+            />
+          </Flex>
+
+          {/* Capacity */}
+          <Flex
+            bg={"gray.200"}
+            borderRadius={"md"}
+            mt={2}
+            flexDir={"row"}
+            p={2}
+            gap={2}
+            w="full"
+            justifyContent={"space-between"}
+            alignItems={"center"}
+          >
+            <Flex alignItems={"center"} gap={2}>
+              <PiSeatbelt size={20} />
+              <Text fontSize={"lg"} fontWeight={400} color={"gray.600"}>
+                Capacity
+              </Text>
+            </Flex>
+            <Flex alignItems={"center"} gap={2}>
+              <Text fontSize={"lg"} fontWeight={500} color={"gray.400"}>
+                {isUnlimited ? 'Unlimited' : capacity}
+              </Text>
+
+              <Button size={"sm"} onClick={onOpenCapcaitySet}>
+                {" "}
+                <CiEdit size={20} />
+              </Button>
+
+              <Modal
+                isOpen={isOPenCapacitySet}
+                onClose={OnCloseCapacitySet}
+                isCentered
+              >
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalHeader>Max Capacity</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody>
+                    Auto-close registration when the capacity is reached.{" "}
+                    <Text fontSize={"lg"} fontWeight={500} color={"gray.600"}>
+                      Capacity
+                    </Text>
+                    <Flex gap={2} alignItems={"center"}>
+                      <Switch
+                        id="private-settings"
+                        isChecked={isUnlimited}
+                        onChange={() => setIsUnlimited(!isUnlimited)}
+                      />
+                      <Text>Unlimited</Text>
+                    </Flex>
+                    {!isUnlimited && (
+                      <Input
+                        type="number"
+                        mt={2}
+                        value={capacity}
+                        onChange={(e) => setCapacity(e.target.value)}
+                      />
+                    )}
+                  </ModalBody>
+
+                  <ModalFooter>
+                    <Button
+                      colorScheme="purple"
+                      mr={3}
+                      size={"sm"}
+                      onClick={OnCloseCapacitySet}
+                    >
+                      Close
+                    </Button>
+                  </ModalFooter>
+                </ModalContent>
+              </Modal>
+            </Flex>
+          </Flex>
+
+          <Button
+            colorScheme="purple"
+            mt={3}
+            p={2}
+            size={"lg"}
+            onClick={handleCreatePost}
+            isLoading={loading}
+          >
+            Create Event
+          </Button>
         </Flex>
       </Grid>
     </>

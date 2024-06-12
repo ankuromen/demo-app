@@ -128,7 +128,15 @@ const Post = ({ post, postedBy }) => {
                     navigate(`/${user.username}`);
                   }}
                 />
-                <Text fontSize={"xs"}>{user.name}</Text>
+                <Text
+                  fontSize={"xs"}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate(`/${user.username}`);
+                  }}
+                >
+                  {user.name}
+                </Text>
               </Flex>
               <Text fontWeight={"medium"} fontSize={"xl"}>
                 {post.name}
@@ -148,7 +156,6 @@ const Post = ({ post, postedBy }) => {
           </Flex>
         </Stack>
       </Link>
-     
     </>
   );
 };
