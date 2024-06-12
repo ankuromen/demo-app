@@ -74,10 +74,6 @@ function App() {
             element={user ? <CalendarPage /> : <Navigate to={"/auth"} />}
           />
           <Route
-            path="/qr-verification"
-            element={user ? <QRVerificationPage /> : <Navigate to={"/auth"} />}
-          />
-          <Route
             path="/create"
             element={
               user?.soloOrganizer ? (
