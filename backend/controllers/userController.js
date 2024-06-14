@@ -377,6 +377,25 @@ const sendEmails = async (req, res) => {
     console.log("Error in sendEmails:", error.message);
   }
 };
+const searchUsers = async (req, res) => {
+  const { q } = req.query;
+  
+  try {
+    // Search users by name or username, case-insensitive
+    const users = await User.find({
+      $or: [
+        { name: { $regex: q, $options: "i" } },
+        { username: { $regex: q, $options: "i" } },
+      ],
+    }).select("-password -updatedAt").lean();
+    
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+    console.log("Error in searchUsers: ", err.message);
+  }
+};
+
 export {
   signupUser,
   loginUser,
@@ -388,4 +407,5 @@ export {
   freezeAccount,
   getAllUsers,
   sendEmails, 
+  searchUsers,
 };

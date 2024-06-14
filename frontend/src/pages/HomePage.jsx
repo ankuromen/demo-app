@@ -1,16 +1,23 @@
-import { Box, Flex, Spinner } from "@chakra-ui/react";
+import { Box, Flex, Spinner, Input, List, ListItem, Text, useColorMode } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import useShowToast from "../hooks/useShowToast";
-import Post from "../components/Post";
 import { useRecoilState } from "recoil";
+import { Link } from "react-router-dom";
 import postsAtom from "../atoms/postsAtom";
-import SuggestedUsers from "../components/SuggestedUsers";
 import userAtom from "../atoms/userAtom";
+import Post from "../components/Post";
+import SuggestedUsers from "../components/SuggestedUsers";
+import useShowToast from "../hooks/useShowToast";
+import axios from "axios";
+
 const HomePage = () => {
   const [posts, setPosts] = useRecoilState(postsAtom);
   const [user] = useRecoilState(userAtom);
   const [loading, setLoading] = useState(true);
   const showToast = useShowToast();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const { colorMode } = useColorMode(); // Access the current color mode
+
   useEffect(() => {
     const getFeedPosts = async () => {
       setLoading(true);
@@ -23,7 +30,7 @@ const HomePage = () => {
           return;
         }
         const userId = user._id;
-        const filteredPosts = await data.filter(
+        const filteredPosts = data.filter(
           (post) => post.postedBy === userId || !post.isPrivate
         );
         setPosts(filteredPosts);
@@ -34,34 +41,89 @@ const HomePage = () => {
       }
     };
     getFeedPosts();
-  }, [showToast, setPosts]);
+  }, [showToast, setPosts, user._id]);
+
+  const handleSearchChange = async (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    if (query.length < 3) {
+      setSearchResults([]);
+      return;
+    }
+
+    try {
+      const response = await axios.get(`/api/users/search?q=${query}`);
+      setSearchResults(response.data);
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    }
+  };
+
   return (
-    <Flex gap="10" alignItems={"flex-start"} w={"80%"} m={"auto"}>
-      <Box flex={70}>
-        {!loading && posts.length === 0 && (
-          <h1>Follow some users to see the feed</h1>
-        )}
+    <Flex direction="column" w="80%" m="auto" mt={6}>
+      {/* Search bar */}
+      <Input
+        placeholder="Search users by name or username"
+        value={searchQuery}
+        onChange={handleSearchChange}
+        mb={4}
+        size="sm"
+      />
 
-        {loading && (
-          <Flex justify="center">
-            <Spinner size="xl" />
-          </Flex>
-        )}
+      {/* Search results predictions */}
+      {searchResults.length > 0 && (
+        <Box
+          mt={2}
+          bg={colorMode === "light" ? "white" : "gray.700"} // Dynamically set background based on color mode
+          boxShadow="md"
+          borderRadius="md"
+          p={2}
+        >
+          <List>
+            {searchResults.map((result) => (
+              <ListItem key={result._id}>
+                <Link to={`/${result.username}`}>
+                  <Text
+                    _hover={{ textDecoration: "underline", cursor: "pointer" }}
+                    color={colorMode === "light" ? "black" : "white"} // Dynamically set text color based on color mode
+                  >
+                    <strong>{result.username}</strong> - {result.name}
+                  </Text>
+                </Link>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      )}
 
-        {!loading &&
-          posts?.map((post) => (
-            <Post key={post._id} post={post} postedBy={post.postedBy} />
-          ))}
-      </Box>
-      <Box
-        flex={30}
-        display={{
-          base: "none",
-          md: "block",
-        }}
-      >
-        <SuggestedUsers />
-      </Box>
+
+      {/* Posts section */}
+      <Flex gap="10" alignItems="flex-start">
+        <Box flex={70}>
+          {!loading && posts.length === 0 && (
+            <Text fontSize="xl" fontWeight="bold">
+              Follow some users to see the feed
+            </Text>
+          )}
+
+          {loading && (
+            <Flex justify="center">
+              <Spinner size="xl" />
+            </Flex>
+          )}
+
+          {!loading &&
+            posts?.map((post) => (
+              <Post key={post._id} post={post} postedBy={post.postedBy} />
+            ))}
+        </Box>
+
+        {/* Suggested users section */}
+        <Box flex={30} display={{ base: "none", md: "block" }}>
+          <SuggestedUsers />
+        </Box>
+      </Flex>
     </Flex>
   );
 };

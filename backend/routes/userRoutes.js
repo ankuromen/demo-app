@@ -10,6 +10,7 @@ import {
 	freezeAccount,
 	getAllUsers,
 	sendEmails,
+	searchUsers,
 } from "../controllers/userController.js";
 import protectRoute from "../middlewares/protectRoute.js";
 
@@ -19,6 +20,7 @@ router.get("/profile/:query", getUserProfile);
 router.get("/suggested", protectRoute, getSuggestedUsers);
 router.get("/all", getAllUsers); 
 router.post("/signup", signupUser);
+router.get("/search", searchUsers);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 router.post("/follow/:id", protectRoute, followUnFollowUser); // Toggle state(follow/unfollow)
