@@ -21,6 +21,7 @@ import Embed from "./components/Settings/Embed";
 import Options from './components/Settings/Options'
 import Payment from './components/Settings/Payment'
 import EvntiqPlus from "./components/Settings/EvntiqPlus";
+import DiscoverPage from "./pages/DiscoverPage";
 
 function App() {
   const user = useRecoilValue(userAtom);
@@ -66,8 +67,8 @@ function App() {
             element={user ? <SettingsPage /> : <Navigate to={"/auth"} />}
           >
             <Route path="freeze-account" element={<FreezeAccount />} />
-            <Route path="options" element={<Options/>} />
-            <Route path="embed" element={<Embed/>} />
+            <Route path="options" element={<Options />} />
+            <Route path="embed" element={<Embed />} />
             <Route path="evntiq-plus" element={<EvntiqPlus />} />
             <Route path="payment" element={<Payment />} />
             <Route path="admins" element={<Admins />} />
@@ -83,6 +84,10 @@ function App() {
           <Route
             path="/calendar"
             element={user ? <CalendarPage /> : <Navigate to={"/auth"} />}
+          />
+          <Route
+            path="/discover"
+            element={user ? <DiscoverPage/>: <Navigate to="/auth" />}
           />
           <Route
             path="/create"

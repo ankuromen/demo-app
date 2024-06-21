@@ -21,14 +21,12 @@ const createPost = async (req, res) => {
       isPrivate,
       ticketSalesStartDate,
       ticketSalesStartTime,
-      requireApproval
+      requireApproval,
     } = req.body;
     let { img } = req.body;
 
-    if (!postedBy ) {
-      return res
-        .status(400)
-        .json({ error: "Postedby fields are required" });
+    if (!postedBy) {
+      return res.status(400).json({ error: "Postedby fields are required" });
     }
 
     const user = await User.findById(postedBy);
@@ -65,7 +63,7 @@ const createPost = async (req, res) => {
       isPrivate,
       ticketSalesStartDate,
       ticketSalesStartTime,
-      requireApproval
+      requireApproval,
     });
     await newPost.save();
 
@@ -233,6 +231,16 @@ const getUserPosts = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+const getAllPosts = async (req, res) => {
+  try {
+    const feedPosts = await Post.find({}).sort({
+      createdAt: -1,
+    });
+    res.status(200).json(feedPosts);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 export {
   createPost,
@@ -243,4 +251,5 @@ export {
   getFeedPosts,
   getUserPosts,
   checkInPost,
+  getAllPosts,
 };

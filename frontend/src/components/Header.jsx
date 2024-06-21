@@ -9,7 +9,7 @@ import { FiLogOut } from "react-icons/fi";
 import useLogout from "../hooks/useLogout";
 import authScreenAtom from "../atoms/authAtom";
 import { BsFillChatQuoteFill } from "react-icons/bs";
-import { MdOutlineSettings } from "react-icons/md";
+import { MdOutlineSettings,MdOutlineExplore } from "react-icons/md";
 import { AiOutlineFileSync } from "react-icons/ai";
 import { CiCalendar } from "react-icons/ci";
 
@@ -59,6 +59,9 @@ const Header = () => {
         <Flex alignItems={"center"} gap={4}>
           <Link as={RouterLink} to={`/${user.username}`}>
             <RxAvatar size={24} />
+          </Link>
+          <Link as={RouterLink} to={`/discover`}>
+            <MdOutlineExplore size={25} />
           </Link>
           <Link as={RouterLink} to={`/chat`}>
             <BsFillChatQuoteFill size={20} />
