@@ -68,7 +68,7 @@ const timeZones = [
   { value: "GMT+12", label: "Kiribati Time (Kiritimati Time)" },
 ];
 
-// const categories = ["Category 1", "Category 2", "Category 3"]; // Define categories array
+const categories = ["Music", "Technology", "Business", "Networking"];
 
 const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
   const { isOpen, onOpen, onClose: closeCreate } = useDisclosure();
@@ -85,6 +85,7 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
 
   // Additional Fields
   const [postName, setPostName] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [startDate, setStartDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -94,8 +95,6 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
   const [ticketPrice, setTicketPrice] = useState("");
   const [capacity, setCapacity] = useState("");
   const [eventType, setEventType] = useState("");
-  // const [category, setCategory] = useState("");
-  // const [subCategory, setSubCategory] = useState("");
   const [meetingLink, setMeetingLink] = useState("");
   const [isFree, setIsFree] = useState(true); // State to manage free ticket price
   const [isPrivate, setIsPrivate] = useState(false);
@@ -224,7 +223,7 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
           meetingLink,
           ticketPrice: isFree ? 0 : ticketPrice, // Set ticket price as 0 if it's free
           capacity,
-          eventType,
+          eventType:selectedCategory,
           ticketSalesStartDate,
           ticketSalesStartTime,
           isPrivate,
@@ -257,6 +256,7 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
       setEventType("");
       setTicketSalesStartDate("");
       setTicketSalesStartTime("");
+      setSelectedCategory("");
       setIsFree(false); // Reset free ticket price state
       setIsPrivate(false); // Reset private post setting state
       setRequireApproval(false);
@@ -299,6 +299,18 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
               >
                 {remainingName}/{MAX_NAME}
               </Text>
+              <FormLabel>Event Category</FormLabel>
+              <Select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                <option value="">Select Event Category</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </Select>
               <FormLabel>Description</FormLabel>
               <Textarea
                 placeholder="Post content goes here.."

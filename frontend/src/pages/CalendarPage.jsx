@@ -46,7 +46,7 @@ const CalendarPage = () => {
   useEffect(() => {
     const getPosts = async () => {
       try {
-        const res = await fetch(`/api/posts/user/${user.name}`);
+        const res = await fetch(`/api/posts/user/${user.username}`);
         const data = await res.json();
         console.log(data);
         setPosts(data);
