@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
 import Post from "../models/postModel.js";
+import UserSetting from "../models/userSettingModel.js";
 import bcrypt from "bcryptjs";
 import generateTokenAndSetCookie from "../utils/helpers/generateTokenAndSetCookie.js";
 import { v2 as cloudinary } from "cloudinary";
@@ -7,11 +8,9 @@ import mongoose from "mongoose";
 import nodemailer from "nodemailer";
 import { ObjectId } from "mongodb";
 
-
-
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select('-password -updatedAt').lean();
+    const users = await User.find().select("-password -updatedAt").lean();
     res.status(200).json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -92,6 +91,9 @@ const signupUser = async (req, res) => {
       soloOrganizer,
     });
     await newUser.save();
+    const currentUser = await User.find({ $or: [{ email }, { username }] });
+    console.log(currentUser[0]._id);
+    await new UserSetting({ userid: currentUser[0]._id }).save();
 
     if (newUser) {
       generateTokenAndSetCookie(newUser._id, res);
@@ -351,7 +353,9 @@ const sendEmails = async (req, res) => {
   const { userIds } = req.body;
 
   try {
-    const users = await User.find({ _id: { $in: userIds } }).select("email name");
+    const users = await User.find({ _id: { $in: userIds } }).select(
+      "email name"
+    );
 
     // Configure nodemailer
     const transporter = nodemailer.createTransport({
@@ -377,9 +381,10 @@ const sendEmails = async (req, res) => {
     console.log("Error in sendEmails:", error.message);
   }
 };
+
 const searchUsers = async (req, res) => {
   const { q } = req.query;
-  
+
   try {
     // Search users by name or username, case-insensitive
     const users = await User.find({
@@ -387,8 +392,10 @@ const searchUsers = async (req, res) => {
         { name: { $regex: q, $options: "i" } },
         { username: { $regex: q, $options: "i" } },
       ],
-    }).select("-password -updatedAt").lean();
-    
+    })
+      .select("-password -updatedAt")
+      .lean();
+
     res.status(200).json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -396,6 +403,100 @@ const searchUsers = async (req, res) => {
   }
 };
 
+const updateSetting = async (req, res) => {
+  const { userId, setting, value } = req.body;
+
+  const updateOption = async (userSettings) => {
+    if (setting === "publicGuest") {
+      userSettings.publicguest = value;
+    } else if (setting === "feedback") {
+      userSettings.feedback = value;
+    }
+    await userSettings.save();
+  };
+
+  if (userId) {
+    try {
+      let userSettings = await UserSetting.findOne({ userid: userId });
+
+      if (!userSettings) {
+        await new UserSetting({ userid: userId }).save();
+        userSettings = await UserSetting.findOne({ userid: userId });
+      }
+
+      if (userSettings) {
+        await updateOption(userSettings);
+        res.status(200).json({ message: "Settings updated successfully" });
+      } else {
+        res
+          .status(500)
+          .json({ error: "Failed to create or find user settings" });
+      }
+    } catch (error) {
+      console.error("Error updating settings:", error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while updating settings" });
+    }
+  } else {
+    res.status(400).json({ error: "User ID is required" });
+  }
+};
+
+const getSettings = async (req, res) => {
+  const { userId } = req.query;
+  try {
+    const settings = await UserSetting.findOne({ userid: userId });
+    res.status(200).json(settings);
+  } catch (error) {
+    res.status(500).json("error", error);
+  }
+};
+const addAdmins = async (req, res) => {
+  const { selectedUsers, userId } = req.body;
+  let admins = [];
+  if (userId) {
+    try {
+      let userSettings = await UserSetting.findOne({ userid: userId });
+      if (!userSettings) {
+        await new UserSetting({ userid: userId }).save();
+        userSettings = await UserSetting.findOne({ userid: userId });
+      }
+      if (userSettings) {
+        if (selectedUsers.length > 0) {
+          const existingAdminUserIds = userSettings.admins.map(
+            (admin) => admin.userid
+          );
+          const adminsToAdd = selectedUsers.filter(
+            (user) => !existingAdminUserIds.includes(user.userid)
+          );
+
+          if (adminsToAdd.length > 0) {
+            adminsToAdd.forEach((user) => {
+              const admin = {
+                name: user.name,
+                userid: user.userid,
+                email: user.email,
+              };
+              userSettings.admins.push(admin);
+            });
+
+            await userSettings.save();
+          }
+        }
+        await userSettings.save();
+        let updatedSettings = await UserSetting.findOne({ userid: userId });
+        res.status(200).json(updatedSettings?.admins);
+      }
+    } catch (error) {
+      res.status(500).json("error", error);
+    }
+  }
+};
+
+const removeAdmins = () => {
+  console.log("removeAdmins");
+};
 export {
   signupUser,
   loginUser,
@@ -406,6 +507,10 @@ export {
   getSuggestedUsers,
   freezeAccount,
   getAllUsers,
-  sendEmails, 
+  sendEmails,
   searchUsers,
+  updateSetting,
+  getSettings,
+  addAdmins,
+  removeAdmins,
 };
