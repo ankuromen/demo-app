@@ -1,20 +1,11 @@
 import { Avatar } from "@chakra-ui/avatar";
 import { Image } from "@chakra-ui/image";
 import { Box, Flex, Text, Stack } from "@chakra-ui/layout";
-import {
-  Drawer,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  useDisclosure,
-} from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import Actions from "./Actions";
 import { useEffect, useState } from "react";
 import useShowToast from "../hooks/useShowToast";
 import { DeleteIcon, TimeIcon } from "@chakra-ui/icons";
-import { FaExpand } from "react-icons/fa6";
 import { CiLocationOn } from "react-icons/ci";
 import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";

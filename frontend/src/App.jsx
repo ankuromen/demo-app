@@ -14,9 +14,13 @@ import { SettingsPage } from "./pages/SettingsPage";
 import Analytics from "./pages/Analytics";
 import TicketsPage from "./pages/TicketsPage";
 import CalendarPage from "./pages/CalendarPage";
-import QRVerificationPage from "./pages/QRVerificationPage";
 import CreateEventPage from "./pages/CreateEventPage";
-import Signupnew from "./components/Signupnew";
+import FreezeAccount from "./components/Settings/FreezeAccount";
+import Admins from "./components/Settings/Admins";
+import Embed from "./components/Settings/Embed";
+import Options from './components/Settings/Options'
+import Payment from './components/Settings/Payment'
+import EvntiqPlus from "./components/Settings/EvntiqPlus";
 
 function App() {
   const user = useRecoilValue(userAtom);
@@ -60,7 +64,14 @@ function App() {
           <Route
             path="/settings"
             element={user ? <SettingsPage /> : <Navigate to={"/auth"} />}
-          />
+          >
+            <Route path="freeze-account" element={<FreezeAccount />} />
+            <Route path="options" element={<Options/>} />
+            <Route path="embed" element={<Embed/>} />
+            <Route path="evntiq-plus" element={<EvntiqPlus />} />
+            <Route path="payment" element={<Payment />} />
+            <Route path="admins" element={<Admins />} />
+          </Route>
           <Route
             path="/analytics"
             element={user ? <Analytics /> : <Navigate to={"/auth"} />}

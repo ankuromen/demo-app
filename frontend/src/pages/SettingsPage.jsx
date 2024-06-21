@@ -1,42 +1,147 @@
-import { Button, Text } from "@chakra-ui/react";
-import useShowToast from "../hooks/useShowToast";
-import useLogout from "../hooks/useLogout";
+import FreezeAccount from "../components/Settings/FreezeAccount";
+import {
+  Box,
+  Flex,
+  List,
+  ListItem,
+  Link,
+  Grid,
+  useColorModeValue,
+} from "@chakra-ui/react";
+import {
+  Route,
+  NavLink,
+  Routes,
+} from "react-router-dom";
+import { LuBadgeDollarSign } from "react-icons/lu";
+import {
+  MdOutlineSettingsInputComponent,
+  MdAdminPanelSettings,
+  MdMotionPhotosPaused,
+  MdOutlineWorkspacePremium,
+} from "react-icons/md";
+import { ImEmbed2 } from "react-icons/im";
+import Options from "../components/Settings/Options";
+import Payment from "../components/Settings/Payment";
+import Admins from "../components/Settings/Admins";
+import Embed from "../components/Settings/Embed";
+import EvntiqPlus from "../components/Settings/EvntiqPlus";
 
 export const SettingsPage = () => {
-	const showToast = useShowToast();
-	const logout = useLogout();
+  const menuItems = [
+    {
+      label: "Options",
+      key: "options",
+      icon: <MdOutlineSettingsInputComponent />,
+      path: "/settings/options",
+    },
+    {
+      label: "Payment",
+      key: "payment",
+      icon: <LuBadgeDollarSign />,
+      path: "/settings/payment",
+    },
+    {
+      label: "Admins",
+      key: "admins",
+      icon: <MdAdminPanelSettings />,
+      path: "/settings/admins",
+    },
+    {
+      label: "Embed",
+      key: "embed",
+      icon: <ImEmbed2 />,
+      path: "/settings/embed",
+    },
+    {
+      label: "Evntiq+",
+      key: "evntiq-plus",
+      icon: <MdOutlineWorkspacePremium />,
+      path: "/settings/evntiq-plus",
+    },
+    {
+      label: "Account",
+      path: "/settings/freeze-account",
+      icon: <MdMotionPhotosPaused />,
+    },
+  ];
+  return (
+    <Grid
+      w={{ base: "full", md: "60%" }}
+      justifyContent={"center"}
+      m={"auto"}
+      gridTemplateColumns={{ base: "1fr", md: "1fr 3fr" }}
+    >
+      <Flex
+        w={{ base: "100%", md: "200px" }}
+        borderBottom={{ base: "1px", md: "none" }}
+        borderColor="gray.200"
+        p={4}
+        overflowX={{ base: "auto", md: "visible" }} // Scrollable on smaller screens
+        maxW={{ base: "100%", md: "none" }} // Full width on smaller screens
+        overflowY={{ base: "visible", md: "auto" }} // Scrollable on larger screens
+        alignItems={"center"}
+        css={{
+          /* Webkit Browsers */
+          "&::-webkit-scrollbar": {
+            width: "1px",
+            height: "1px",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            background: "rgba(0, 0, 0, 0.2)",
+            borderRadius: "10px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "rgba(0, 0, 0, 0.1)",
+            borderRadius: "10px",
+          },
+          /* Firefox */
+          "&": {
+            scrollbarWidth: "",
+            scrollbarColor: "rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.1)",
+          },
+        }}
+      >
+        <List
+          spacing={2}
+          display={{ base: "flex", md: "block" }}
+          flexDirection={{ base: "row", md: "column" }}
+          alignItems={"center"}
+        >
+          {menuItems.map((item) => (
+            <ListItem key={item.key} p={3}>
+              <Link
+                as={NavLink}
+                to={item.path}
+                display={"flex"}
+                flexDir={"row"}
+                alignItems={"center"}
+                gap={1}
+                color={"gray.500"}
+                _activeLink={{
+                  fontWeight: "bold",
+                  color:useColorModeValue( "gray.800",'white'),
+                }}
+                _hover={{ textDecoration: "none" }}
+              >
+                {item.icon && item.icon}
+                {item.label}
+              </Link>
+            </ListItem>
+          ))}
+        </List>
+      </Flex>
 
-	const freezeAccount = async () => {
-		if (!window.confirm("Are you sure you want to freeze your account?")) return;
-
-		try {
-			const res = await fetch("/api/users/freeze", {
-				method: "PUT",
-				headers: { "Content-Type": "application/json" },
-			});
-			const data = await res.json();
-
-			if (data.error) {
-				return showToast("Error", data.error, "error");
-			}
-			if (data.success) {
-				await logout();
-				showToast("Success", "Your account has been frozen", "success");
-			}
-		} catch (error) {
-			showToast("Error", error.message, "error");
-		}
-	};
-
-	return (
-		<>
-			<Text my={1} fontWeight={"bold"}>
-				Freeze Your Account
-			</Text>
-			<Text my={1}>You can unfreeze your account anytime by logging in.</Text>
-			<Button size={"sm"} colorScheme='red' onClick={freezeAccount}>
-				Freeze
-			</Button>
-		</>
-	);
+      <Box flex="1" p={4} justifyContent={"start"}>
+        <Routes>
+          <Route path="/options" element={<Options />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/admins" element={<Admins />} />
+          <Route path="/embed" element={<Embed />} />
+          <Route path="/Evntiq-plus" element={<EvntiqPlus />} />
+          <Route path="/freeze-account" element={<FreezeAccount />} />
+        </Routes>
+      </Box>
+    </Grid>
+  );
 };
