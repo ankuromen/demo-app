@@ -494,8 +494,17 @@ const addAdmins = async (req, res) => {
   }
 };
 
-const removeAdmins = () => {
-  console.log("removeAdmins");
+const removeAdmins = async (req, res) => {
+  const { userId, currentUser } = req.body;
+  if (userId) {
+    let userSettings = await UserSetting.findOne({ userid: userId });
+    await userSettings.admins.pull({ userid: currentUser.userid });
+    userSettings.save();
+    let updatedSettings = await UserSetting.findOne({ userid: userId });
+    res.status(200).json(updatedSettings?.admins);
+  } else {
+    res.status(500).json({ error: "User Not Found" });
+  }
 };
 export {
   signupUser,

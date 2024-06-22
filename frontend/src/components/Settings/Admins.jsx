@@ -42,11 +42,11 @@ const Admins = () => {
         params: { userId: user._id },
       });
       setSelectedUsers(res.data.admins);
-      console.log(selectedUsers);
     };
     fetchUserSettings();
   }, [user]);
 
+  useEffect(() => {}, [selectedUsers]);
   const handleSearchChange = async (e) => {
     const query = e.target.value;
     setSearchQuery(query);
@@ -64,12 +64,11 @@ const Admins = () => {
     }
   };
   const isObjectInArray = (array, newAdmin) => {
-    console.log('array',array);
+    console.log("array", array);
     return array.some((item) => item.userid === newAdmin.userid);
   };
 
   const addObjectToArray = (user) => {
-    
     if (selectedUsers?.length >= 5) {
       alert("You can only select Maximum of 5 users");
       return;
@@ -97,7 +96,20 @@ const Admins = () => {
       });
       setSelectedUsers(res.data);
       showToast("success", "Admins Updated", "success");
-      onClose()
+      onClose();
+    } catch (error) {
+      showToast("error", "Something went wrong", "error");
+    }
+  };
+
+  const handleRemoveAdmin = async (currentUser) => {
+    try {
+      const res = await axios.post("/api/users/remove-admins", {
+        userId: user._id,
+        currentUser,
+      });
+      setSelectedUsers(res.data);
+      showToast("success", "Admins Updated", "success");
     } catch (error) {
       showToast("error", "Something went wrong", "error");
     }
@@ -142,7 +154,11 @@ const Admins = () => {
                 <Text>{user.name}</Text>
                 <Text>{user.email}</Text>
               </Box>
-              <Button colorScheme="red" size={"xs"}>
+              <Button
+                colorScheme="red"
+                size={"xs"}
+                onClick={() => handleRemoveAdmin(user)}
+              >
                 Remove
               </Button>
             </Flex>
@@ -201,7 +217,6 @@ const Admins = () => {
           <ModalFooter>
             <Button
               w={"full"}
-              // onClick={onClose}
               onClick={handleAddAdmins}
               bg={useColorModeValue("black", "white")}
               color={useColorModeValue("white", "black")}
