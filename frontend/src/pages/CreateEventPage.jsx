@@ -548,7 +548,7 @@ const CreateEventPage = () => {
                 {["Physical", "Hybrid"].includes(eventType) && (
                   <LoadScript
                     style={{ width: "100%" }}
-                    googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY}
+                    googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY2}
                     libraries={libraries}
                   >
                     <StandaloneSearchBox
