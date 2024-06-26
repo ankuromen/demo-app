@@ -131,9 +131,8 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
     closeCreate();
     setCreatePostOpen(!createPostOpen);
   }
-
   const handlePlaceChanged = async () => {
-    const [place] = await inputRef.current.getPlaces()[0];
+    const [place] = await inputRef.current.getPlaces();
 
     if (place) {
       console.log(place.geometry.location.lat());
@@ -141,28 +140,37 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
       setVenue(place.formatted_address);
     }
   };
+  // const handlePlaceChanged = async () => {
+  //   const [place] = await inputRef.current.getPlaces()[0];
 
-  const debouncedHandlePlaceChanged = useCallback(
-    debounce(handlePlaceChanged, 300),
-    []
-  );
+  //   if (place) {
+  //     console.log(place.geometry.location.lat());
+  //     console.log(place.geometry.location.lng());
+  //     setVenue(place.formatted_address);
+  //   }
+  // };
 
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.addListener(
-        "places_changed",
-        debouncedHandlePlaceChanged
-      );
-    }
-    return () => {
-      if (inputRef.current) {
-        inputRef.current.removeListener(
-          "places_changed",
-          debouncedHandlePlaceChanged
-        );
-      }
-    };
-  }, [debouncedHandlePlaceChanged]);
+  // const debouncedHandlePlaceChanged = useCallback(
+  //   debounce(handlePlaceChanged, 500),
+  //   []
+  // );
+
+  // useEffect(() => {
+  //   if (inputRef.current) {
+  //     inputRef.current.addListener(
+  //       "places_changed",
+  //       debouncedHandlePlaceChanged
+  //     );
+  //   }
+  //   return () => {
+  //     if (inputRef.current) {
+  //       inputRef.current.removeListener(
+  //         "places_changed",
+  //         debouncedHandlePlaceChanged
+  //       );
+  //     }
+  //   };
+  // }, [debouncedHandlePlaceChanged]);
 
   const handleTextChange = (e) => {
     const inputText = e.target.value;
@@ -223,7 +231,7 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
           meetingLink,
           ticketPrice: isFree ? 0 : ticketPrice, // Set ticket price as 0 if it's free
           capacity,
-          eventType:selectedCategory,
+          eventType: selectedCategory,
           ticketSalesStartDate,
           ticketSalesStartTime,
           isPrivate,
@@ -395,21 +403,18 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
               {["Physical", "Hybrid"].includes(eventType) && (
                 <FormControl isRequired>
                   <FormLabel>Location</FormLabel>
-                  <LoadScript
-                    googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY}
-                    libraries={libraries}
+
+                  <StandaloneSearchBox
+                    onLoad={(ref) => (inputRef.current = ref)}
+                    onPlacesChanged={handlePlaceChanged}
                   >
-                    <StandaloneSearchBox
-                      onLoad={(ref) => (inputRef.current = ref)}
-                      onPlacesChanged={handlePlaceChanged}
-                    >
-                      <Input
-                        type="text"
-                        placeholder=""
-                        onChange={(e) => setVenue(e.target.value)}
-                      />
-                    </StandaloneSearchBox>
-                  </LoadScript>
+                    <Input
+                      type="text"
+                      placeholder=""
+                      value={venue}
+                      onChange={(e) => setVenue(e.target.value)}
+                    />
+                  </StandaloneSearchBox>
                 </FormControl>
               )}
 

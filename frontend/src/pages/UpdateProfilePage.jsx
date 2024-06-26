@@ -15,7 +15,7 @@ import { useRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
 import usePreviewImg from "../hooks/usePreviewImg";
 import useShowToast from "../hooks/useShowToast";
-import { LoadScript, StandaloneSearchBox } from "@react-google-maps/api";
+import { StandaloneSearchBox } from "@react-google-maps/api";
 import { useNavigate } from "react-router-dom";
 
 export default function UpdateProfilePage() {
@@ -181,10 +181,10 @@ export default function UpdateProfilePage() {
 
           <FormControl isRequired>
             <FormLabel>Location</FormLabel>
-            <LoadScript
-              googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY}
+            {/* <LoadScript
+              googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY4}
               libraries={["places"]}
-            >
+            > */}
               <StandaloneSearchBox
                 onLoad={(ref) => (inputRef.current = ref)}
                 onPlacesChanged={handlePlaceChanged}
@@ -199,7 +199,7 @@ export default function UpdateProfilePage() {
                   type="text"
                 />
               </StandaloneSearchBox>
-            </LoadScript>
+            {/* </LoadScript> */}
           </FormControl>
 
           <FormControl>

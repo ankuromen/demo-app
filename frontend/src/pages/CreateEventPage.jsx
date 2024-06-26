@@ -133,9 +133,8 @@ const CreateEventPage = () => {
       );
     }
   }, [ticketSalesStartDate]);
-
   const handlePlaceChanged = async () => {
-    const [place] = await inputRef.current.getPlaces()[0];
+    const [place] = await inputRef.current.getPlaces();
 
     if (place) {
       console.log(place.geometry.location.lat());
@@ -143,28 +142,37 @@ const CreateEventPage = () => {
       setVenue(place.formatted_address);
     }
   };
+  // const handlePlaceChanged = async () => {
+  //   const [place] = await inputRef.current.getPlaces()[0];
 
-  const debouncedHandlePlaceChanged = useCallback(
-    debounce(handlePlaceChanged, 300),
-    []
-  );
+  //   if (place) {
+  //     console.log(place.geometry.location.lat());
+  //     console.log(place.geometry.location.lng());
+  //     setVenue(place.formatted_address);
+  //   }
+  // };
 
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.addListener(
-        "places_changed",
-        debouncedHandlePlaceChanged
-      );
-    }
-    return () => {
-      if (inputRef.current) {
-        inputRef.current.removeListener(
-          "places_changed",
-          debouncedHandlePlaceChanged
-        );
-      }
-    };
-  }, [debouncedHandlePlaceChanged]);
+  // const debouncedHandlePlaceChanged = useCallback(
+  //   debounce(handlePlaceChanged, 300),
+  //   []
+  // );
+
+  // useEffect(() => {
+  //   if (inputRef.current) {
+  //     inputRef.current.addListener(
+  //       "places_changed",
+  //       debouncedHandlePlaceChanged
+  //     );
+  //   }
+  //   return () => {
+  //     if (inputRef.current) {
+  //       inputRef.current.removeListener(
+  //         "places_changed",
+  //         debouncedHandlePlaceChanged
+  //       );
+  //     }
+  //   };
+  // }, [debouncedHandlePlaceChanged]);
 
   const handleTextChange = (e) => {
     const inputText = e.target.value;
@@ -546,23 +554,23 @@ const CreateEventPage = () => {
                   <option value="Hybrid">Hybrid</option>
                 </Select>
                 {["Physical", "Hybrid"].includes(eventType) && (
-                  <LoadScript
-                    style={{ width: "100%" }}
-                    googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY2}
-                    libraries={libraries}
+                  // <LoadScript
+                  //   style={{ width: "100%" }}
+                  //   googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY2}
+                  //   libraries={libraries}
+                  // >
+                  <StandaloneSearchBox
+                    onLoad={(ref) => (inputRef.current = ref)}
+                    onPlacesChanged={handlePlaceChanged}
                   >
-                    <StandaloneSearchBox
-                      onLoad={(ref) => (inputRef.current = ref)}
-                      onPlacesChanged={handlePlaceChanged}
-                    >
-                      <Input
-                        type="text"
-                        style={{ width: "100%" }}
-                        placeholder="Venue"
-                        onChange={(e) => setVenue(e.target.value)}
-                      />
-                    </StandaloneSearchBox>
-                  </LoadScript>
+                    <Input
+                      type="text"
+                      style={{ width: "100%" }}
+                      placeholder="Venue"
+                      onChange={(e) => setVenue(e.target.value)}
+                    />
+                  </StandaloneSearchBox>
+                  // </LoadScript>
                 )}
                 {["Virtual", "Hybrid"].includes(eventType) && (
                   <>
@@ -741,7 +749,7 @@ const CreateEventPage = () => {
             </Flex>
             <Flex alignItems={"center"} gap={2}>
               <Text fontSize={"lg"} fontWeight={500} color={"gray.400"}>
-                {isUnlimited ? 'Unlimited' : capacity}
+                {isUnlimited ? "Unlimited" : capacity}
               </Text>
 
               <Button size={"sm"} onClick={onOpenCapcaitySet}>

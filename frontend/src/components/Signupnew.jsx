@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import * as Yup from "yup";
-import { LoadScript, StandaloneSearchBox } from "@react-google-maps/api";
+import { StandaloneSearchBox } from "@react-google-maps/api";
 import { useRef, useState } from "react";
 import { useSetRecoilState } from "recoil";
 import authScreenAtom from "../atoms/authAtom";
@@ -166,10 +166,7 @@ const Signupnew = () => {
                 </FormControl>
                 <FormControl isRequired>
                   <FormLabel>Location</FormLabel>
-                  <LoadScript
-                    googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY}
-                    libraries={["places"]}
-                  >
+                
                     <StandaloneSearchBox
                       onLoad={(ref) => (placesRef.current = ref)}
                       onPlacesChanged={() => {
@@ -187,7 +184,6 @@ const Signupnew = () => {
                         placeholder="Enter your location"
                       />
                     </StandaloneSearchBox>
-                  </LoadScript>
                   <ErrorMessage
                     name="location"
                     component="div"
