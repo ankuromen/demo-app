@@ -28,7 +28,7 @@ import {
   PopoverHeader,
   PopoverBody,
 } from "@chakra-ui/react";
-import { StandaloneSearchBox, LoadScript } from "@react-google-maps/api";
+import { StandaloneSearchBox } from "@react-google-maps/api";
 import { useCallback, useEffect, useRef, useState } from "react";
 import usePreviewImg from "../hooks/usePreviewImg";
 import { BsFillImageFill } from "react-icons/bs";
@@ -103,8 +103,15 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
   const [requireApproval, setRequireApproval] = useState(false);
   const [isUnlimited, setIsUnlimited] = useState(true);
   const inputRef = useRef();
-  const libraries = ["places"];
+  const handlePlaceChanged = async () => {
+    const [place] = await inputRef.current.getPlaces();
 
+    if (place) {
+      console.log(place.geometry.location.lat());
+      console.log(place.geometry.location.lng());
+      setVenue(place.formatted_address);
+    }
+  };
   useEffect(() => {
     if (createPostOpen) {
       onOpen();
@@ -129,17 +136,9 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
 
   function onCloseCreate() {
     closeCreate();
-    setCreatePostOpen(!createPostOpen);
+    setCreatePostOpen && setCreatePostOpen(!createPostOpen);
   }
-  const handlePlaceChanged = async () => {
-    const [place] = await inputRef.current.getPlaces();
 
-    if (place) {
-      console.log(place.geometry.location.lat());
-      console.log(place.geometry.location.lng());
-      setVenue(place.formatted_address);
-    }
-  };
   // const handlePlaceChanged = async () => {
   //   const [place] = await inputRef.current.getPlaces()[0];
 
@@ -403,15 +402,14 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
               {["Physical", "Hybrid"].includes(eventType) && (
                 <FormControl isRequired>
                   <FormLabel>Location</FormLabel>
-
                   <StandaloneSearchBox
                     onLoad={(ref) => (inputRef.current = ref)}
                     onPlacesChanged={handlePlaceChanged}
                   >
                     <Input
                       type="text"
-                      placeholder=""
-                      value={venue}
+                      style={{ width: "100%" }}
+                      placeholder="Venue"
                       onChange={(e) => setVenue(e.target.value)}
                     />
                   </StandaloneSearchBox>

@@ -8,7 +8,6 @@ import {
   Heading,
   IconButton,
   Input,
-  InputRightElement,
   Link,
   Select,
   Stack,

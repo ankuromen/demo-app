@@ -1,13 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import { Box, Flex, Grid, Spinner, Text } from "@chakra-ui/react";
+import { Box, Flex, Grid, Select, Spinner, Text } from "@chakra-ui/react";
 import Post from "../components/Post";
 import useShowToast from "../hooks/useShowToast";
 import SearchBar from "../components/SearchBar";
 import postsAtom from "../atoms/postsAtom";
 import userAtom from "../atoms/userAtom";
-// import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -27,6 +26,11 @@ const DiscoverPage = () => {
   const [user] = useRecoilState(userAtom);
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState(null);
+  const [locationArray, setLocationArray] = useState([]);
+  const categories = ["Music", "Technology", "Business", "Networking"];
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [filteredPosts, setFilteredPosts] = useState([]);
   const locations = [
     { key: "operaHouse", location: { lat: -33.8567844, lng: 151.213108 } },
     { key: "tarongaZoo", location: { lat: -33.8472767, lng: 151.2188164 } },
@@ -65,9 +69,10 @@ const DiscoverPage = () => {
     const getAllEvents = async () => {
       try {
         setLoading(true);
-        setPosts([]); // Clear posts before fetching
+        setPosts([]);
         const { data } = await axios.get("/api/posts/all");
         setPosts(data);
+        setFilteredPosts(data);
         if (data.error) {
           showToast("Error", data.error, "error");
           return;
@@ -80,8 +85,37 @@ const DiscoverPage = () => {
     };
 
     getAllEvents();
-  }, [setPosts, showToast]);
+  }, []);
 
+  useEffect(() => {
+    const locations = [];
+    posts?.forEach((post) => {
+      if (!locations.includes(post.venue)) {
+        locations.push(post.venue);
+      }
+      setLocationArray(locations);
+    });
+  }, [posts]);
+
+  useEffect(() => {
+    let filteredPosts = posts;
+
+    if (selectedLocation) {
+      filteredPosts = filteredPosts.filter(
+        (post) => post.venue === selectedLocation
+      );
+    }
+
+    if (selectedCategory) {
+      filteredPosts = filteredPosts.filter(
+        (post) => post.eventType === selectedCategory
+      );
+    }
+
+    setFilteredPosts(filteredPosts);
+  }, [selectedLocation, selectedCategory]);
+
+  console.log(selectedCategory);
   return (
     <Box mx="auto" width="80%" textAlign="center">
       <SearchBar onSearch={handleSearch} />
@@ -90,6 +124,32 @@ const DiscoverPage = () => {
           <pre>{results}</pre>
         </Box>
       )}
+      <Flex gap={10} mt={2}>
+        <Select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+        >
+          <option value="">Select Event Category</option>
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </Select>
+        <Select
+          placeholder="Select Location"
+          filled
+          value={selectedLocation}
+          onChange={(e) => setSelectedLocation(e.target.value)}
+        >
+          {locationArray.map((location) => (
+            <option key={location} value={location}>
+              {location}
+            </option>
+          ))}
+        </Select>
+      </Flex>
+
       <Grid
         gridTemplateColumns={{ base: "1fr", md: "1fr 2fr" }}
         gap="10"
@@ -102,8 +162,8 @@ const DiscoverPage = () => {
             zoom={13}
             style={{
               maxHeight: "60vh",
-              height:'60vh',
-              borderRadius:'5%'
+              height: "60vh",
+              borderRadius: "5%",
             }}
           >
             <TileLayer
@@ -149,7 +209,7 @@ const DiscoverPage = () => {
 
           <Box>
             {!loading &&
-              posts?.map((post) => (
+              filteredPosts?.map((post) => (
                 <Post key={post._id} post={post} postedBy={post.postedBy} />
               ))}
           </Box>
