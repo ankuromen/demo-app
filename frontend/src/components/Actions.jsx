@@ -16,8 +16,6 @@ import {
   PopoverBody,
   PopoverCloseButton,
   PopoverContent,
-  PopoverFooter,
-  PopoverHeader,
   PopoverTrigger,
   Portal,
   Text,
@@ -44,12 +42,13 @@ const Actions = ({ post }) => {
   const showToast = useShowToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const currentDate = parseISO(new Date().toISOString());
+ 
   const eventDate = new Date(post.startDate);
   eventDate.setMinutes(post.startTime.split(":")[1]);
+  eventDate.setHours(post.startTime.split(":")[0]);
+
   const isEventAfter = isAfter(eventDate, currentDate);
-  // console.log(isEventAfter);
-  // console.log(eventDate);
-  // console.log(currentDate);
+
 
   const handleLikeAndUnlike = async () => {
     if (!user)

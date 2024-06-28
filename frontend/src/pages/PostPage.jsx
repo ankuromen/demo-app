@@ -20,6 +20,7 @@ import postsAtom from "../atoms/postsAtom";
 import JoinEvent from "../components/JoinEvent";
 
 const PostPage = (post) => {
+  
   const { user, loading } = useGetUserProfile();
   const [posts, setPosts] = useRecoilState(postsAtom);
   const showToast = useShowToast();

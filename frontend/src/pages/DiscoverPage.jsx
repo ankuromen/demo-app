@@ -1,7 +1,15 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import { Box, Flex, Grid, Select, Spinner, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Grid,
+  Input,
+  Select,
+  Spinner,
+  Text,
+} from "@chakra-ui/react";
 import Post from "../components/Post";
 import useShowToast from "../hooks/useShowToast";
 import SearchBar from "../components/SearchBar";
@@ -10,6 +18,7 @@ import userAtom from "../atoms/userAtom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import { isAfter, isBefore, parseISO, setHours, setMinutes } from "date-fns";
 
 // Fix icon issue with leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -30,6 +39,10 @@ const DiscoverPage = () => {
   const categories = ["Music", "Technology", "Business", "Networking"];
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [startDate, setStartDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [endTime, setEndTime] = useState("");
   const [filteredPosts, setFilteredPosts] = useState([]);
   const locations = [
     { key: "operaHouse", location: { lat: -33.8567844, lng: 151.213108 } },
@@ -105,17 +118,57 @@ const DiscoverPage = () => {
         (post) => post.venue === selectedLocation
       );
     }
-
     if (selectedCategory) {
       filteredPosts = filteredPosts.filter(
         (post) => post.eventType === selectedCategory
       );
     }
+    if (startDate && !startTime) {
+      filteredPosts = filteredPosts.filter((post) =>
+        isAfter(
+          new Date(post.startDate),
+          parseISO(new Date(startDate).toISOString())
+        )
+      );
+    }
+    if (startDate && startTime) {
+      filteredPosts = filteredPosts.filter((post) => {
+        const eventDate = new Date(post.startDate);
+        eventDate.setMinutes(post.startTime.split(":")[1]);
+        eventDate.setHours(post.startTime.split(":")[0]);
+        const startDateTime = parseISO(`${startDate}T${startTime}`);
+        return isAfter(eventDate, startDateTime);
+      });
+    }
+    if (endDate && !endTime) {
+      filteredPosts = filteredPosts.filter((post) =>
+        isBefore(
+          new Date(post.endDate),
+          parseISO(new Date(endDate).toISOString())
+        )
+      );
+    }
+    if (endDate && endTime) {
+      filteredPosts = filteredPosts.filter((post) => {
+        const eventEndDate = new Date(post.startDate);
+        eventEndDate.setMinutes(post.endTime.split(":")[1]);
+        eventEndDate.setHours(post.endTime.split(":")[0]);
+        const endDateTime = parseISO(`${endDate}T${endTime}`);
+        return isBefore(eventEndDate, endDateTime);
+      });
+    }
 
     setFilteredPosts(filteredPosts);
-  }, [selectedLocation, selectedCategory]);
+  }, [
+    posts,
+    selectedLocation,
+    selectedCategory,
+    startDate,
+    startTime,
+    endDate,
+    endTime,
+  ]);
 
-  console.log(selectedCategory);
   return (
     <Box mx="auto" width="80%" textAlign="center">
       <SearchBar onSearch={handleSearch} />
@@ -124,7 +177,39 @@ const DiscoverPage = () => {
           <pre>{results}</pre>
         </Box>
       )}
-      <Flex gap={10} mt={2}>
+      <Flex gap={10} mt={2} alignItems={"center"}>
+        <Text fontWeight={"bold"} color={"red"}>
+          Start
+        </Text>
+        <Input
+          type="date"
+          w={"60%"}
+          value={startDate}
+          min={new Date().toISOString().split("T")[0]}
+          onChange={(e) => setStartDate(e.target.value)}
+        />
+        <Input
+          type="time"
+          w={"40%"}
+          value={startTime}
+          onChange={(e) => setStartTime(e.target.value)}
+        />
+        <Text fontWeight={"bold"} color={"red"}>
+          End
+        </Text>
+        <Input
+          type="date"
+          value={endDate}
+          min={startDate}
+          w={"60%"}
+          onChange={(e) => setEndDate(e.target.value)}
+        />
+        <Input
+          type="time"
+          value={endTime}
+          w={"40%"}
+          onChange={(e) => setEndTime(e.target.value)}
+        />
         <Select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
