@@ -1,4 +1,11 @@
-import { Button, Flex, Image, Link, useColorMode } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Image,
+  Link,
+  Text,
+  useColorMode,
+} from "@chakra-ui/react";
 import { AiOutlineStock } from "react-icons/ai";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
@@ -9,16 +16,26 @@ import { FiLogOut } from "react-icons/fi";
 import useLogout from "../hooks/useLogout";
 import authScreenAtom from "../atoms/authAtom";
 import { BsFillChatQuoteFill } from "react-icons/bs";
-import { MdOutlineSettings,MdOutlineExplore } from "react-icons/md";
+import { MdOutlineSettings, MdOutlineExplore } from "react-icons/md";
 import { AiOutlineFileSync } from "react-icons/ai";
 import { CiCalendar } from "react-icons/ci";
+import { FaAngleDown } from "react-icons/fa6";
+import { useEffect, useState } from "react";
+import LocationSettingModal from "./LocationSettingModal";
 
 const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const user = useRecoilValue(userAtom);
   const logout = useLogout();
   const setAuthScreen = useSetRecoilState(authScreenAtom);
+  const [locationSettingsOpen, setLocationSettingsOpen] = useState(false);
 
+  useEffect(() => {
+    if (user && !user?.selectedLocation) {
+      setLocationSettingsOpen(true);
+    }
+  }, [user]);
+  
   return (
     <Flex
       justifyContent={"space-between"}
@@ -57,6 +74,27 @@ const Header = () => {
 
       {user && (
         <Flex alignItems={"center"} gap={4}>
+          <Flex
+            alignItems={"center"}
+            gap={2}
+            onClick={() => setLocationSettingsOpen(!locationSettingsOpen)}
+            cursor={"pointer"}
+          >
+            <FaAngleDown />
+            <Text>
+              {" "}
+              {user?.selectedLocation
+                ? user.selectedLocation
+                : "Select Location"}
+            </Text>
+          </Flex>
+          {user && (
+            <LocationSettingModal
+              locationSettingsOpen={locationSettingsOpen}
+              setLocationSettingsOpen={setLocationSettingsOpen}
+              user={user}
+            />
+          )}
           <Link as={RouterLink} to={`/${user.username}`}>
             <RxAvatar size={24} />
           </Link>

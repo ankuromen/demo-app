@@ -122,6 +122,7 @@ const signupUser = async (req, res) => {
         profilePic: newUser.profilePic,
         notificationsEnabled: newUser.notificationsEnabled,
         soloOrganizer: newUser.soloOrganizer,
+        selectedLocation: newUser.selectedLocation,
       });
     } else {
       res.status(400).json({ error: "Invalid user data" });
@@ -168,6 +169,7 @@ const loginUser = async (req, res) => {
       tiktok: user.tiktok,
       website: user.website,
       soloOrganizer: user.soloOrganizer,
+      selectedLocation: user.selectedLocation,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -236,7 +238,6 @@ const updateUser = async (req, res) => {
     website,
   } = req.body;
   let { profilePic } = req.body;
-  console.log(req.body);
   const userId = req.user._id;
   try {
     let user = await User.findById(userId);
@@ -506,6 +507,22 @@ const removeAdmins = async (req, res) => {
     res.status(500).json({ error: "User Not Found" });
   }
 };
+const updateSelectedLocation = async (req, res) => {
+  const { userId, selectedLocation } = req.body;
+  if (userId) {
+    try {
+      let user = await User.findById(userId);
+      if (!user) return res.status(400).json({ error: "User not found" });
+      user.selectedLocation = selectedLocation;
+      await user.save();
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({ error: "Server Error" });
+    }
+  } else {
+    res.status(500).json({ error: "User Not Found" });
+  }
+};
 export {
   signupUser,
   loginUser,
@@ -522,4 +539,5 @@ export {
   getSettings,
   addAdmins,
   removeAdmins,
+  updateSelectedLocation,
 };

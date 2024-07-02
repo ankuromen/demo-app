@@ -14,7 +14,8 @@ import {
   updateSetting,
   getSettings,
   addAdmins,
-  removeAdmins
+  removeAdmins,
+  updateSelectedLocation
 } from "../controllers/userController.js";
 import protectRoute from "../middlewares/protectRoute.js";
 
@@ -35,5 +36,6 @@ router.post("/update-settings", protectRoute, updateSetting);
 router.get("/settings", protectRoute, getSettings);
 router.post("/add-admins", protectRoute, addAdmins);
 router.post("/remove-admins", protectRoute, removeAdmins);
+router.post("/update-selectedlocation", protectRoute, updateSelectedLocation);
 
 export default router;

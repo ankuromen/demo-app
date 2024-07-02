@@ -97,9 +97,9 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    userSettings:{
-      
-    }
+    selectedLocation: {
+      type: String,
+    },
   },
   {
     timestamps: true,
