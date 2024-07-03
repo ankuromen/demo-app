@@ -87,7 +87,7 @@ function App() {
           />
           <Route
             path="/discover"
-            element={user ? <DiscoverPage/>: <Navigate to="/auth" />}
+            element={user ? <DiscoverPage /> : <Navigate to="/auth" />}
           />
           <Route
             path="/create"
