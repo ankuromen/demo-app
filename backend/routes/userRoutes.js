@@ -15,7 +15,9 @@ import {
   getSettings,
   addAdmins,
   removeAdmins,
-  updateSelectedLocation
+  updateSelectedLocation,
+  updateUserEmail,
+  updateUserPassword,
 } from "../controllers/userController.js";
 import protectRoute from "../middlewares/protectRoute.js";
 
@@ -30,6 +32,8 @@ router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 router.post("/follow/:id", protectRoute, followUnFollowUser); // Toggle state(follow/unfollow)
 router.put("/update/:id", protectRoute, updateUser);
+router.put("/update-email/:id", protectRoute, updateUserEmail);
+router.put("/update-password", protectRoute, updateUserPassword);
 router.put("/freeze", protectRoute, freezeAccount);
 router.post("/send-email", protectRoute, sendEmails);
 router.post("/update-settings", protectRoute, updateSetting);
@@ -37,5 +41,6 @@ router.get("/settings", protectRoute, getSettings);
 router.post("/add-admins", protectRoute, addAdmins);
 router.post("/remove-admins", protectRoute, removeAdmins);
 router.post("/update-selectedlocation", protectRoute, updateSelectedLocation);
+
 
 export default router;

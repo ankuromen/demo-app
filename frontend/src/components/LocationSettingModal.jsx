@@ -29,7 +29,6 @@ const LocationSettingModal = ({
   );
   const inputRef = useRef();
   const setUser = useSetRecoilState(userAtom);
-  console.log(user);
   const handlePlaceChanged = async () => {
     const [place] = await inputRef.current.getPlaces();
 
@@ -62,8 +61,6 @@ const LocationSettingModal = ({
   const closeLocation = () => {
     setLocationSettingsOpen && setLocationSettingsOpen(!locationSettingsOpen);
   };
-  console.log(locationSettingsOpen);
-
   return (
     <Modal isOpen={locationSettingsOpen} onClose={closeLocation} isCentered>
       <ModalOverlay />

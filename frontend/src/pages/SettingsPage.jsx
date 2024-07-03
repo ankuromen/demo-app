@@ -1,4 +1,3 @@
-import FreezeAccount from "../components/Settings/FreezeAccount";
 import {
   Box,
   Flex,
@@ -8,11 +7,7 @@ import {
   Grid,
   useColorModeValue,
 } from "@chakra-ui/react";
-import {
-  Route,
-  NavLink,
-  Routes,
-} from "react-router-dom";
+import { Route, NavLink, Routes } from "react-router-dom";
 import { LuBadgeDollarSign } from "react-icons/lu";
 import {
   MdOutlineSettingsInputComponent,
@@ -26,9 +21,15 @@ import Payment from "../components/Settings/Payment";
 import Admins from "../components/Settings/Admins";
 import Embed from "../components/Settings/Embed";
 import EvntiqPlus from "../components/Settings/EvntiqPlus";
+import AccountSettings from "../components/Settings/AccountSettings";
 
 export const SettingsPage = () => {
   const menuItems = [
+    {
+      label: "Account",
+      path: "/settings/account",
+      icon: <MdMotionPhotosPaused />,
+    },
     {
       label: "Options",
       key: "options",
@@ -58,11 +59,6 @@ export const SettingsPage = () => {
       key: "evntiq-plus",
       icon: <MdOutlineWorkspacePremium />,
       path: "/settings/evntiq-plus",
-    },
-    {
-      label: "Account",
-      path: "/settings/freeze-account",
-      icon: <MdMotionPhotosPaused />,
     },
   ];
   return (
@@ -120,7 +116,7 @@ export const SettingsPage = () => {
                 color={"gray.500"}
                 _activeLink={{
                   fontWeight: "bold",
-                  color:useColorModeValue( "gray.800",'white'),
+                  color: useColorModeValue("gray.800", "white"),
                 }}
                 _hover={{ textDecoration: "none" }}
               >
@@ -139,7 +135,7 @@ export const SettingsPage = () => {
           <Route path="/admins" element={<Admins />} />
           <Route path="/embed" element={<Embed />} />
           <Route path="/Evntiq-plus" element={<EvntiqPlus />} />
-          <Route path="/freeze-account" element={<FreezeAccount />} />
+          <Route path="/account" element={<AccountSettings />} />
         </Routes>
       </Box>
     </Grid>

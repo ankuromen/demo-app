@@ -7,6 +7,7 @@ import { v2 as cloudinary } from "cloudinary";
 import mongoose from "mongoose";
 import nodemailer from "nodemailer";
 import { ObjectId } from "mongodb";
+const bcryptsalt = await bcrypt.genSalt(10);
 
 const getAllUsers = async (req, res) => {
   try {
@@ -69,8 +70,7 @@ const signupUser = async (req, res) => {
     if (user) {
       return res.status(400).json({ error: "User already exists" });
     }
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, bcryptsalt);
 
     const newUser = new User({
       name,
@@ -223,9 +223,7 @@ const followUnFollowUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const {
     name,
-    email,
     username,
-    password,
     bio,
     interests,
     location,
@@ -248,12 +246,6 @@ const updateUser = async (req, res) => {
         .status(400)
         .json({ error: "You cannot update other user's profile" });
 
-    if (password) {
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
-      user.password = hashedPassword;
-    }
-
     if (profilePic) {
       if (user.profilePic) {
         await cloudinary.uploader.destroy(
@@ -266,7 +258,6 @@ const updateUser = async (req, res) => {
     }
 
     user.name = name || user.name;
-    user.email = email || user.email;
     user.username = username || user.username;
     user.profilePic = profilePic || user.profilePic;
     user.bio = bio || user.bio;
@@ -523,6 +514,54 @@ const updateSelectedLocation = async (req, res) => {
     res.status(500).json({ error: "User Not Found" });
   }
 };
+
+const updateUserEmail = async (req, res) => {
+  const { userId, email } = req.body;
+  if (userId) {
+    try {
+      let user = await User.findById(userId);
+      if (!user) return res.status(400).json({ error: "User not found" });
+      if (req.params.id !== userId.toString())
+        return res
+          .status(400)
+          .json({ error: "You cannot update other user's profile" });
+      user.email = email;
+      await user.save();
+      user.password = null;
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({ error: "Server Error" });
+    }
+  }
+};
+
+const updateUserPassword = async (req, res) => {
+  const { userId, password, newPassword } = req.body;
+  try {
+    let user = await User.findById(userId);
+    if (!user) return res.status(400).json({ error: "User not found" });
+    console.log(user?.password);
+    if (password) {
+      const isPasswordCorrect = await bcrypt.compare(
+        password,
+        user?.password || ""
+      );
+      if (!isPasswordCorrect) {
+        return res.status(400).json({ error: "Incorrect Password" });
+      }
+      if (isPasswordCorrect === true && newPassword) {
+        const hashedPassword = await bcrypt.hash(newPassword, bcryptsalt);
+        user.password = hashedPassword;
+        await user.save();
+      }
+      user.password = null;
+      res.status(200).json(user);
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
 export {
   signupUser,
   loginUser,
@@ -540,4 +579,6 @@ export {
   addAdmins,
   removeAdmins,
   updateSelectedLocation,
+  updateUserEmail,
+  updateUserPassword,
 };

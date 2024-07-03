@@ -23,9 +23,7 @@ export default function UpdateProfilePage() {
   const [inputs, setInputs] = useState({
     name: user.name,
     username: user.username,
-    email: user.email,
     bio: user.bio,
-    password: "",
     interests: user.interests,
     location: user.location,
     occupation: user.occupation,
@@ -87,6 +85,7 @@ export default function UpdateProfilePage() {
       setUpdating(false);
     }
   };
+
   return (
     <form onSubmit={handleSubmit}>
       <Flex align={"center"} justify={"center"} my={6}>
@@ -146,16 +145,7 @@ export default function UpdateProfilePage() {
               type="text"
             />
           </FormControl>
-          <FormControl>
-            <FormLabel>Email address</FormLabel>
-            <Input
-              placeholder="your-email@example.com"
-              value={inputs.email}
-              onChange={(e) => setInputs({ ...inputs, email: e.target.value })}
-              _placeholder={{ color: "gray.500" }}
-              type="email"
-            />
-          </FormControl>
+          
           <FormControl>
             <FormLabel>Bio</FormLabel>
             <Input
@@ -284,18 +274,7 @@ export default function UpdateProfilePage() {
               type="text"
             />
           </FormControl>
-          <FormControl>
-            <FormLabel>Password</FormLabel>
-            <Input
-              placeholder="password"
-              value={inputs.password}
-              onChange={(e) =>
-                setInputs({ ...inputs, password: e.target.value })
-              }
-              _placeholder={{ color: "gray.500" }}
-              type="password"
-            />
-          </FormControl>
+          
           <Stack spacing={6} direction={["column", "row"]}>
             <Button
               bg={"red.400"}

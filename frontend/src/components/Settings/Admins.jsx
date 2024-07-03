@@ -19,7 +19,6 @@ import {
   Badge,
   HStack,
   VStack,
-  useToast,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { useEffect, useState } from "react";
@@ -64,7 +63,6 @@ const Admins = () => {
     }
   };
   const isObjectInArray = (array, newAdmin) => {
-    console.log("array", array);
     return array.some((item) => item.userid === newAdmin.userid);
   };
 
@@ -80,7 +78,6 @@ const Admins = () => {
     };
 
     setSelectedUsers((prevItems) => {
-      console.log(prevItems);
       if (!isObjectInArray(prevItems, newAdmin)) {
         return [...prevItems, newAdmin];
       }
@@ -114,7 +111,6 @@ const Admins = () => {
       showToast("error", "Something went wrong", "error");
     }
   };
-  console.log("selectedUsers", selectedUsers);
 
   return (
     <>

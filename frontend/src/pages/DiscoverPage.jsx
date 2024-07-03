@@ -42,7 +42,7 @@ const DiscoverPage = () => {
   const [startDate, setStartDate] = useState("");
   const [startTime, setStartTime] = useState("00:00");
   const [endDate, setEndDate] = useState("");
-  const [endTime, setEndTime] = useState("00:00");
+  const [endTime, setEndTime] = useState("23:59");
   const [filteredPosts, setFilteredPosts] = useState([]);
   const locations = [
     { key: "operaHouse", location: { lat: -33.8567844, lng: 151.213108 } },
@@ -208,7 +208,6 @@ const DiscoverPage = () => {
         <Input
           type="time"
           value={endTime}
-          defaultValue={"00:00"}
           w={"40%"}
           onChange={(e) => setEndTime(e.target.value)}
         />
