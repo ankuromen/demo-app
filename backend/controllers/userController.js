@@ -540,7 +540,6 @@ const updateUserPassword = async (req, res) => {
   try {
     let user = await User.findById(userId);
     if (!user) return res.status(400).json({ error: "User not found" });
-    console.log(user?.password);
     if (password) {
       const isPasswordCorrect = await bcrypt.compare(
         password,

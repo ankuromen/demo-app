@@ -1,8 +1,17 @@
 import mongoose from "mongoose";
 
 const eventAnalyticsSchema = new mongoose.Schema({
-  eventid: { type: mongoose.Schema.Types.ObjectId, required: true, unique: true, ref: "Event" },
-  postedBy: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" }, // new field
+  eventid: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    unique: true,
+    ref: "Post",
+  },
+  postedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "User",
+  }, // new field
   totalSales: { type: Number, required: true },
   averageAge: { type: Number, required: true },
   numberOfMales: { type: Number, required: true },
