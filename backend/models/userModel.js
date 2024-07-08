@@ -100,6 +100,14 @@ const userSchema = mongoose.Schema(
     selectedLocation: {
       type: String,
     },
+    selectedLocationCord: {
+      lat: {
+        type: Number,
+      },
+      long: {
+        type: Number,
+      },
+    },
   },
   {
     timestamps: true,

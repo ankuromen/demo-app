@@ -499,12 +499,19 @@ const removeAdmins = async (req, res) => {
   }
 };
 const updateSelectedLocation = async (req, res) => {
-  const { userId, selectedLocation } = req.body;
+  const {
+    userId,
+    selectedLocation,
+    selectedLocationLat,
+    selectedLocationLong,
+  } = req.body;
   if (userId) {
     try {
       let user = await User.findById(userId);
       if (!user) return res.status(400).json({ error: "User not found" });
       user.selectedLocation = selectedLocation;
+      user.selectedLocationCord.lat = selectedLocationLat;
+      user.selectedLocationCord.long = selectedLocationLong;
       await user.save();
       res.status(200).json(user);
     } catch (error) {

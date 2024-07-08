@@ -36,9 +36,15 @@ const DiscoverPage = () => {
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState(null);
   const [locationArray, setLocationArray] = useState([]);
+  const [citiesArray, setCitiesArray] = useState([]);
+  const [statesArray, setStatesArray] = useState([]);
+  const [countriesArray, setCountriesArray] = useState([]);
   const categories = ["Music", "Technology", "Business", "Networking"];
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(null);
+  const [selectedState, setSelectedState] = useState(null);
+  const [selectedCountry, setSelectedCountry] = useState(null);
   const [startDate, setStartDate] = useState("");
   const [startTime, setStartTime] = useState("00:00");
   const [endDate, setEndDate] = useState("");
@@ -64,7 +70,7 @@ const DiscoverPage = () => {
     { key: "darlingHarbour", location: { lat: -33.87488, lng: 151.1987113 } },
     { key: "barangaroo", location: { lat: -33.8605523, lng: 151.1972205 } },
   ];
-
+  console.log(citiesArray);
   const handleSearch = (searchData) => {
     const { filters } = searchData;
     // Assuming you want to format and display search results
@@ -101,12 +107,22 @@ const DiscoverPage = () => {
   }, []);
 
   useEffect(() => {
-    const locations = [];
+    const cities = [];
+    const states = [];
+    const countries = [];
     posts?.forEach((post) => {
-      if (!locations.includes(post.venue)) {
-        locations.push(post.venue);
+      if (!cities.includes(post.city)) {
+        post.city && cities.push(post.city);
       }
-      setLocationArray(locations);
+      setCitiesArray(cities);
+      if (!states.includes(post.state)) {
+        post.state && states.push(post.state);
+      }
+      setStatesArray(states);
+      if (!countries.includes(post.country)) {
+        post.country && countries.push(post.country);
+      }
+      setCountriesArray(countries);
     });
   }, [posts]);
 
@@ -116,6 +132,21 @@ const DiscoverPage = () => {
     if (selectedLocation) {
       filteredPosts = filteredPosts.filter(
         (post) => post.venue === selectedLocation
+      );
+    }
+    if (selectedCity) {
+      filteredPosts = filteredPosts.filter(
+        (post) => post.city === selectedCity
+      );
+    }
+    if (selectedState) {
+      filteredPosts = filteredPosts.filter(
+        (post) => post.state === selectedState
+      );
+    }
+    if (selectedCountry) {
+      filteredPosts = filteredPosts.filter(
+        (post) => post.country === selectedCountry
       );
     }
     if (selectedCategory) {
@@ -162,6 +193,9 @@ const DiscoverPage = () => {
   }, [
     posts,
     selectedLocation,
+    selectedCity,
+    selectedState,
+    selectedCountry,
     selectedCategory,
     startDate,
     startTime,
@@ -222,7 +256,7 @@ const DiscoverPage = () => {
             </option>
           ))}
         </Select>
-        <Select
+        {/* <Select
           placeholder="Select Location"
           filled
           value={selectedLocation}
@@ -231,6 +265,42 @@ const DiscoverPage = () => {
           {locationArray.map((location) => (
             <option key={location} value={location}>
               {location}
+            </option>
+          ))}
+        </Select> */}
+        <Select
+          placeholder="Select City"
+          filled
+          value={selectedCity}
+          onChange={(e) => setSelectedCity(e.target.value)}
+        >
+          {citiesArray.map((city) => (
+            <option key={city} value={city}>
+              {city}
+            </option>
+          ))}
+        </Select>
+        <Select
+          placeholder="Select State"
+          filled
+          value={selectedState}
+          onChange={(e) => setSelectedState(e.target.value)}
+        >
+          {statesArray.map((state) => (
+            <option key={state} value={state}>
+              {state}
+            </option>
+          ))}
+        </Select>
+        <Select
+          placeholder="Select Country"
+          filled
+          value={selectedCountry}
+          onChange={(e) => setSelectedCountry(e.target.value)}
+        >
+          {countriesArray.map((country) => (
+            <option key={country} value={country}>
+              {country}
             </option>
           ))}
         </Select>

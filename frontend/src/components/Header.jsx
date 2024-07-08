@@ -73,7 +73,7 @@ const Header = () => {
 			</Text> */}
 
       {user && (
-        <Flex alignItems={"center"} gap={4}>
+        <Flex alignItems={"center"} gap={4} >
           <Flex
             alignItems={"center"}
             gap={2}

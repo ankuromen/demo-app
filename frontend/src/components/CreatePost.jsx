@@ -37,8 +37,23 @@ import userAtom from "../atoms/userAtom";
 import useShowToast from "../hooks/useShowToast";
 import postsAtom from "../atoms/postsAtom";
 import { useParams } from "react-router-dom";
-import { debounce } from "lodash";
-
+import {
+  setKey,
+  setDefaults,
+  setLanguage,
+  setRegion,
+  fromAddress,
+  fromLatLng,
+  fromPlaceId,
+  setLocationType,
+  geocode,
+  RequestType,
+} from "react-geocode";
+setDefaults({
+  key: import.meta.env.VITE_GOOGLE_GEOLOCATION_KEY, // Your API key here.
+  language: "en", // Default language for responses.
+  region: "es", // Default region for responses.
+});
 const MAX_CHAR = 500;
 const MAX_NAME = 100;
 const timeZones = [
@@ -92,6 +107,8 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
   const [endTime, setEndTime] = useState("");
   const [timeZone, setTimeZone] = useState("");
   const [venue, setVenue] = useState("");
+  const [venueLatitude, setVenueLatitude] = useState();
+  const [venueLongitude, setVenueLongitude] = useState();
   const [ticketPrice, setTicketPrice] = useState("");
   const [capacity, setCapacity] = useState("");
   const [eventType, setEventType] = useState("");
@@ -102,14 +119,18 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
   const [ticketSalesStartTime, setTicketSalesStartTime] = useState("");
   const [requireApproval, setRequireApproval] = useState(false);
   const [isUnlimited, setIsUnlimited] = useState(true);
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [country, setCountry] = useState("");
   const inputRef = useRef();
   const handlePlaceChanged = async () => {
     const [place] = await inputRef.current.getPlaces();
 
     if (place) {
-      console.log(place.geometry.location.lat());
-      console.log(place.geometry.location.lng());
+      console.log(place);
       setVenue(place.formatted_address);
+      setVenueLatitude(place.geometry.location.lat());
+      setVenueLongitude(place.geometry.location.lng());
     }
   };
   useEffect(() => {
@@ -124,6 +145,34 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
       setCapacity(9999);
     }
   }, [isUnlimited]);
+
+  useEffect(() => {
+    venueLatitude &&
+      venueLongitude &&
+      geocode(RequestType.LATLNG, `${venueLatitude},${venueLongitude}`, {
+        location_type: "ROOFTOP", // Override location type filter for this request.
+        enable_address_descriptor: true, // Include address descriptor in response.
+      })
+        .then(({ results }) => {
+          // const address = results[0].formatted_address;
+          const { city, state, country } = results[0].address_components.reduce(
+            (acc, component) => {
+              if (component.types.includes("administrative_area_level_3"))
+                acc.city = component.long_name;
+              else if (component.types.includes("administrative_area_level_1"))
+                acc.state = component.long_name;
+              else if (component.types.includes("country"))
+                acc.country = component.long_name;
+              return acc;
+            },
+            {}
+          );
+          setCity(city);
+          setState(state);
+          setCountry(country);
+        })
+        .catch(console.error);
+  }, [venueLatitude, venueLongitude]);
 
   useEffect(() => {
     if (!ticketSalesStartDate) {
@@ -227,6 +276,11 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
           endTime,
           timeZone,
           venue,
+          venueLatitude,
+          venueLongitude,
+          city,
+          state,
+          country,
           meetingLink,
           ticketPrice: isFree ? 0 : ticketPrice, // Set ticket price as 0 if it's free
           capacity,
@@ -257,6 +311,9 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
       setEndTime("");
       setTimeZone("");
       setVenue("");
+      setCity("");
+      setState("");
+      setCountry("");
       setMeetingLink("");
       setTicketPrice("");
       setCapacity("");
@@ -274,6 +331,7 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
     }
     onCloseCreate();
   };
+  console.log(document);
   return (
     <>
       <Button

@@ -45,6 +45,23 @@ import { useNavigate, useParams } from "react-router-dom";
 import { debounce } from "lodash";
 import { BsFillImageFill } from "react-icons/bs";
 
+import {
+  setKey,
+  setDefaults,
+  setLanguage,
+  setRegion,
+  fromAddress,
+  fromLatLng,
+  fromPlaceId,
+  setLocationType,
+  geocode,
+  RequestType,
+} from "react-geocode";
+setDefaults({
+  key: import.meta.env.VITE_GOOGLE_GEOLOCATION_KEY, // Your API key here.
+  language: "en", // Default language for responses.
+  region: "es", // Default region for responses.
+});
 const MAX_CHAR = 500;
 const timeZones = [
   { value: "GMT-12", label: "Baker Island Time (BIKT)" },
@@ -72,6 +89,7 @@ const timeZones = [
   { value: "GMT+9", label: "Japan Standard Time (JST)" },
   { value: "GMT+12", label: "Kiribati Time (Kiritimati Time)" },
 ];
+const categories = ["Music", "Technology", "Business", "Networking"];
 
 const CreateEventPage = () => {
   const [postText, setPostText] = useState("");
@@ -83,7 +101,6 @@ const CreateEventPage = () => {
   const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useRecoilState(postsAtom);
   const { username } = useParams();
-  console.log(user);
 
   // Additional Fields
   const [postName, setPostName] = useState("");
@@ -92,12 +109,13 @@ const CreateEventPage = () => {
   const [endDate, setEndDate] = useState("");
   const [endTime, setEndTime] = useState("");
   const [timeZone, setTimeZone] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [venue, setVenue] = useState("");
+  const [venueLatitude, setVenueLatitude] = useState();
+  const [venueLongitude, setVenueLongitude] = useState();
   const [ticketPrice, setTicketPrice] = useState("");
   const [capacity, setCapacity] = useState("");
   const [eventType, setEventType] = useState("");
-  // const [category, setCategory] = useState("");
-  // const [subCategory, setSubCategory] = useState("");
   const [meetingLink, setMeetingLink] = useState("");
   const [isFree, setIsFree] = useState(true); // State to manage free ticket price
   const [isPrivate, setIsPrivate] = useState(false);
@@ -105,8 +123,10 @@ const CreateEventPage = () => {
   const [ticketSalesStartTime, setTicketSalesStartTime] = useState("");
   const [requireApproval, setRequireApproval] = useState(false);
   const [isUnlimited, setIsUnlimited] = useState(true);
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [country, setCountry] = useState("");
   const inputRef = useRef();
-  const libraries = ["places"];
   const [isEventTypeOpen, setIsEventTypeOpen] = useState(false);
   const {
     isOpen: isOpenEditDescmodal,
@@ -126,6 +146,33 @@ const CreateEventPage = () => {
   }, [isUnlimited]);
 
   useEffect(() => {
+    geocode(RequestType.LATLNG, `${venueLatitude},${venueLongitude}`, {
+      location_type: "ROOFTOP", // Override location type filter for this request.
+      enable_address_descriptor: true, // Include address descriptor in response.
+    })
+      .then(({ results }) => {
+        const address = results[0].formatted_address;
+        console.log(results);
+        const { city, state, country } = results[0].address_components.reduce(
+          (acc, component) => {
+            if (component.types.includes("administrative_area_level_3"))
+              acc.city = component.long_name;
+            else if (component.types.includes("administrative_area_level_1"))
+              acc.state = component.long_name;
+            else if (component.types.includes("country"))
+              acc.country = component.long_name;
+            return acc;
+          },
+          {}
+        );
+        setCity(city);
+        setState(state);
+        setCountry(country);
+      })
+      .catch(console.error);
+  }, [venueLatitude, venueLongitude]);
+
+  useEffect(() => {
     if (!ticketSalesStartDate) {
       setTicketSalesStartDate(new Date().toJSON().split("T")[0]);
       setTicketSalesStartTime(
@@ -137,9 +184,11 @@ const CreateEventPage = () => {
     const [place] = await inputRef.current.getPlaces();
 
     if (place) {
-      console.log(place.geometry.location.lat());
-      console.log(place.geometry.location.lng());
+      // console.log(place.geometry.location.lat());
+      // console.log(place.geometry.location.lng());
       setVenue(place.formatted_address);
+      setVenueLatitude(place.geometry.location.lat());
+      setVenueLongitude(place.geometry.location.lng());
     }
   };
   // const handlePlaceChanged = async () => {
@@ -219,10 +268,15 @@ const CreateEventPage = () => {
           endTime,
           timeZone,
           venue,
+          venueLatitude,
+          venueLongitude,
+          city,
+          state,
+          country,
           meetingLink,
           ticketPrice: isFree ? 0 : ticketPrice, // Set ticket price as 0 if it's free
           capacity,
-          eventType,
+          eventType: selectedCategory,
           ticketSalesStartDate,
           ticketSalesStartTime,
           isPrivate,
@@ -250,6 +304,11 @@ const CreateEventPage = () => {
       setEndTime("");
       setTimeZone("");
       setVenue("");
+      setCity("");
+      setState("");
+      setCountry("");
+      setVenueLatitude();
+      setVenueLongitude();
       setMeetingLink("");
       setTicketPrice("");
       setCapacity("");
@@ -596,7 +655,41 @@ const CreateEventPage = () => {
               </PopoverBody>
             </PopoverContent>
           </Popover>
+          <Flex
+            bg={"gray.200"}
+            borderRadius={"md"}
+            mt={2}
+            flexDir={"column"}
+            p={3}
+            gap={2}
+            w="full"
+          >
+            <Flex
+              flexDir={"row"}
+              alignItems={"center"}
+              justifyContent={"space-between"}
+            >
+              <Flex alignItems={"center"} gap={2}>
+                <CiLocationOn size={20} />
+                <Text fontSize={"lg"} fontWeight={500} color={"gray.600"}>
+                  Event Category
+                </Text>
+              </Flex>
 
+              <Select
+                maxW={"25%"}
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                <option value="">Select Event Category</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </Select>
+            </Flex>
+          </Flex>
           {/* description */}
           <Flex
             bg={"gray.200"}

@@ -64,6 +64,23 @@ const postSchema = mongoose.Schema(
     venue: {
       type: String,
     },
+    venueCord: {
+      lat: {
+        type: Number,
+      },
+      long: {
+        type: Number,
+      },
+    },
+    city: {
+      type: String,
+    },
+    state: {
+      type: String,
+    },
+    country:{
+      type: String,
+    },
     ticketPrice: {
       type: Number,
       required: true,
@@ -91,7 +108,7 @@ const postSchema = mongoose.Schema(
     ticketSalesStartTime: {
       type: String,
     },
-    
+
     checkins: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Tickets",

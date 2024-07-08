@@ -10,13 +10,13 @@ import {
   useDisclosure,
   Button,
   Input,
-  Box,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { StandaloneSearchBox } from "@react-google-maps/api";
 import axios from "axios";
 import { useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
+import useShowToast from "../hooks/useShowToast";
 
 const LocationSettingModal = ({
   locationSettingsOpen,
@@ -27,17 +27,23 @@ const LocationSettingModal = ({
   const [location, setLocation] = useState(
     user.selectedLocation ? user.selectedLocation : ""
   );
+  const [selectedLocationLat, SetselectedLocationLat] = useState();
+  const [selectedLocationLong, SetselectedLocationLong] = useState();
   const inputRef = useRef();
+  const showToast = useShowToast();
   const setUser = useSetRecoilState(userAtom);
   const handlePlaceChanged = async () => {
     const [place] = await inputRef.current.getPlaces();
-
+    console.log(await inputRef.current.getPlaces());
     if (place) {
-      console.log(place.geometry.location.lat());
-      console.log(place.geometry.location.lng());
+      // console.log(place.geometry.location.lat());
+      // console.log(place.geometry.location.lng());
+      SetselectedLocationLat(place.geometry.location.lat())
+      SetselectedLocationLong(place.geometry.location.lng())
       setLocation(place.formatted_address);
     }
   };
+  
   useEffect(() => {
     if (locationSettingsOpen) {
       onOpen();
@@ -49,18 +55,22 @@ const LocationSettingModal = ({
       const res = await axios.post("/api/users/update-selectedlocation", {
         userId: user._id,
         selectedLocation: location,
+        selectedLocationLat: selectedLocationLat,
+        selectedLocationLong: selectedLocationLong,
       });
       localStorage.setItem("user-threads", JSON.stringify(res.data));
       setUser(res.data);
       setLocationSettingsOpen(false);
+      showToast('success',"Location Updated",'success')
     } catch (error) {
-      console.log(error);
+      showToast("success", "Error", "success");
     }
   };
 
   const closeLocation = () => {
     setLocationSettingsOpen && setLocationSettingsOpen(!locationSettingsOpen);
   };
+
   return (
     <Modal isOpen={locationSettingsOpen} onClose={closeLocation} isCentered>
       <ModalOverlay />
@@ -71,6 +81,10 @@ const LocationSettingModal = ({
           <StandaloneSearchBox
             onLoad={(ref) => (inputRef.current = ref)}
             onPlacesChanged={handlePlaceChanged}
+            options={{
+              componentRestrictions: { locality: ["*"] },
+              types: ["(cities)"], // Add this line to filter out non-city results
+            }}
           >
             <Input
               type="text"
