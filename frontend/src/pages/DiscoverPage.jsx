@@ -3,12 +3,14 @@ import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import {
   Box,
+  Button,
   Flex,
   Grid,
   Input,
   Select,
   Spinner,
   Text,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import Post from "../components/Post";
 import useShowToast from "../hooks/useShowToast";
@@ -19,6 +21,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { isAfter, isBefore, parseISO, setHours, setMinutes } from "date-fns";
+import { Link } from "react-router-dom";
 
 // Fix icon issue with leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -70,7 +73,8 @@ const DiscoverPage = () => {
     { key: "darlingHarbour", location: { lat: -33.87488, lng: 151.1987113 } },
     { key: "barangaroo", location: { lat: -33.8605523, lng: 151.1972205 } },
   ];
-  console.log(citiesArray);
+  const { lat, long } = user.selectedLocationCord && user.selectedLocationCord;
+  console.log(filteredPosts);
   const handleSearch = (searchData) => {
     const { filters } = searchData;
     // Assuming you want to format and display search results
@@ -314,7 +318,7 @@ const DiscoverPage = () => {
       >
         <Box>
           <MapContainer
-            center={[-33.8567844, 151.213108]}
+            center={[lat, long]}
             zoom={13}
             style={{
               maxHeight: "60vh",
@@ -326,14 +330,41 @@ const DiscoverPage = () => {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
-            {locations.map((marker, idx) => (
-              <Marker
-                key={idx}
-                position={[marker.location.lat, marker.location.lng]}
-              >
-                <Popup>{marker.key}</Popup>
-              </Marker>
-            ))}
+            {filteredPosts.map(
+              (marker, idx) =>
+                marker?.venueCord && (
+                  <Marker
+                    key={idx}
+                    position={[marker?.venueCord?.lat, marker?.venueCord?.long]}
+                  >
+                    <Popup>
+                      {marker.name}
+                      <br />
+                      Venue : {marker.venue}
+                      <br />
+                      <Link to={`/${user.username}/post/${marker._id}`}>
+                        <Button
+                          size={"xs"}
+                          mt={2}
+                          bg={useColorModeValue("black", "white")}
+                          color={useColorModeValue("white", "black")}
+                          _hover={{
+                            background: useColorModeValue(
+                              "gray.700",
+                              "gray.300"
+                            ),
+                          }}
+                          p={2}
+                          gap={2}
+                          mr={3}
+                        >
+                          More
+                        </Button>
+                      </Link>
+                    </Popup>
+                  </Marker>
+                )
+            )}
           </MapContainer>
           {/* <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY}  >
           <GoogleMap zoom={10}>

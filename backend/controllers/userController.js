@@ -170,6 +170,7 @@ const loginUser = async (req, res) => {
       website: user.website,
       soloOrganizer: user.soloOrganizer,
       selectedLocation: user.selectedLocation,
+      selectedLocationCord:user.selectedLocationCord
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

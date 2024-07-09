@@ -331,7 +331,6 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
     }
     onCloseCreate();
   };
-  console.log(document);
   return (
     <>
       <Button
