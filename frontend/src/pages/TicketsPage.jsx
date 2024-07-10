@@ -18,7 +18,6 @@ import {
   ModalCloseButton,
   useDisclosure,
   Button,
-  Toast,
 } from "@chakra-ui/react";
 import useShowToast from "../hooks/useShowToast.js";
 
@@ -107,7 +106,7 @@ const TicketsPage = () => {
                 )}
               </Text>
             </Box>
-            {ticket.eventid.img && (
+            {ticket.eventid?.img ? (
               <Box
                 w={"25%"}
                 h={"100px "}
@@ -117,8 +116,10 @@ const TicketsPage = () => {
                 objectFit={"contain"}
                 overflow={"hidden"}
               >
-                <Image h={"100%"} w={"100%"} src={ticket.eventid.img} />
+                <Image h={"100%"} w={"100%"} src={ticket.eventid.img ? ticket.eventid.img :""} />
               </Box>
+            ) : (
+              ""
             )}
             <Modal isOpen={isOpen} onClose={onClose} mt={0}>
               <ModalOverlay />
@@ -145,7 +146,7 @@ const TicketsPage = () => {
                   >
                     {selectedTicket && (
                       <Box p={"6"} background={""}>
-                        {selectedTicket.eventid.img && (
+                        {selectedTicket.eventid?.img && (
                           <Box
                             w={"100%"}
                             h={"200px"}
@@ -184,8 +185,8 @@ const TicketsPage = () => {
                           <br />
                           Time : {selectedTicket.ticketDetails.eventtime}
                           <br />
-                          Venue : {selectedTicket.eventid.venue} (
-                          {selectedTicket.eventid.eventType})
+                          Venue : {selectedTicket.eventid?.venue} (
+                          {selectedTicket.eventid?.eventType})
                           <br />
                         </Box>
                         <QRCode

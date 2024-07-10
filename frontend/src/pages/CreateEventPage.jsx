@@ -155,7 +155,7 @@ const CreateEventPage = () => {
         const { city, state, country } = results[0].address_components.reduce(
           (acc, component) => {
             if (component.types.includes("administrative_area_level_3"))
-              acc.city g in = component.long_name;
+              acc.city = component.long_name;
             else if (component.types.includes("administrative_area_level_1"))
               acc.state = component.long_name;
             else if (component.types.includes("country"))
