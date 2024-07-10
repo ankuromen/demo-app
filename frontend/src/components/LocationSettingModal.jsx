@@ -12,7 +12,7 @@ import {
   Input,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { StandaloneSearchBox } from "@react-google-maps/api";
+import { Autocomplete } from "@react-google-maps/api";
 import axios from "axios";
 import { useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
@@ -32,18 +32,16 @@ const LocationSettingModal = ({
   const inputRef = useRef();
   const showToast = useShowToast();
   const setUser = useSetRecoilState(userAtom);
-  const handlePlaceChanged = async () => {
-    const [place] = await inputRef.current.getPlaces();
-    console.log(await inputRef.current.getPlaces());
+
+  const handlePlaceChanged = () => {
+    const place = inputRef.current.getPlace();
     if (place) {
-      // console.log(place.geometry.location.lat());
-      // console.log(place.geometry.location.lng());
-      SetselectedLocationLat(place.geometry.location.lat())
-      SetselectedLocationLong(place.geometry.location.lng())
+      SetselectedLocationLat(place.geometry.location.lat());
+      SetselectedLocationLong(place.geometry.location.lng());
       setLocation(place.formatted_address);
     }
   };
-  
+
   useEffect(() => {
     if (locationSettingsOpen) {
       onOpen();
@@ -61,9 +59,9 @@ const LocationSettingModal = ({
       localStorage.setItem("user-threads", JSON.stringify(res.data));
       setUser(res.data);
       setLocationSettingsOpen(false);
-      showToast('success',"Location Updated",'success')
+      showToast("success", "Location Updated", "success");
     } catch (error) {
-      showToast("success", "Error", "success");
+      showToast("error", "Error", "error");
     }
   };
 
@@ -78,12 +76,11 @@ const LocationSettingModal = ({
         <ModalHeader>Location</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <StandaloneSearchBox
+          <Autocomplete
             onLoad={(ref) => (inputRef.current = ref)}
-            onPlacesChanged={handlePlaceChanged}
+            onPlaceChanged={handlePlaceChanged}
             options={{
-              componentRestrictions: { locality: ["*"] },
-              types: ["(cities)"], // Add this line to filter out non-city results
+              types: ["(cities)"],
             }}
           >
             <Input
@@ -93,7 +90,7 @@ const LocationSettingModal = ({
               value={location}
               onChange={(e) => setLocation(e.target.value)}
             />
-          </StandaloneSearchBox>
+          </Autocomplete>
         </ModalBody>
 
         <ModalFooter>
