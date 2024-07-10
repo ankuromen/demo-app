@@ -152,11 +152,10 @@ const CreateEventPage = () => {
     })
       .then(({ results }) => {
         const address = results[0].formatted_address;
-        console.log(results);
         const { city, state, country } = results[0].address_components.reduce(
           (acc, component) => {
             if (component.types.includes("administrative_area_level_3"))
-              acc.city = component.long_name;
+              acc.city g in = component.long_name;
             else if (component.types.includes("administrative_area_level_1"))
               acc.state = component.long_name;
             else if (component.types.includes("country"))
@@ -180,6 +179,7 @@ const CreateEventPage = () => {
       );
     }
   }, [ticketSalesStartDate]);
+  
   const handlePlaceChanged = async () => {
     const [place] = await inputRef.current.getPlaces();
 

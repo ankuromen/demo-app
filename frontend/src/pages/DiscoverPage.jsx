@@ -12,6 +12,7 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { isPointWithinRadius } from "geolib";
 import Post from "../components/Post";
 import useShowToast from "../hooks/useShowToast";
 import SearchBar from "../components/SearchBar";
@@ -53,30 +54,11 @@ const DiscoverPage = () => {
   const [endDate, setEndDate] = useState("");
   const [endTime, setEndTime] = useState("23:59");
   const [filteredPosts, setFilteredPosts] = useState([]);
-  const locations = [
-    { key: "operaHouse", location: { lat: -33.8567844, lng: 151.213108 } },
-    { key: "tarongaZoo", location: { lat: -33.8472767, lng: 151.2188164 } },
-    { key: "manlyBeach", location: { lat: -33.8209738, lng: 151.2563253 } },
-    { key: "hyderPark", location: { lat: -33.8690081, lng: 151.2052393 } },
-    { key: "theRocks", location: { lat: -33.8587568, lng: 151.2058246 } },
-    { key: "circularQuay", location: { lat: -33.858761, lng: 151.2055688 } },
-    { key: "harbourBridge", location: { lat: -33.852228, lng: 151.2038374 } },
-    { key: "kingsCross", location: { lat: -33.8737375, lng: 151.222569 } },
-    { key: "botanicGardens", location: { lat: -33.864167, lng: 151.216387 } },
-    { key: "museumOfSydney", location: { lat: -33.8636005, lng: 151.2092542 } },
-    { key: "maritimeMuseum", location: { lat: -33.869395, lng: 151.198648 } },
-    {
-      key: "kingStreetWharf",
-      location: { lat: -33.8665445, lng: 151.1989808 },
-    },
-    { key: "aquarium", location: { lat: -33.869627, lng: 151.202146 } },
-    { key: "darlingHarbour", location: { lat: -33.87488, lng: 151.1987113 } },
-    { key: "barangaroo", location: { lat: -33.8605523, lng: 151.1972205 } },
-  ];
+  
   const { lat, long } = user.selectedLocationCord && user.selectedLocationCord;
-  console.log(filteredPosts);
   const handleSearch = (searchData) => {
     const { filters } = searchData;
+    console.log(searchData);
     // Assuming you want to format and display search results
     let response = `
       Event Category: ${filters.category}
@@ -84,7 +66,8 @@ const DiscoverPage = () => {
       Event Date Indicator: ${filters.date}
       Event Hoster Indicator: ${filters.eventHoster}
     `;
-
+    filters.category && setSelectedCategory(filters.category);
+    
     setResults(response);
   };
 
@@ -110,28 +93,11 @@ const DiscoverPage = () => {
     getAllEvents();
   }, []);
 
-  useEffect(() => {
-    const cities = [];
-    const states = [];
-    const countries = [];
-    posts?.forEach((post) => {
-      if (!cities.includes(post.city)) {
-        post.city && cities.push(post.city);
-      }
-      setCitiesArray(cities);
-      if (!states.includes(post.state)) {
-        post.state && states.push(post.state);
-      }
-      setStatesArray(states);
-      if (!countries.includes(post.country)) {
-        post.country && countries.push(post.country);
-      }
-      setCountriesArray(countries);
-    });
-  }, [posts]);
-
-  useEffect(() => {
+  const sortEvents = async () => {
     let filteredPosts = posts;
+    let nearbyPosts = [];
+
+    const selectedLocationCord = user?.selectedLocationCord;
 
     if (selectedLocation) {
       filteredPosts = filteredPosts.filter(
@@ -192,9 +158,54 @@ const DiscoverPage = () => {
         return isBefore(eventEndDate, endDateTime);
       });
     }
+    if (
+      selectedLocationCord &&
+      !selectedLocation &&
+      !selectedCity &&
+      !selectedCity &&
+      !selectedState &&
+      !selectedCountry
+    ) {
+      nearbyPosts = filteredPosts.filter((post) =>
+        isPointWithinRadius(
+          {
+            latitude: user.selectedLocationCord.lat,
+            longitude: user.selectedLocationCord.long,
+          },
+          { latitude: post.venueCord?.lat, longitude: post.venueCord?.long },
+          25000
+        )
+      );
+      setFilteredPosts(nearbyPosts);
+      return;
+    }
 
     setFilteredPosts(filteredPosts);
+  };
+  useEffect(() => {
+    const cities = [];
+    const states = [];
+    const countries = [];
+    posts?.forEach((post) => {
+      if (!cities.includes(post.city)) {
+        post.city && cities.push(post.city);
+      }
+      setCitiesArray(cities);
+      if (!states.includes(post.state)) {
+        post.state && states.push(post.state);
+      }
+      setStatesArray(states);
+      if (!countries.includes(post.country)) {
+        post.country && countries.push(post.country);
+      }
+      setCountriesArray(countries);
+    });
+  }, [posts]);
+
+  useEffect(() => {
+    sortEvents();
   }, [
+    user,
     posts,
     selectedLocation,
     selectedCity,
@@ -206,7 +217,6 @@ const DiscoverPage = () => {
     endDate,
     endTime,
   ]);
-
   return (
     <Box mx="auto" width="80%" textAlign="center">
       <SearchBar onSearch={handleSearch} />
