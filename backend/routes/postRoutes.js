@@ -9,6 +9,7 @@ import {
   getUserPosts,
   checkInPost,
   getAllPosts,
+  searchPosts
 } from "../controllers/postController.js";
 import protectRoute from "../middlewares/protectRoute.js";
 
@@ -23,5 +24,5 @@ router.delete("/:id", protectRoute, deletePost);
 router.put("/like/:id", protectRoute, likeUnlikePost);
 router.put("/reply/:id", protectRoute, replyToPost);
 router.put("/checkin/:id", protectRoute, checkInPost);
-
+router.get("/search/:query", protectRoute, searchPosts);
 export default router;

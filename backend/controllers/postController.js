@@ -250,7 +250,18 @@ const getAllPosts = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+const searchPosts = async (req, res) => {
+  try {
+    const { query } = req.params;
+    
+    // Perform a case-insensitive search for posts where the name matches the query
+    const matchedPosts = await Post.find({ name: { $regex: query, $options: 'i' } });
 
+    res.status(200).json(matchedPosts);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 export {
   createPost,
   getPost,
@@ -261,4 +272,5 @@ export {
   getUserPosts,
   checkInPost,
   getAllPosts,
+  searchPosts
 };

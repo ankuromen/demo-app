@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
+import SearchPostComponent from "../components/SearchPostComponent.jsx";
 import {
   Box,
   Button,
@@ -15,7 +16,7 @@ import {
 import { isPointWithinRadius } from "geolib";
 import Post from "../components/Post";
 import useShowToast from "../hooks/useShowToast";
-import SearchBar from "../components/SearchBar";
+
 import postsAtom from "../atoms/postsAtom";
 import userAtom from "../atoms/userAtom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
@@ -23,8 +24,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { isAfter, isBefore, parseISO, setHours, setMinutes } from "date-fns";
 import { Link } from "react-router-dom";
-import { stringSimilarity } from "string-similarity-js";
-import { filter } from "lodash";
+
 
 // Fix icon issue with leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -59,19 +59,6 @@ const DiscoverPage = () => {
   const [searchLocation, setSearchLocation] = useState("");
 
   const { lat, long } = user.selectedLocationCord && user.selectedLocationCord;
-  const handleSearch = (searchData) => {
-    const { filters } = searchData;
-    // Assuming you want to format and display search results
-    let response = `
-      Event Category: ${filters.category}
-      Event Location: ${filters.location}
-      Event Date Indicator: ${filters.date}
-      Event Hoster Indicator: ${filters.eventHoster}
-    `;
-    filters.category !== "None" && setSelectedCategory(filters.category);
-    filters.location !== "None" && setSearchLocation(filters.location);
-    setResults(response);
-  };
 
   useEffect(() => {
     const getAllEvents = async () => {
@@ -120,18 +107,7 @@ const DiscoverPage = () => {
         (post) => post.country === selectedCountry
       );
     }
-    // // Sort by search location
-    // if (searchLocation) {
-    //   filteredPosts = posts.filter((post) => {
-    //     const similiarity = stringSimilarity(post.venue, searchLocation);
-    //     if (similiarity > 0.1) {
-    //       return true;
-    //     } else {
-    //       return false;
-    //     }
-    //   });
-    //   console.log("search", filteredPosts);
-    // }
+
 
     if (startDate && !startTime) {
       filteredPosts = filteredPosts.filter((post) =>
@@ -247,13 +223,9 @@ const DiscoverPage = () => {
 
   return (
     <Box mx="auto" width="80%" textAlign="center">
-      <SearchBar onSearch={handleSearch} />
-      {results && (
-        <Box p={4} bg="gray.100" mb={4} borderRadius="md">
-          <pre>{results}</pre>
-        </Box>
-      )}
+      <SearchPostComponent />
       <Flex gap={10} mt={2} alignItems={"center"}>
+
         <Text fontWeight={"bold"} color={"red"}>
           Start
         </Text>
@@ -298,18 +270,7 @@ const DiscoverPage = () => {
             </option>
           ))}
         </Select>
-        {/* <Select
-          placeholder="Select Location"
-          filled
-          value={selectedLocation}
-          onChange={(e) => setSelectedLocation(e.target.value)}
-        >
-          {locationArray.map((location) => (
-            <option key={location} value={location}>
-              {location}
-            </option>
-          ))}
-        </Select> */}
+
         <Select
           placeholder="Select City"
           filled
@@ -404,20 +365,7 @@ const DiscoverPage = () => {
                 )
             )}
           </MapContainer>
-          {/* <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY}  >
-          <GoogleMap zoom={10}>
-            {locations.map((marker, idx) => ( 
-              <Marker
-                key={idx}
-                position={{
-                  lat: marker.location.lat,
-                  lng: marker.location.lng,
-                }}
-                title={marker.key}
-              />
-            ))}
-          </GoogleMap>
-        </LoadScript> */}
+
         </Box>
         <Box flex={70} maxH={"60vh"} overflowY={"scroll"}>
           {!loading && posts.length === 0 && (
