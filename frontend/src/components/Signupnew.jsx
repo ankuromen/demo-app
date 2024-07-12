@@ -52,7 +52,7 @@ const Signupnew = () => {
 
       localStorage.setItem("user-threads", JSON.stringify(data));
       setUser(data);
-      showToast('Success','Account Created Successfully','success')
+      showToast("Success", "Account Created Successfully", "success");
     } catch (error) {
       showToast("Error", error, "error");
     }
@@ -98,11 +98,7 @@ const Signupnew = () => {
             location: "",
             dob: "",
             gender: "",
-            nationality: "",
             interests: [],
-            student: false,
-            university: "",
-            course: "",
             occupation: "",
             instagram: "",
             password: "",
@@ -165,24 +161,24 @@ const Signupnew = () => {
                 </FormControl>
                 <FormControl isRequired>
                   <FormLabel>Location</FormLabel>
-                
-                    <StandaloneSearchBox
-                      onLoad={(ref) => (placesRef.current = ref)}
-                      onPlacesChanged={() => {
-                        const places = placesRef.current.getPlaces();
-                        if (places && places.length > 0) {
-                          const place = places[0];
-                          setFieldValue("venue", place.formatted_address);
-                        }
-                      }}
-                    >
-                      <Field
-                        as={Input}
-                        type="text"
-                        name="venue"
-                        placeholder="Enter your location"
-                      />
-                    </StandaloneSearchBox>
+
+                  <StandaloneSearchBox
+                    onLoad={(ref) => (placesRef.current = ref)}
+                    onPlacesChanged={() => {
+                      const places = placesRef.current.getPlaces();
+                      if (places && places.length > 0) {
+                        const place = places[0];
+                        setFieldValue("venue", place.formatted_address);
+                      }
+                    }}
+                  >
+                    <Field
+                      as={Input}
+                      type="text"
+                      name="venue"
+                      placeholder="Enter your location"
+                    />
+                  </StandaloneSearchBox>
                   <ErrorMessage
                     name="location"
                     component="div"
@@ -217,10 +213,6 @@ const Signupnew = () => {
                         Prefer Not to Say
                       </option>
                     </Field>
-                  </FormControl>
-                  <FormControl isRequired>
-                    <FormLabel>Nationality</FormLabel>
-                    <Field as={Input} name="nationality" />
                   </FormControl>
                 </HStack>
                 <FormControl>
@@ -308,98 +300,66 @@ const Signupnew = () => {
                 </FormControl>
                 <FormControl id="password">
                   <FormLabel>Password</FormLabel>
-                  <Field
-                    as={Input}
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                  />
-                  <IconButton
-                    onClick={handleTogglePassword}
-                    icon={showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                    style={{
-                      position: "absolute",
-                      right: "2px",
-                    }}
-                  />
+                  <Flex>
+                    <Field
+                      as={Input}
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                    />
+                    <IconButton
+                      onClick={handleTogglePassword}
+                      icon={showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                      style={{
+                        position: "absolute",
+                        right: "2px",
+                        zIndex: 1,
+                      }}
+                    />
+                  </Flex>
+
                   <ErrorMessage
                     name="password"
                     component="div"
                     style={{ color: "red" }}
                   />
                 </FormControl>
-                <FormControl isRequired>
-                  <FormLabel>Are you a student?</FormLabel>
-                  <label>
-                    <Field
-                      type="checkbox"
-                      name="student"
-                      value={values.student}
-                      checked={values.student === "yes"}
-                      onChange={() => {
-                        setFieldValue(
-                          "student",
-                          values.student === true ? false : true
-                        );
-                      }}
-                    />{" "}
-                    Yes
-                  </label>
 
-                  <ErrorMessage
-                    name="student"
-                    component="div"
-                    className="error"
-                  />
+                <FormControl>
+                  <FormLabel>Occupation</FormLabel>
+                  <Field
+                    as={Select}
+                    placeholder="Select occupation"
+                    value={values.occupation}
+                    name="occupation"
+                  >
+                    <option value="arts and entertainment">
+                      Arts and Entertainment
+                    </option>
+                    <option value="business and finance">
+                      Business and Finance
+                    </option>
+                    <option value="education">Education</option>
+                    <option value="healthcare">Healthcare</option>
+                    <option value="human services">Human Services</option>
+                    <option value="IT and Tech">IT and Tech</option>
+                    <option value="Law and Government">
+                      Law and Government
+                    </option>
+                    <option value="Manufacturing and Production">
+                      Manufacturing and Production
+                    </option>
+                    <option value="Sales and Marketing">
+                      Sales and Marketing
+                    </option>
+                    <option value="Science and Research">
+                      Science and Research
+                    </option>
+                    <option value="Transportation">Transportation</option>
+                    <option value="Student">Student</option>
+                    <option value="Other">Other</option>
+                  </Field>
                 </FormControl>
 
-                {/* Conditionally render University and Course fields based on student */}
-                {values.student === true ? (
-                  <>
-                    <FormControl isRequired>
-                      <FormLabel>University</FormLabel>
-                      <Field
-                        type="text"
-                        name="university"
-                        as={Input}
-                        value={values.university}
-                      />
-                      <ErrorMessage
-                        name="university"
-                        component="div"
-                        className="error"
-                      />
-                    </FormControl>
-                    <FormControl isRequired>
-                      <FormLabel>Course</FormLabel>
-                      <Field
-                        type="text"
-                        name="course"
-                        as={Input}
-                        value={values.course}
-                      />
-                      <ErrorMessage
-                        name="course"
-                        component="div"
-                        className="error"
-                      />
-                    </FormControl>
-                  </>
-                ) : (
-                  <FormControl isRequired>
-                    <FormLabel>Occupation</FormLabel>
-                    <Field
-                      type="text"
-                      as={Input}
-                      name="occupation"
-                      value={values.occupation}
-                    />
-                    <ErrorMessage
-                      name="occupation"
-                      component="div"
-                      className="error"
-                    />
-                  </FormControl>
-                )}
                 <FormControl>
                   <FormLabel>Instagram </FormLabel>
                   <Field

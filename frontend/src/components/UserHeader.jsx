@@ -49,8 +49,8 @@ const UserHeader = ({ user }) => {
           <Flex gap={2} alignItems={"center"}>
             <AiFillCompass />
             <Text fontSize={"sm"}>{user.location}</Text>
-            <AiFillFlag />
-            <Text fontSize={"sm"}>{user.nationality}</Text>
+            {/* <AiFillFlag />
+            <Text fontSize={"sm"}>{user.nationality}</Text> */}
           </Flex>
           <Flex gap={2} alignItems={"center"}>
             <AiTwotoneHeart />
@@ -187,7 +187,11 @@ const UserHeader = ({ user }) => {
           pb="3"
           cursor={"pointer"}
         >
-          <Text fontWeight={"bold"}> Your Events</Text>
+          {currentUser?._id === user._id ? (
+            <Text fontWeight={"bold"}> Your Events</Text>
+          ) : (
+            <Text fontWeight={"bold"}> User Events</Text>
+          )}
         </Flex>
       </Flex>
     </VStack>

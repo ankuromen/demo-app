@@ -27,9 +27,6 @@ const userSchema = mongoose.Schema(
     gender: {
       type: String,
     },
-    nationality: {
-      type: String,
-    },
     location: {
       type: String,
     },
@@ -77,17 +74,6 @@ const userSchema = mongoose.Schema(
     isFrozen: {
       type: Boolean,
       default: false,
-    },
-    // New fields from frontend component
-    student: {
-      type: Boolean,
-      default: false,
-    },
-    university: {
-      type: String,
-    },
-    course: {
-      type: String,
     },
     notificationsEnabled: {
       type: Boolean,
