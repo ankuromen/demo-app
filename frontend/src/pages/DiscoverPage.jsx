@@ -23,6 +23,8 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { isAfter, isBefore, parseISO, setHours, setMinutes } from "date-fns";
 import { Link } from "react-router-dom";
+import { stringSimilarity } from "string-similarity-js";
+import { filter } from "lodash";
 
 // Fix icon issue with leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -54,11 +56,11 @@ const DiscoverPage = () => {
   const [endDate, setEndDate] = useState("");
   const [endTime, setEndTime] = useState("23:59");
   const [filteredPosts, setFilteredPosts] = useState([]);
-  
+  const [searchLocation, setSearchLocation] = useState("");
+
   const { lat, long } = user.selectedLocationCord && user.selectedLocationCord;
   const handleSearch = (searchData) => {
     const { filters } = searchData;
-    console.log(searchData);
     // Assuming you want to format and display search results
     let response = `
       Event Category: ${filters.category}
@@ -67,7 +69,7 @@ const DiscoverPage = () => {
       Event Hoster Indicator: ${filters.eventHoster}
     `;
     filters.category && setSelectedCategory(filters.category);
-    
+    filters.location && setSearchLocation(filters.location);
     setResults(response);
   };
 
@@ -96,7 +98,6 @@ const DiscoverPage = () => {
   const sortEvents = async () => {
     let filteredPosts = posts;
     let nearbyPosts = [];
-
     const selectedLocationCord = user?.selectedLocationCord;
 
     if (selectedLocation) {
@@ -104,26 +105,22 @@ const DiscoverPage = () => {
         (post) => post.venue === selectedLocation
       );
     }
-    if (selectedCity) {
+    if (selectedCity && !searchLocation) {
       filteredPosts = filteredPosts.filter(
         (post) => post.city === selectedCity
       );
     }
-    if (selectedState) {
+    if (selectedState && !searchLocation) {
       filteredPosts = filteredPosts.filter(
         (post) => post.state === selectedState
       );
     }
-    if (selectedCountry) {
+    if (selectedCountry && !searchLocation) {
       filteredPosts = filteredPosts.filter(
         (post) => post.country === selectedCountry
       );
     }
-    if (selectedCategory) {
-      filteredPosts = filteredPosts.filter(
-        (post) => post.eventType === selectedCategory
-      );
-    }
+
     if (startDate && !startTime) {
       filteredPosts = filteredPosts.filter((post) =>
         isAfter(
@@ -158,13 +155,15 @@ const DiscoverPage = () => {
         return isBefore(eventEndDate, endDateTime);
       });
     }
+    //Sort by user preferred location
     if (
       selectedLocationCord &&
       !selectedLocation &&
       !selectedCity &&
       !selectedCity &&
       !selectedState &&
-      !selectedCountry
+      !selectedCountry &&
+      !searchLocation
     ) {
       nearbyPosts = filteredPosts.filter((post) =>
         isPointWithinRadius(
@@ -179,9 +178,33 @@ const DiscoverPage = () => {
       setFilteredPosts(nearbyPosts);
       return;
     }
+    // Sort by search location
+    if (searchLocation) {
+      setSelectedCity(null);
+      setSelectedCountry(null);
+      setSelectedState(null);
+      filteredPosts = posts.filter((post) => {
+        const similiarity = stringSimilarity(post.venue, searchLocation);
+        if (similiarity > 0.1) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+      console.log("search", filteredPosts);
+    }
+
+    // sort by Category
+    if (selectedCategory) {
+      filteredPosts = filteredPosts.filter(
+        (post) => post.eventType === selectedCategory
+      );
+    }
 
     setFilteredPosts(filteredPosts);
   };
+  console.log("Posts", filteredPosts);
+
   useEffect(() => {
     const cities = [];
     const states = [];
@@ -205,6 +228,7 @@ const DiscoverPage = () => {
   useEffect(() => {
     sortEvents();
   }, [
+    searchLocation,
     user,
     posts,
     selectedLocation,
@@ -217,6 +241,7 @@ const DiscoverPage = () => {
     endDate,
     endTime,
   ]);
+
   return (
     <Box mx="auto" width="80%" textAlign="center">
       <SearchBar onSearch={handleSearch} />
