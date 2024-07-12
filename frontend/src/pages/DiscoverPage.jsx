@@ -223,7 +223,7 @@ const DiscoverPage = () => {
 
   return (
     <Box mx="auto" width="80%" textAlign="center">
-      <SearchPostComponent />
+      <SearchPostComponent user={user}/>
       <Flex gap={10} mt={2} alignItems={"center"}>
 
         <Text fontWeight={"bold"} color={"red"}>

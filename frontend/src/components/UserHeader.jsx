@@ -17,7 +17,7 @@ const UserHeader = ({ user }) => {
   const toast = useToast();
   const currentUser = useRecoilValue(userAtom); // logged in user
   const { handleFollowUnfollow, following, updating } = useFollowUnfollow(user);
-  const Navigate = useNavigate()
+  const Navigate = useNavigate();
 
   const copyURL = () => {
     const currentURL = window.location.href;
@@ -31,8 +31,10 @@ const UserHeader = ({ user }) => {
       });
     });
   };
+  console.log("currentUser", currentUser);
+  console.log(user);
   return (
-    <VStack gap={4} alignItems={"start"} w={'80%'} m={"auto"}>
+    <VStack gap={4} alignItems={"start"} w={"80%"} m={"auto"}>
       <Flex justifyContent={"space-between"} w={"full"}>
         <Box>
           <Text fontSize={"2xl"}>{user.name}</Text>
@@ -159,19 +161,23 @@ const UserHeader = ({ user }) => {
           </Box>
         </Flex>
       </Flex>
-      <Flex w={"full"} justifyContent="space-between">
-        {/* Create Campaign button */}
-        <Button size={"sm"}>Create Campaign</Button>
+      {currentUser?._id === user._id && (
+        <Flex w={"full"} justifyContent="space-between">
+          {/* Create Campaign button */}
+          <Button size={"sm"}>Create Campaign</Button>
 
-        {/* Create Story button */}
-        <Button size={"sm"} onClick={()=>Navigate('/create')}>Create Event</Button>
+          {/* Create Story button */}
+          <Button size={"sm"} onClick={() => Navigate("/create")}>
+            Create Event
+          </Button>
 
-        {/* Create Story button */}
-        <Button size={"sm"}>Create Story</Button>
+          {/* Create Story button */}
+          <Button size={"sm"}>Create Story</Button>
 
-        {/* Create Broadcast button */}
-        <Button size={"sm"}>Create Broadcast</Button>
-      </Flex>
+          {/* Create Broadcast button */}
+          <Button size={"sm"}>Create Broadcast</Button>
+        </Flex>
+      )}
 
       <Flex w={"full"}>
         <Flex

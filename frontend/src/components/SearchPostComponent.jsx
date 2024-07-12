@@ -14,7 +14,7 @@ import {
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
 
-const SearchPostComponent = () => {
+const SearchPostComponent = ({user}) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -44,7 +44,7 @@ const SearchPostComponent = () => {
       const response = await axios.get(`/api/posts/${suggestion._id}`);
       console.log("Post details:", response.data);
       // Navigate to post page
-      navigate(`api/posts/${suggestion._id}`); // Use navigate instead of history.push
+      navigate(`/${user.username}/post/${suggestion._id}`); // Use navigate instead of history.push
     } catch (error) {
       console.error("Error fetching post details:", error);
       // Handle error gracefully
@@ -116,6 +116,7 @@ const SearchPostComponent = () => {
             ))}
           </List>
         ) : (
+          searchQuery &&
           <Text>No results found</Text>
         )}
       </Box>

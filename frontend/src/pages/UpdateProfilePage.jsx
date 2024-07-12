@@ -9,6 +9,10 @@ import {
   useColorModeValue,
   Avatar,
   Center,
+  Select,
+  CheckboxGroup,
+  HStack,
+  Checkbox,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { useRecoilState } from "recoil";
@@ -78,7 +82,7 @@ export default function UpdateProfilePage() {
       showToast("Success", "Profile updated successfully", "success");
       setUser(data);
       localStorage.setItem("user-threads", JSON.stringify(data));
-      navigate(`/${user.name}`)
+      navigate(`/${user.username}`)
     } catch (error) {
       showToast("Error", error, "error");
     } finally {
@@ -145,7 +149,7 @@ export default function UpdateProfilePage() {
               type="text"
             />
           </FormControl>
-          
+
           <FormControl>
             <FormLabel>Bio</FormLabel>
             <Input
@@ -158,51 +162,67 @@ export default function UpdateProfilePage() {
           </FormControl>
           <FormControl>
             <FormLabel>Interests</FormLabel>
-            <Input
-              placeholder="Your interests"
+            <CheckboxGroup
               value={inputs.interests}
-              onChange={(e) =>
-                setInputs({ ...inputs, interests: e.target.value })
+              onChange={(selectedInterests) =>
+                setInputs({ ...inputs, interests: selectedInterests })
               }
-              _placeholder={{ color: "gray.500" }}
-              type="text"
-            />
+            >
+              <HStack>
+                <Checkbox value="sports">Sports</Checkbox>
+                <Checkbox value="music">Music</Checkbox>
+                <Checkbox value="reading">Reading</Checkbox>
+                {/* Add more checkboxes for other interests */}
+              </HStack>
+            </CheckboxGroup>
           </FormControl>
 
           <FormControl isRequired>
             <FormLabel>Location</FormLabel>
-            {/* <LoadScript
-              googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY4}
-              libraries={["places"]}
-            > */}
-              <StandaloneSearchBox
-                onLoad={(ref) => (inputRef.current = ref)}
-                onPlacesChanged={handlePlaceChanged}
-              >
-                <Input
-                  placeholder="Your location"
-                  value={inputs.location}
-                  onChange={(e) =>
-                    setInputs({ ...inputs, location: e.target.value })
-                  }
-                  _placeholder={{ color: "gray.500" }}
-                  type="text"
-                />
-              </StandaloneSearchBox>
-            {/* </LoadScript> */}
+            
+            <StandaloneSearchBox
+              onLoad={(ref) => (inputRef.current = ref)}
+              onPlacesChanged={handlePlaceChanged}
+            >
+              <Input
+                placeholder="Your location"
+                value={inputs.location}
+                onChange={(e) =>
+                  setInputs({ ...inputs, location: e.target.value })
+                }
+                _placeholder={{ color: "gray.500" }}
+                type="text"
+              />
+            </StandaloneSearchBox>
           </FormControl>
 
           <FormControl>
             <FormLabel>Occupation</FormLabel>
-            <Input
-              placeholder="Your occupation"
+            <Select
+              placeholder="Select occupation"
               value={inputs.occupation}
               onChange={(e) =>
                 setInputs({ ...inputs, occupation: e.target.value })
               }
-              _placeholder={{ color: "gray.500" }}
-              type="text"
-            />
+            >
+              <option value="arts and entertainment">
+                Arts and Entertainment
+              </option>
+              <option value="business and finance">Business and Finance</option>
+              <option value="education">Education</option>
+              <option value="healthcare">Healthcare</option>
+              <option value="human services">Human Services</option>
+              <option value="IT and Tech">IT and Tech</option>
+              <option value="Law and Government">Law and Government</option>
+              <option value="Manufacturing and Production">
+                Manufacturing and Production
+              </option>
+              <option value="Sales and Marketing">Sales and Marketing</option>
+              <option value="Science and Research">Science and Research</option>
+              <option value="Transportation">Transportation</option>
+              <option value="Student">Student</option>
+              <option value="Other">Other</option>
+            </Select>
           </FormControl>
           <FormControl>
             <FormLabel>Instagram</FormLabel>
@@ -274,7 +294,7 @@ export default function UpdateProfilePage() {
               type="text"
             />
           </FormControl>
-          
+
           <Stack spacing={6} direction={["column", "row"]}>
             <Button
               bg={"red.400"}
@@ -283,7 +303,7 @@ export default function UpdateProfilePage() {
               _hover={{
                 bg: "red.500",
               }}
-              onClick={()=>navigate(`/${user.name}`)}
+              onClick={() => navigate(`/${user.name}`)}
             >
               Cancel
             </Button>
