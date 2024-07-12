@@ -68,8 +68,8 @@ const DiscoverPage = () => {
       Event Date Indicator: ${filters.date}
       Event Hoster Indicator: ${filters.eventHoster}
     `;
-    filters.category && setSelectedCategory(filters.category);
-    filters.location && setSearchLocation(filters.location);
+    filters.category !== "None" && setSelectedCategory(filters.category);
+    filters.location !== "None" && setSearchLocation(filters.location);
     setResults(response);
   };
 
@@ -105,12 +105,12 @@ const DiscoverPage = () => {
         (post) => post.venue === selectedLocation
       );
     }
-    if (selectedCity && !searchLocation) {
+    if (selectedCity) {
       filteredPosts = filteredPosts.filter(
         (post) => post.city === selectedCity
       );
     }
-    if (selectedState && !searchLocation) {
+    if (selectedState) {
       filteredPosts = filteredPosts.filter(
         (post) => post.state === selectedState
       );
@@ -120,6 +120,18 @@ const DiscoverPage = () => {
         (post) => post.country === selectedCountry
       );
     }
+    // // Sort by search location
+    // if (searchLocation) {
+    //   filteredPosts = posts.filter((post) => {
+    //     const similiarity = stringSimilarity(post.venue, searchLocation);
+    //     if (similiarity > 0.1) {
+    //       return true;
+    //     } else {
+    //       return false;
+    //     }
+    //   });
+    //   console.log("search", filteredPosts);
+    // }
 
     if (startDate && !startTime) {
       filteredPosts = filteredPosts.filter((post) =>
@@ -141,20 +153,27 @@ const DiscoverPage = () => {
     if (endDate && !endTime) {
       filteredPosts = filteredPosts.filter((post) =>
         isBefore(
-          new Date(post.endDate),
+          new Date(post.startDate),
           parseISO(new Date(endDate).toISOString())
         )
       );
     }
     if (endDate && endTime) {
       filteredPosts = filteredPosts.filter((post) => {
-        const eventEndDate = new Date(post.startDate);
-        eventEndDate.setMinutes(post.endTime.split(":")[1]);
-        eventEndDate.setHours(post.endTime.split(":")[0]);
+        const eventDate = new Date(post.startDate);
+        eventDate.setMinutes(post.startTime.split(":")[1]);
+        eventDate.setHours(post.startTime.split(":")[0]);
         const endDateTime = parseISO(`${endDate}T${endTime}`);
-        return isBefore(eventEndDate, endDateTime);
+        return isBefore(eventDate, endDateTime);
       });
     }
+    // sort by Category
+    if (selectedCategory) {
+      filteredPosts = filteredPosts.filter(
+        (post) => post.eventType === selectedCategory
+      );
+    }
+
     //Sort by user preferred location
     if (
       selectedLocationCord &&
@@ -177,21 +196,6 @@ const DiscoverPage = () => {
       );
       setFilteredPosts(nearbyPosts);
       return;
-    }
-    // Sort by search location
-    if (searchLocation) {
-      setSelectedCity(null);
-      setSelectedCountry(null);
-      setSelectedState(null);
-      filteredPosts = posts.filter((post) => {
-        const similiarity = stringSimilarity(post.venue, searchLocation);
-        if (similiarity > 0.1) {
-          return true;
-        } else {
-          return false;
-        }
-      });
-      console.log("search", filteredPosts);
     }
 
     // sort by Category
@@ -228,7 +232,6 @@ const DiscoverPage = () => {
   useEffect(() => {
     sortEvents();
   }, [
-    searchLocation,
     user,
     posts,
     selectedLocation,
@@ -365,7 +368,7 @@ const DiscoverPage = () => {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
-            {filteredPosts.map(
+            {posts.map(
               (marker, idx) =>
                 marker?.venueCord && (
                   <Marker
