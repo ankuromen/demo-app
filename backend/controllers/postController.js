@@ -2,6 +2,7 @@ import Post from "../models/postModel.js";
 import User from "../models/userModel.js";
 import ticket from "../models/ticketModel.js";
 import { v2 as cloudinary } from "cloudinary";
+import { stringSimilarity } from "string-similarity-js";
 
 const createPost = async (req, res) => {
   try {
@@ -253,10 +254,14 @@ const getAllPosts = async (req, res) => {
 const searchPosts = async (req, res) => {
   try {
     const { query } = req.params;
-    
-    // Perform a case-insensitive search for posts where the name matches the query
-    const matchedPosts = await Post.find({ name: { $regex: query, $options: 'i' } });
-
+    const posts = await Post.find()
+    const matchedPosts = await posts.filter((post) => {
+      const similarity = stringSimilarity(query, post.name);
+      if (similarity > 0.2) {
+        return true;
+      }
+      return false;
+    })
     res.status(200).json(matchedPosts);
   } catch (err) {
     res.status(500).json({ error: err.message });

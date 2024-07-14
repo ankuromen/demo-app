@@ -1,4 +1,14 @@
-import { Box, Flex, Spinner, Input, List, ListItem, Text, useColorMode } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Spinner,
+  Input,
+  List,
+  ListItem,
+  Text,
+  useColorMode,
+  Heading,
+} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { Link } from "react-router-dom";
@@ -15,7 +25,8 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const showToast = useShowToast();
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchUsersResults, setSearchUsersResults] = useState([]);
+  const [searchPostsResults, setSearchPostsResults] = useState([]);
   const { colorMode } = useColorMode(); // Access the current color mode
 
   useEffect(() => {
@@ -47,14 +58,19 @@ const HomePage = () => {
     const query = e.target.value;
     setSearchQuery(query);
 
-    if (query.length < 3) {
-      setSearchResults([]);
-      return;
-    }
-
     try {
-      const response = await axios.get(`/api/users/search?q=${query}`);
-      setSearchResults(response.data);
+      try {
+        const responseUsers = await axios.get(`/api/users/search?q=${query}`);
+        setSearchUsersResults(responseUsers.data);
+      } catch (error) {
+        console.error("Error fetching user search results:", error);
+      }
+      try {
+        const responsePosts = await axios.get(`/api/posts/search/${query}`);
+        setSearchPostsResults(responsePosts.data);
+      } catch (error) {
+        console.error("Error fetching posts search results:", error);
+      }
     } catch (error) {
       console.error("Error fetching search results:", error);
     }
@@ -72,7 +88,7 @@ const HomePage = () => {
       />
 
       {/* Search results predictions */}
-      {searchResults.length > 0 && (
+      {(searchUsersResults.length > 0 || searchPostsResults.length > 0) && (
         <Box
           mt={2}
           bg={colorMode === "light" ? "white" : "gray.700"} // Dynamically set background based on color mode
@@ -80,8 +96,13 @@ const HomePage = () => {
           borderRadius="md"
           p={2}
         >
+          {searchUsersResults.length > 0 && (
+            <Heading size={"xs"} color={"green"}>
+              Users
+            </Heading>
+          )}
           <List>
-            {searchResults.map((result) => (
+            {searchUsersResults.map((result) => (
               <ListItem key={result._id}>
                 <Link to={`/${result.username}`}>
                   <Text
@@ -94,9 +115,35 @@ const HomePage = () => {
               </ListItem>
             ))}
           </List>
+          {searchPostsResults.length > 0 && (
+            <>
+              {searchPostsResults.length > 0 && (
+                <Heading size={"xs"} color={"green"}>
+                  Events
+                </Heading>
+              )}
+
+              <List>
+                {searchPostsResults.map((result) => (
+                  <ListItem key={result._id}>
+                    <Link to={`/${user.username}/post/${result._id}`}>
+                      <Text
+                        _hover={{
+                          textDecoration: "underline",
+                          cursor: "pointer",
+                        }}
+                        color={colorMode === "light" ? "black" : "white"} // Dynamically set text color based on color mode
+                      >
+                        <strong>{result.username}</strong> - {result.name}
+                      </Text>
+                    </Link>
+                  </ListItem>
+                ))}
+              </List>
+            </>
+          )}
         </Box>
       )}
-
 
       {/* Posts section */}
       <Flex gap="10" alignItems="flex-start">

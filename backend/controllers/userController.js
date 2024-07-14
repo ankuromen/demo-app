@@ -7,6 +7,7 @@ import { v2 as cloudinary } from "cloudinary";
 import mongoose from "mongoose";
 import nodemailer from "nodemailer";
 import { ObjectId } from "mongodb";
+import { stringSimilarity } from "string-similarity-js";
 const bcryptsalt = await bcrypt.genSalt(10);
 
 const getAllUsers = async (req, res) => {
@@ -159,7 +160,7 @@ const loginUser = async (req, res) => {
       website: user.website,
       soloOrganizer: user.soloOrganizer,
       selectedLocation: user.selectedLocation,
-      selectedLocationCord:user.selectedLocationCord
+      selectedLocationCord: user.selectedLocationCord,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -368,17 +369,15 @@ const searchUsers = async (req, res) => {
   const { q } = req.query;
 
   try {
-    // Search users by name or username, case-insensitive
-    const users = await User.find({
-      $or: [
-        { name: { $regex: q, $options: "i" } },
-        { username: { $regex: q, $options: "i" } },
-      ],
-    })
-      .select("-password -updatedAt")
-      .lean();
-
-    res.status(200).json(users);
+    const users = await User.find().select("-password -updatedAt").lean();
+    const matchedUsers = users.filter((user) => {
+      const similarity = stringSimilarity(q, user.name);
+      if (similarity > 0.2) {
+        return true;
+      }
+      return false;
+    });
+    res.status(200).json(matchedUsers);
   } catch (err) {
     res.status(500).json({ error: err.message });
     console.log("Error in searchUsers: ", err.message);

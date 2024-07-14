@@ -47,8 +47,13 @@ const UserHeader = ({ user }) => {
             <Text fontSize={"sm"}>{user.occupation}</Text> */}
           </Flex>
           <Flex gap={2} alignItems={"center"}>
-            <AiFillCompass />
-            <Text fontSize={"sm"}>{user.location}</Text>
+            {user.location && (
+              <>
+                <AiFillCompass />
+                <Text fontSize={"sm"}>{user.location}</Text>
+              </>
+            )}
+
             {/* <AiFillFlag />
             <Text fontSize={"sm"}>{user.nationality}</Text> */}
           </Flex>
