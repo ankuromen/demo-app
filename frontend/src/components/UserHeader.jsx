@@ -31,8 +31,6 @@ const UserHeader = ({ user }) => {
       });
     });
   };
-  console.log("currentUser", currentUser);
-  console.log(user);
   return (
     <VStack gap={4} alignItems={"start"} w={"80%"} m={"auto"}>
       <Flex justifyContent={"space-between"} w={"full"}>

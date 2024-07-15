@@ -8,7 +8,6 @@ import AuthPage from "./pages/AuthPage";
 import { useRecoilValue } from "recoil";
 import userAtom from "./atoms/userAtom";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
-import CreatePost from "./components/CreatePost";
 import ChatPage from "./pages/ChatPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import Analytics from "./pages/Analytics";
@@ -17,11 +16,12 @@ import CalendarPage from "./pages/CalendarPage";
 import CreateEventPage from "./pages/CreateEventPage";
 import Admins from "./components/Settings/Admins";
 import Embed from "./components/Settings/Embed";
-import Options from './components/Settings/Options'
-import Payment from './components/Settings/Payment'
+import Options from "./components/Settings/Options";
+import Payment from "./components/Settings/Payment";
 import EvntiqPlus from "./components/Settings/EvntiqPlus";
 import DiscoverPage from "./pages/DiscoverPage";
 import AccountSettings from "./components/Settings/AccountSettings";
+import CreateEventButton from "./components/CreateEventButton";
 
 function App() {
   const user = useRecoilValue(userAtom);
@@ -30,6 +30,8 @@ function App() {
     <Box position={"relative"} w={"full"}>
       <Container maxW={"full"}>
         <Header />
+        {user.soloOrganizer === true && <CreateEventButton />}
+
         <Routes>
           <Route
             path="/"
@@ -50,7 +52,7 @@ function App() {
               user ? (
                 <>
                   <UserPage />
-                  <CreatePost />
+                  {/* <CreatePost /> */}
                 </>
               ) : (
                 <UserPage />

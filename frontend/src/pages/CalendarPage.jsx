@@ -140,12 +140,6 @@ const CalendarPage = () => {
   
   return (
     <Box w={"80%"} m={"auto"}>
-      {/* <Flex alignItems={"center"} gap={"5"}>
-        <Box bg={"blue"} w={"12px"} h={"12px"} borderRadius={"full"}></Box>
-        <Text>Tickets</Text>
-        <Box bg={"green"} w={"12px"} h={"12px"} borderRadius={"full"}></Box>
-        <Text>Posts</Text>
-      </Flex> */}
 
       {eventsList && (
         <FullCalendar

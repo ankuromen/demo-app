@@ -2,10 +2,7 @@ import {
   Box,
   Button,
   Flex,
-  FormControl,
-  FormLabel,
   Grid,
-  Heading,
   Image,
   Input,
   Modal,
@@ -34,8 +31,8 @@ import { PiSeatbelt } from "react-icons/pi";
 import { MdOutlineVerifiedUser } from "react-icons/md";
 import { IoTicketOutline } from "react-icons/io5";
 import { FcPicture } from "react-icons/fc";
-import { StandaloneSearchBox, LoadScript } from "@react-google-maps/api";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { StandaloneSearchBox } from "@react-google-maps/api";
+import { useEffect, useRef, useState } from "react";
 import usePreviewImg from "../hooks/usePreviewImg";
 import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
@@ -179,7 +176,7 @@ const CreateEventPage = () => {
       );
     }
   }, [ticketSalesStartDate]);
-  
+
   const handlePlaceChanged = async () => {
     const [place] = await inputRef.current.getPlaces();
 
@@ -594,7 +591,11 @@ const CreateEventPage = () => {
                   </Text>
                 </Flex>
                 <Flex ps={6}>
-                  <Text>Offline location or virtual link</Text>
+                  {venue ? (
+                    <Text>{venue}</Text>
+                  ) : (
+                    <Text>Offline location or virtual link</Text>
+                  )}
                 </Flex>
               </Flex>
             </PopoverTrigger>

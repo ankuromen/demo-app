@@ -29,7 +29,7 @@ import {
   PopoverBody,
 } from "@chakra-ui/react";
 import { StandaloneSearchBox } from "@react-google-maps/api";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import usePreviewImg from "../hooks/usePreviewImg";
 import { BsFillImageFill } from "react-icons/bs";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -50,7 +50,7 @@ import {
   RequestType,
 } from "react-geocode";
 setDefaults({
-  key: import.meta.env.VITE_GOOGLE_GEOLOCATION_KEY, // Your API key here.
+  key: import.meta.env.VITE_GOOGLE_GEOLOCATION_KEY, 
   language: "en", // Default language for responses.
   region: "es", // Default region for responses.
 });
@@ -335,6 +335,7 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
     <>
       <Button
         position={"fixed"}
+        visibility={'hidden'}
         bottom={10}
         right={5}
         bg={useColorModeValue("gray.300", "gray.dark")}
@@ -346,7 +347,6 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
 
       <Modal isOpen={isOpen} onClose={onCloseCreate}>
         <ModalOverlay />
-
         <ModalContent>
           <ModalHeader>Create Event</ModalHeader>
           <ModalCloseButton />
