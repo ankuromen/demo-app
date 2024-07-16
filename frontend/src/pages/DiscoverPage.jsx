@@ -25,7 +25,6 @@ import L from "leaflet";
 import { isAfter, isBefore, parseISO, setHours, setMinutes } from "date-fns";
 import { Link } from "react-router-dom";
 
-
 // Fix icon issue with leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -107,7 +106,6 @@ const DiscoverPage = () => {
         (post) => post.country === selectedCountry
       );
     }
-
 
     if (startDate && !startTime) {
       filteredPosts = filteredPosts.filter((post) =>
@@ -223,9 +221,8 @@ const DiscoverPage = () => {
 
   return (
     <Box mx="auto" width="80%" textAlign="center">
-      <SearchPostComponent user={user}/>
+      <SearchPostComponent user={user} />
       <Flex gap={10} mt={2} alignItems={"center"}>
-
         <Text fontWeight={"bold"} color={"red"}>
           Start
         </Text>
@@ -324,6 +321,7 @@ const DiscoverPage = () => {
               height: "60vh",
               borderRadius: "5%",
             }}
+            attributionControl={false}  
           >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -365,7 +363,6 @@ const DiscoverPage = () => {
                 )
             )}
           </MapContainer>
-
         </Box>
         <Box flex={70} maxH={"60vh"} overflowY={"scroll"}>
           {!loading && posts.length === 0 && (

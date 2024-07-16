@@ -18,10 +18,14 @@ import { SlLocationPin } from "react-icons/sl";
 import { MdOutlineEventAvailable } from "react-icons/md";
 import postsAtom from "../atoms/postsAtom";
 import JoinEvent from "../components/JoinEvent";
+import { isAfter, parseISO } from "date-fns";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import axios from "axios";
 
 const PostPage = (post) => {
   const { user, loading } = useGetUserProfile();
   const [posts, setPosts] = useRecoilState(postsAtom);
+  const [postAnalytics, setPostAnalytics] = useState();
   const showToast = useShowToast();
   const { pid } = useParams();
   const [joinModalOpen, setJoinModalOpen] = useState(false);
@@ -29,6 +33,29 @@ const PostPage = (post) => {
   const navigate = useNavigate();
 
   const currentPost = posts[0];
+  const currentDate = parseISO(new Date().toISOString());
+  const eventDate = new Date(currentPost?.startDate);
+  eventDate.setMinutes(currentPost?.startTime.split(":")[1]);
+  eventDate.setHours(currentPost?.startTime.split(":")[0]);
+
+  const isEventAfter = isAfter(eventDate, currentDate);
+  const [currentEventCapacity, setCurrentEventCapacity] = useState(
+    currentPost?.capacity
+  );
+
+  const getPostAnalytics = async (pid) => {
+    const res = await axios.get(`/api/analytics/post/${pid}`);
+    setPostAnalytics(res.data);
+  };
+
+  useEffect(() => {
+    if (currentPost && postAnalytics) {
+      setCurrentEventCapacity(
+        currentPost.capacity - postAnalytics[0]?.totalSales
+      );
+      console.log("currentEventCapacity:", currentEventCapacity);
+    }
+  }, [currentPost, postAnalytics]);
 
   useEffect(() => {
     const getPost = async () => {
@@ -46,9 +73,9 @@ const PostPage = (post) => {
       }
     };
     getPost();
-  }, [showToast, pid, setPosts]);
+    getPostAnalytics(pid);
+  }, [showToast, pid, setPosts,joinModalOpen]);
 
-  console.log(currentPost);
   const handleDeletePost = async () => {
     try {
       if (!window.confirm("Are you sure you want to delete this post?")) return;
@@ -247,7 +274,7 @@ const PostPage = (post) => {
                     day: "numeric",
                   })}
                 </Text>
-                <Text fontSize={15}>6:00 PM - 8:00 PM EDT</Text>
+                <Text fontSize={15}>{currentPost.startTime}</Text>
               </Box>
             </Flex>
             <Flex gap={5} color={"gray.600"} pt={1}>
@@ -316,15 +343,30 @@ const PostPage = (post) => {
                 Please click on the button below to join the waitlist. You will
                 be notified if additional spots become available.
               </Text>
-              <Button
-                colorScheme="purple"
-                variant="solid"
-                w={"full"}
-                letterSpacing={1}
-                onClick={() => setJoinModalOpen(true)}
-              >
-                Join Waitlist
-              </Button>
+              {!isEventAfter ||
+              (currentPost?.capacity < 9999 && currentEventCapacity <= 0) ? (
+                <Button
+                  colorScheme="red"
+                  variant="solid"
+                  w={"full"}
+                  letterSpacing={1}
+                >
+                  {currentPost?.capacity < 9999 &&
+                    currentEventCapacity <= 0 &&
+                    "Event Full"}
+                  {!isEventAfter && "Event Started"}
+                </Button>
+              ) : (
+                <Button
+                  colorScheme="purple"
+                  variant="solid"
+                  w={"full"}
+                  letterSpacing={1}
+                  onClick={() => setJoinModalOpen(true)}
+                >
+                  Join Event
+                </Button>
+              )}
             </Box>
           </Box>
           {joinModalOpen && (
@@ -350,41 +392,7 @@ const PostPage = (post) => {
               About Event
             </Text>
 
-            <Text
-              color={"gray.700"}
-              fontSize={"2xl"}
-              pt={5}
-              pb={2}
-              fontWeight={"500"}
-            >
-              ​What to Expect
-            </Text>
-            <Text color={"gray.600"} pb={3} fontWeight={400} fontSize={17}>
-              ​​​Have you been interested in trying Pickleball? Wondering what
-              all the hype is about? Join us for our next TMI Club event in
-              partnership with Fairgrounds!
-            </Text>
-            <Text color={"gray.600"} pb={3} fontWeight={400} fontSize={17}>
-              ​Come out for 2 hours of free play followed by prebiotic sodas
-              from Geez Louise and goodie bags of other treats! The music will
-              be pumping and all skills levels are welcome. Come out for the
-              opportunity to try pickleball, get some exercise, and meet new
-              people.
-            </Text>
-            <Text
-              color={"gray.700"}
-              fontSize={"2xl"}
-              pt={5}
-              pb={2}
-              fontWeight={"500"}
-            >
-              ​Schedule
-            </Text>
-            <Text color={"gray.600"} pb={3} fontWeight={400} fontSize={17}>
-              ​​​This will be drop-in free play across the 9 courts plus
-              opportunities to hang out in the lounge and enjoy prebiotic sodas
-              from Geez Louise!
-            </Text>
+            <Text>{currentPost.text}</Text>
           </Box>
 
           {/* Location */}
@@ -402,18 +410,39 @@ const PostPage = (post) => {
               Location
             </Text>
             <Text color={"gray.600"} pb={3} fontWeight={400} fontSize={25}>
-              {currentPost.venue}
+              {currentPost?.venue}
             </Text>
             <Box borderRadius={10} overflow={"hidden"} mt={2} mb={4}>
-              <iframe
-                className="Location"
-                title="location"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2800.311159147775!2d-75.68934432245015!3d45.423228571073366!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4cce05071ad36a51%3A0x67afbd9897dba9de!2s50%20Laurier%20Ave%20E%2C%20Ottawa%2C%20ON%20K1N%201H7%2C%20Canada!5e0!3m2!1sen!2sin!4v1713060247916!5m2!1sen!2sin"
-                width="100%"
-                height="300"
-                allowFullScreen=""
-                loading="lazy"
-              />
+              {currentPost?.venueCord.lat && currentPost?.venueCord.long ? (
+                <MapContainer
+                  center={[
+                    currentPost?.venueCord.lat,
+                    currentPost?.venueCord.long,
+                  ]}
+                  zoom={13}
+                  style={{
+                    maxHeight: "60vh",
+                    height: "50vh",
+                    borderRadius: "5%",
+                  }}
+                  attributionControl={false}
+                >
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  />
+                  <Marker
+                    position={[
+                      currentPost?.venueCord.lat,
+                      currentPost?.venueCord.long,
+                    ]}
+                  ></Marker>
+                </MapContainer>
+              ) : (
+                <Text>Map is Unavailable</Text>
+              )}
+
+              {/*  */}
             </Box>
           </Box>
           <Box display={{ base: "block", lg: "none" }}>

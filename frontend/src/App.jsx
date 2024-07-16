@@ -30,7 +30,7 @@ function App() {
     <Box position={"relative"} w={"full"}>
       <Container maxW={"full"}>
         <Header />
-        {user.soloOrganizer === true && <CreateEventButton />}
+        {user?.soloOrganizer === true && <CreateEventButton />}
 
         <Routes>
           <Route

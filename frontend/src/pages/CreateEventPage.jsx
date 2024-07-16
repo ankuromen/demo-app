@@ -27,6 +27,7 @@ import {
 } from "@chakra-ui/react";
 import { RiGitRepositoryPrivateFill } from "react-icons/ri";
 import { CiGlobe, CiLocationOn, CiStickyNote, CiEdit } from "react-icons/ci";
+import { BiCategoryAlt } from "react-icons/bi";
 import { PiSeatbelt } from "react-icons/pi";
 import { MdOutlineVerifiedUser } from "react-icons/md";
 import { IoTicketOutline } from "react-icons/io5";
@@ -671,7 +672,7 @@ const CreateEventPage = () => {
               justifyContent={"space-between"}
             >
               <Flex alignItems={"center"} gap={2}>
-                <CiLocationOn size={20} />
+                <BiCategoryAlt size={20} />
                 <Text fontSize={"lg"} fontWeight={500} color={"gray.600"}>
                   Event Category
                 </Text>
