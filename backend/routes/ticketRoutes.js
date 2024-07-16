@@ -1,6 +1,8 @@
 import express from "express";
 import mongoose from "mongoose"; // Ensure mongoose is imported
 import Ticket from "../models/ticketModel.js";
+import EventAnalytics from "../models/eventAnalyticsModel.js";
+import Post from "../models/postModel.js";
 
 const router = express.Router();
 
@@ -24,6 +26,8 @@ router.post("/createTicket", async (req, res) => {
       interests,
     } = req.body;
 
+    const eventAnalytics = await EventAnalytics.find({ eventid: eventid });
+    const post = await Post.findById(eventid);
     const ticket = new Ticket({
       userid,
       eventid,
@@ -43,12 +47,21 @@ router.post("/createTicket", async (req, res) => {
       },
     });
 
-    await ticket.save();
+    if (post.capacity >= 9999) {
+      await ticket.save();
+      return res.status(201).json({ message: "Ticket created successfully" });
+    }
+    const availableTickets = post.capacity - eventAnalytics[0].totalSales;
 
-    res.status(201).json({ message: "Ticket created successfully" });
+    if (availableTickets > tickets && post.capacity < 9999) {
+      await ticket.save();
+      return res.status(201).json({ message: "Ticket created successfully" });
+    } else {
+      return res.status(400).json({ message: `${availableTickets} Tickets left` });
+    }
   } catch (error) {
     console.error("Error creating ticket:", error);
-    res.status(500).json({ error: "Failed to create ticket" });
+    return res.status(500).json({ error: "Failed to create ticket" });
   }
 });
 

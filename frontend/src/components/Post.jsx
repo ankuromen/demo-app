@@ -60,6 +60,7 @@ const Post = ({ post, postedBy }) => {
   };
 
   if (!user) return null;
+  
   return (
     <>
       <Link to={`/${user.username}/post/${post._id}`}>

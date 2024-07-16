@@ -33,7 +33,6 @@ ticketSchema.post("findOneAndUpdate", function (doc) {
   saveOrUpdateEventAnalytics(doc.eventid);
 });
 
-
 const ticket = mongoose.model("Ticket", ticketSchema);
 
 export default ticket;

@@ -5,8 +5,12 @@ import Post from "../models/postModel.js";
 
 async function computeEventAnalytics(eventid) {
   try {
-    const tickets = await Ticket.find({ eventid: new mongoose.Types.ObjectId(eventid) });
-    const post = await Post.findOne({ _id: new mongoose.Types.ObjectId(eventid) }); // find the post by eventid
+    const tickets = await Ticket.find({
+      eventid: new mongoose.Types.ObjectId(eventid),
+    });
+    const post = await Post.findOne({
+      _id: new mongoose.Types.ObjectId(eventid),
+    }); // find the post by eventid
 
     if (tickets.length === 0) {
       console.log("No tickets found for this event.");
@@ -23,7 +27,7 @@ async function computeEventAnalytics(eventid) {
     let numberOfMales = 0;
     let numberOfFemales = 0;
 
-    tickets.forEach(ticket => {
+    tickets.forEach((ticket) => {
       totalSales += ticket.ticketDetails.count;
       totalAge += ticket.ticketDetails.age * ticket.ticketDetails.count;
       numberOfMales += ticket.ticketDetails.NumberOfMale;
@@ -55,7 +59,6 @@ async function computeEventAnalytics(eventid) {
   }
 }
 
-
 async function saveOrUpdateEventAnalytics(eventid) {
   try {
     const analytics = await computeEventAnalytics(eventid);
@@ -65,14 +68,14 @@ async function saveOrUpdateEventAnalytics(eventid) {
       return;
     }
 
-    await EventAnalytics.findOneAndUpdate(
-      { eventid: eventid },
-      analytics,
-      { upsert: true, new: true }
-    );
+    await EventAnalytics.findOneAndUpdate({ eventid: eventid }, analytics, {
+      upsert: true,
+      new: true,
+    });
     console.log("Event analytics saved or updated successfully.");
   } catch (error) {
     console.error("Error saving or updating event analytics:", error);
+    throw error;
   }
 }
 

@@ -74,7 +74,7 @@ const PostPage = (post) => {
     };
     getPost();
     getPostAnalytics(pid);
-  }, [showToast, pid, setPosts,joinModalOpen]);
+  }, [showToast, pid, setPosts, joinModalOpen]);
 
   const handleDeletePost = async () => {
     try {
@@ -322,27 +322,34 @@ const PostPage = (post) => {
             </Text>
 
             <Box p={4}>
-              <Flex
-                alignItems={"center"}
-                p={1}
-                borderBottom={"1px solid"}
-                w={"full"}
-                borderColor={"gray.200"}
-              >
-                <MdOutlineEventAvailable size={25} />
-                <Box ps={3}>
-                  <Text color={"gray.500"} fontWeight={"500"}>
-                    Event Full
-                  </Text>
-                  <Text color={"gray.500"}>
-                    If you’d like, you can join the waitlist.
-                  </Text>
-                </Box>
-              </Flex>
-              <Text color={"gray.600"} fontWeight={"500"} p={4}>
-                Please click on the button below to join the waitlist. You will
-                be notified if additional spots become available.
-              </Text>
+              {currentPost?.capacity < 9999 &&
+                currentEventCapacity <= 0 &&
+                isEventAfter && (
+                  <>
+                    <Flex
+                      alignItems={"center"}
+                      p={1}
+                      borderBottom={"1px solid"}
+                      w={"full"}
+                      borderColor={"gray.200"}
+                    >
+                      <MdOutlineEventAvailable size={25} />
+                      <Box ps={3}>
+                        <Text color={"gray.500"} fontWeight={"500"}>
+                          Event Full
+                        </Text>
+                        <Text color={"gray.500"}>
+                          If you’d like, you can join the waitlist.
+                        </Text>
+                      </Box>
+                    </Flex>{" "}
+                    <Text color={"gray.600"} fontWeight={"500"} p={4}>
+                      Please click on the button below to join the waitlist. You
+                      will be notified if additional spots become available.
+                    </Text>
+                  </>
+                )}
+
               {!isEventAfter ||
               (currentPost?.capacity < 9999 && currentEventCapacity <= 0) ? (
                 <Button
@@ -353,6 +360,7 @@ const PostPage = (post) => {
                 >
                   {currentPost?.capacity < 9999 &&
                     currentEventCapacity <= 0 &&
+                    isEventAfter &&
                     "Event Full"}
                   {!isEventAfter && "Event Started"}
                 </Button>

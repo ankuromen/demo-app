@@ -21,7 +21,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
 import useShowToast from "../hooks/useShowToast";
@@ -29,6 +29,7 @@ import postsAtom from "../atoms/postsAtom";
 import { useNavigate } from "react-router-dom";
 import JoinEvent from "./JoinEvent";
 import { isAfter, parseISO } from "date-fns";
+import axios from "axios";
 
 const Actions = ({ post }) => {
   const user = useRecoilValue(userAtom);
@@ -42,13 +43,31 @@ const Actions = ({ post }) => {
   const showToast = useShowToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const currentDate = parseISO(new Date().toISOString());
- 
+  const [postAnalytics, setPostAnalytics] = useState();
+  const [currentEventCapacity, setCurrentEventCapacity] = useState(
+    post?.capacity
+  );
+
   const eventDate = new Date(post.startDate);
   eventDate.setMinutes(post.startTime.split(":")[1]);
   eventDate.setHours(post.startTime.split(":")[0]);
 
   const isEventAfter = isAfter(eventDate, currentDate);
 
+  const getPostAnalytics = async (pid) => {
+    const res = await axios.get(`/api/analytics/post/${pid}`);
+    setPostAnalytics(res.data);
+  };
+  useEffect(() => {
+    if (post && postAnalytics) {
+      setCurrentEventCapacity(post.capacity - postAnalytics[0]?.totalSales);
+      console.log("currentEventCapacity:", currentEventCapacity);
+    }
+  }, [post, postAnalytics]);
+
+  useEffect(() => {
+    getPostAnalytics(post._id);
+  }, [post, joinModalOpen]);
 
   const handleLikeAndUnlike = async () => {
     if (!user)
@@ -227,15 +246,16 @@ const Actions = ({ post }) => {
             strokeWidth="2"
           ></polygon>
         </svg>
-        {isEventAfter ? (
-          <Button colorScheme="blue" size="xs" onClick={handleJoinEvent}>
-            Join Event
-          </Button>
-        ) : (
+        {!isEventAfter ||
+        (post?.capacity < 9999 && currentEventCapacity <= 0) ? (
           <Popover>
             <PopoverTrigger>
               <Button colorScheme="red" size="xs">
-                Event Started
+                {post?.capacity < 9999 &&
+                  currentEventCapacity <= 0 &&
+                  isEventAfter &&
+                  "Event Full"}
+                {!isEventAfter && "Event Started"}
               </Button>
             </PopoverTrigger>
             <Portal>
@@ -243,11 +263,22 @@ const Actions = ({ post }) => {
                 <PopoverArrow />
                 <PopoverCloseButton />
                 <PopoverBody>
-                  <Text>Event has been Started Already</Text>
+                  <Text>
+                    {" "}
+                    {post?.capacity < 9999 &&
+                      currentEventCapacity <= 0 &&
+                      isEventAfter &&
+                      "Event Full"}
+                    {!isEventAfter && "Event has been Started Already"}
+                  </Text>
                 </PopoverBody>
               </PopoverContent>
             </Portal>
           </Popover>
+        ) : (
+          <Button colorScheme="blue" size="xs" onClick={handleJoinEvent}>
+            Join Event
+          </Button>
         )}
       </Flex>
       {

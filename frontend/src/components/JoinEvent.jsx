@@ -92,10 +92,11 @@ const JoinEvent = ({ user, post, joinModalOpen, setJoinModalOpen }) => {
         onCloseJoin();
       } else {
         const data = await res.json();
-        showToast("Error", data.error, "error");
+        console.log(data);
+        showToast("Error", data.message, "error");
       }
     } catch (error) {
-      showToast("Error", "Failed to create ticket", "error");
+      showToast("Error", error.message, "error");
       console.log(error);
     }
   };
