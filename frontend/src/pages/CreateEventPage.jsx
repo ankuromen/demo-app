@@ -40,8 +40,6 @@ import userAtom from "../atoms/userAtom";
 import useShowToast from "../hooks/useShowToast";
 import postsAtom from "../atoms/postsAtom";
 import { useNavigate, useParams } from "react-router-dom";
-import { debounce } from "lodash";
-import { BsFillImageFill } from "react-icons/bs";
 
 import {
   setKey,
@@ -90,6 +88,7 @@ const timeZones = [
 const categories = ["Music", "Technology", "Business", "Networking"];
 
 const CreateEventPage = () => {
+  const Navigate = useNavigate();
   const [postText, setPostText] = useState("");
   const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
   const imageRef = useRef(null);
@@ -316,6 +315,7 @@ const CreateEventPage = () => {
       setIsFree(false); // Reset free ticket price state
       setIsPrivate(false); // Reset private post setting state
       setRequireApproval(false);
+      Navigate('/')
     } catch (error) {
       showToast("Error", error, "error");
     } finally {

@@ -112,6 +112,7 @@ const PostPage = (post) => {
         maxW={{ base: "95%", lg: "60%" }}
         margin={"auto"}
         alignItems={"start"}
+        pb={10}
       >
         {/* left side */}
 

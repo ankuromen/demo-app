@@ -126,7 +126,9 @@ const HomePage = () => {
               <List>
                 {searchPostsResults.map((result) => (
                   <ListItem key={result._id}>
-                    <Link to={`/${user.username}/post/${result._id}`}>
+                    <Link
+                      to={`/${result.postedBy.username}/post/${result._id}`}
+                    >
                       <Text
                         _hover={{
                           textDecoration: "underline",

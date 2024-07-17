@@ -254,14 +254,15 @@ const getAllPosts = async (req, res) => {
 const searchPosts = async (req, res) => {
   try {
     const { query } = req.params;
-    const posts = await Post.find()
-    const matchedPosts = await posts.filter((post) => {
-      const similarity = stringSimilarity(query, post.name);
-      if (similarity > 0.2) {
-        return true;
-      }
-      return false;
-    })
+    const posts = await Post.find().populate("postedBy");
+     const matchedPosts = await posts
+       .filter((post) => {
+         const similarity = stringSimilarity(query, post.name);
+         if (similarity > 0.2) {
+           return true;
+         }
+         return false;
+       })
     res.status(200).json(matchedPosts);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -277,5 +278,5 @@ export {
   getUserPosts,
   checkInPost,
   getAllPosts,
-  searchPosts
+  searchPosts,
 };
