@@ -21,7 +21,7 @@ import {
 } from "../atoms/messagesAtom";
 import userAtom from "../atoms/userAtom";
 import { useSocket } from "../context/SocketContext";
-import { useLocation} from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const ChatPage = () => {
   const [searchingUser, setSearchingUser] = useState(false);
@@ -36,6 +36,7 @@ const ChatPage = () => {
   const { socket, onlineUsers } = useSocket();
   const location = useLocation();
   const sharingPost = location?.state?.post;
+  const contactUser = location?.state?.user;
 
   useEffect(() => {
     socket?.on("messagesSeen", ({ conversationId }) => {
@@ -58,6 +59,34 @@ const ChatPage = () => {
   }, [socket, setConversations]);
 
   useEffect(() => {
+    if (contactUser && contactUser?._id !== currentUser?._id) {
+      const conversationWithContactUser = conversations.find(
+        (conversation) => conversation.participants[0]._id === contactUser._id
+      );
+
+      if (conversationWithContactUser) {
+        setSelectedConversation(conversationWithContactUser);
+        return;
+      } else {
+        const newConversation = {
+          _id: Date.now(),
+          userId: contactUser._id,
+          username: contactUser.username,
+          userProfilePic: contactUser.profilePic,
+          participants: [
+            {
+              _id: contactUser._id,
+              username: contactUser.username,
+              profilePic: contactUser.profilePic,
+            },
+          ],
+        };
+        setConversations((prevConvs) => [...prevConvs, newConversation]);
+      }
+    }
+  }, [contactUser, conversations, currentUser, setSelectedConversation]);
+
+  useEffect(() => {
     const getConversations = async () => {
       try {
         const res = await fetch("/api/messages/conversations");
@@ -78,21 +107,10 @@ const ChatPage = () => {
     getConversations();
   }, [showToast, setConversations]);
 
-  // useEffect(() => {
-  //   if (sharingPost && conversationChange) {
-  //     console.log("post send");
-  //     console.log(selectedConversation);
-  //     navigate("/");
-  //   }
-  // }, [conversationChange]);
-
-  // useEffect(() => {
-  //   setConversationChange(true)
-  // }, [selectedConversation]);
-
   const handleConversationSearch = async (e) => {
     e.preventDefault();
     setSearchingUser(true);
+    console.log("search");
     try {
       const res = await fetch(`/api/users/profile/${searchText}`);
       const searchedUser = await res.json();
@@ -235,7 +253,7 @@ const ChatPage = () => {
           </Flex>
         )}
 
-        {selectedConversation._id && <MessageContainer post={sharingPost}/>}
+        {selectedConversation._id && <MessageContainer post={sharingPost} />}
       </Flex>
     </Box>
   );

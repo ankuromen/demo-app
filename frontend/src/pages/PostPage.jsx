@@ -48,6 +48,11 @@ const PostPage = (post) => {
     setPostAnalytics(res.data);
   };
 
+  const handleContactHost = async () => {
+    let user = currentPost.postedBy;
+    navigate("/chat", { state: { user: user } });
+  };
+
   useEffect(() => {
     if (currentPost && postAnalytics) {
       setCurrentEventCapacity(
@@ -56,6 +61,7 @@ const PostPage = (post) => {
       console.log("currentEventCapacity:", currentEventCapacity);
     }
   }, [currentPost, postAnalytics]);
+
 
   useEffect(() => {
     const getPost = async () => {
@@ -209,6 +215,7 @@ const PostPage = (post) => {
               _hover={{
                 color: "gray.500",
               }}
+              onClick={handleContactHost}
             >
               Contact the Host
             </Text>

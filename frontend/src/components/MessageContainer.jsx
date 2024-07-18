@@ -66,7 +66,7 @@ const MessageContainer = ({ post }) => {
   useEffect(() => {
     const lastMessageIsFromOtherUser =
       messages.length &&
-      messages[messages.length - 1].sender !== currentUser._id;
+      messages[messages.length - 1].sender !== currentUser?._id;
     if (lastMessageIsFromOtherUser) {
       socket.emit("markMessagesAsSeen", {
         conversationId: selectedConversation._id,
@@ -102,13 +102,17 @@ const MessageContainer = ({ post }) => {
       setMessages([]);
       try {
         if (selectedConversation.mock) return;
-        const res = await fetch(`/api/messages/${selectedConversation.userId}`);
-        const data = await res.json();
-        if (data.error) {
-          showToast("Error", data.error, "error");
-          return;
+        if (selectedConversation.userId) {
+          const res = await fetch(
+            `/api/messages/${selectedConversation.userId}`
+          );
+          const data = await res.json();
+          if (data.error) {
+            showToast("Error", data.error, "error");
+            return;
+          }
+          setMessages(data);
         }
-        setMessages(data);
       } catch (error) {
         showToast("Error", error.message, "error");
       } finally {
@@ -118,6 +122,7 @@ const MessageContainer = ({ post }) => {
     getMessages();
   }, [showToast, selectedConversation.userId, selectedConversation.mock]);
 
+  console.log(selectedConversation);
   return (
     <Flex
       flex="70"
@@ -178,7 +183,7 @@ const MessageContainer = ({ post }) => {
             >
               <Message
                 message={message}
-                ownMessage={currentUser._id === message.sender}
+                ownMessage={currentUser._id === message?.sender}
               />
             </Flex>
           ))}
