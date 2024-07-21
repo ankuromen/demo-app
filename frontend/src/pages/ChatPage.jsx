@@ -58,14 +58,19 @@ const ChatPage = () => {
     });
   }, [socket, setConversations]);
 
-  useEffect(() => {
+  const selectedContactload = async () => {
     if (contactUser && contactUser?._id !== currentUser?._id) {
-      const conversationWithContactUser = conversations.find(
+      const conversationAlreadyExists = conversations.find(
         (conversation) => conversation.participants[0]._id === contactUser._id
       );
 
-      if (conversationWithContactUser) {
-        setSelectedConversation(conversationWithContactUser);
+      if (conversationAlreadyExists) {
+        setSelectedConversation({
+          _id: conversationAlreadyExists._id,
+          userId: contactUser._id,
+          username: contactUser.username,
+          userProfilePic: contactUser.profilePic,
+        });
         return;
       } else {
         const newConversation = {
@@ -84,6 +89,10 @@ const ChatPage = () => {
         setConversations((prevConvs) => [...prevConvs, newConversation]);
       }
     }
+  };
+
+  useEffect(() => {
+    selectedContactload();
   }, [contactUser, conversations, currentUser, setSelectedConversation]);
 
   useEffect(() => {
@@ -232,7 +241,7 @@ const ChatPage = () => {
               <Conversation
                 key={conversation._id}
                 isOnline={onlineUsers.includes(
-                  conversation.participants[0]._id
+                  conversation.participants[0]?._id
                 )}
                 conversation={conversation}
               />

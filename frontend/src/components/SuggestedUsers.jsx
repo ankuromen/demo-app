@@ -35,7 +35,7 @@ const SuggestedUsers = () => {
 				Suggested Users
 			</Text>
 			<Flex direction={"column"} gap={4}>
-				{!loading && suggestedUsers.map((user) => <SuggestedUser key={user._id} user={user} />)}
+				{!loading && suggestedUsers?.map((user) => <SuggestedUser key={user._id} user={user} />)}
 				{loading &&
 					[0, 1, 2, 3, 4].map((_, idx) => (
 						<Flex key={idx} gap={2} alignItems={"center"} p={"1"} borderRadius={"md"}>

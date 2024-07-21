@@ -61,7 +61,6 @@ const Actions = ({ post }) => {
   useEffect(() => {
     if (post && postAnalytics) {
       setCurrentEventCapacity(post.capacity - postAnalytics[0]?.totalSales);
-      console.log("currentEventCapacity:", currentEventCapacity);
     }
   }, [post, postAnalytics]);
 
