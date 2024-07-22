@@ -35,6 +35,10 @@ const Signupnew = () => {
   const handleTogglePassword = () => setShowPassword(!showPassword);
 
   const handleSignup = async (values) => {
+    if (values.location !== values.locationInput) {
+      showToast("", "Select a Location", "error");
+      return;
+    }
     try {
       const res = await fetch("/api/users/signup", {
         method: "POST",
@@ -106,7 +110,6 @@ const Signupnew = () => {
           }}
           validationSchema={validationSchema}
           onSubmit={(values, { setSubmitting }) => {
-            console.log(values);
             handleSignup(values);
             setTimeout(() => {
               setSubmitting(false);
@@ -168,14 +171,15 @@ const Signupnew = () => {
                       const places = placesRef.current.getPlaces();
                       if (places && places.length > 0) {
                         const place = places[0];
-                        setFieldValue("venue", place.formatted_address);
+                        setFieldValue("location", place.formatted_address);
+                        setFieldValue("locationInput", place.formatted_address);
                       }
                     }}
                   >
                     <Field
                       as={Input}
                       type="text"
-                      name="venue"
+                      name="locationInput"
                       placeholder="Enter your location"
                     />
                   </StandaloneSearchBox>

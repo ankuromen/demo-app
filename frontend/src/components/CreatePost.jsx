@@ -37,20 +37,9 @@ import userAtom from "../atoms/userAtom";
 import useShowToast from "../hooks/useShowToast";
 import postsAtom from "../atoms/postsAtom";
 import { useParams } from "react-router-dom";
-import {
-  setKey,
-  setDefaults,
-  setLanguage,
-  setRegion,
-  fromAddress,
-  fromLatLng,
-  fromPlaceId,
-  setLocationType,
-  geocode,
-  RequestType,
-} from "react-geocode";
+import { setDefaults, geocode, RequestType } from "react-geocode";
 setDefaults({
-  key: import.meta.env.VITE_GOOGLE_GEOLOCATION_KEY, 
+  key: import.meta.env.VITE_GOOGLE_GEOLOCATION_KEY,
   language: "en", // Default language for responses.
   region: "es", // Default region for responses.
 });
@@ -122,13 +111,14 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [country, setCountry] = useState("");
+  const [venueInput, setVenueInput] = useState("");
   const inputRef = useRef();
   const handlePlaceChanged = async () => {
     const [place] = await inputRef.current.getPlaces();
 
     if (place) {
-      console.log(place);
       setVenue(place.formatted_address);
+      setVenueInput(place.formatted_address);
       setVenueLatitude(place.geometry.location.lat());
       setVenueLongitude(place.geometry.location.lng());
     }
@@ -246,17 +236,17 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
   };
   const handleCreatePost = async () => {
     if ((eventType === "Hybrid" || eventType === "Physical") && !venue) {
-      showToast("Error", "Please provide a venue for the event.", "error");
+      showToast("", "Please provide a venue for the event.", "error");
       showToast();
       return;
     }
+
     if ((eventType === "Hybrid" || eventType === "Virtual") && !meetingLink) {
-      showToast(
-        "Error",
-        "Please provide a meeting link for the event.",
-        "error"
-      );
+      showToast("", "Please provide a meeting link for the event.", "error");
       return;
+    }
+    if (venueInput !== venue) {
+      showToast("", "Please select a venue from Place suggestions", "error");
     }
     setLoading(true);
     try {
@@ -335,7 +325,7 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
     <>
       <Button
         position={"fixed"}
-        visibility={'hidden'}
+        visibility={"hidden"}
         bottom={10}
         right={5}
         bg={useColorModeValue("gray.300", "gray.dark")}
@@ -467,7 +457,8 @@ const CreatePost = ({ date, createPostOpen, setCreatePostOpen }) => {
                       type="text"
                       style={{ width: "100%" }}
                       placeholder="Venue"
-                      onChange={(e) => setVenue(e.target.value)}
+                      value={venueInput}
+                      onChange={(e) => setVenueInput(e.target.value)}
                     />
                   </StandaloneSearchBox>
                 </FormControl>

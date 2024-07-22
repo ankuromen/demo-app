@@ -89,6 +89,7 @@ const categories = ["Music", "Technology", "Business", "Networking"];
 
 const CreateEventPage = () => {
   const Navigate = useNavigate();
+  const { onClose } = useDisclosure();
   const [postText, setPostText] = useState("");
   const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
   const imageRef = useRef(null);
@@ -125,6 +126,8 @@ const CreateEventPage = () => {
   const [country, setCountry] = useState("");
   const inputRef = useRef();
   const [isEventTypeOpen, setIsEventTypeOpen] = useState(false);
+  const [venueInput, setVenueInput] = useState("");
+  const [isVenueSettingOpen, setIsVenueSettingOpen] = useState(false);
   const {
     isOpen: isOpenEditDescmodal,
     onOpen: openEditDescModal,
@@ -184,41 +187,11 @@ const CreateEventPage = () => {
       // console.log(place.geometry.location.lat());
       // console.log(place.geometry.location.lng());
       setVenue(place.formatted_address);
+      setVenueInput(place.formatted_address);
       setVenueLatitude(place.geometry.location.lat());
       setVenueLongitude(place.geometry.location.lng());
     }
   };
-  // const handlePlaceChanged = async () => {
-  //   const [place] = await inputRef.current.getPlaces()[0];
-
-  //   if (place) {
-  //     console.log(place.geometry.location.lat());
-  //     console.log(place.geometry.location.lng());
-  //     setVenue(place.formatted_address);
-  //   }
-  // };
-
-  // const debouncedHandlePlaceChanged = useCallback(
-  //   debounce(handlePlaceChanged, 300),
-  //   []
-  // );
-
-  // useEffect(() => {
-  //   if (inputRef.current) {
-  //     inputRef.current.addListener(
-  //       "places_changed",
-  //       debouncedHandlePlaceChanged
-  //     );
-  //   }
-  //   return () => {
-  //     if (inputRef.current) {
-  //       inputRef.current.removeListener(
-  //         "places_changed",
-  //         debouncedHandlePlaceChanged
-  //       );
-  //     }
-  //   };
-  // }, [debouncedHandlePlaceChanged]);
 
   const handleTextChange = (e) => {
     const inputText = e.target.value;
@@ -233,6 +206,9 @@ const CreateEventPage = () => {
     }
   };
 
+  const handleSave = () => {
+    setIsVenueSettingOpen(false);
+  };
   const handleCreatePost = async () => {
     if ((eventType === "Hybrid" || eventType === "Physical") && !venue) {
       showToast("Error", "Please provide a venue for the event.", "error");
@@ -246,6 +222,9 @@ const CreateEventPage = () => {
         "error"
       );
       return;
+    }
+    if (venueInput !== venue) {
+      showToast("", "Please select a venue from Place suggestions", "error");
     }
     setLoading(true);
     try {
@@ -315,7 +294,7 @@ const CreateEventPage = () => {
       setIsFree(false); // Reset free ticket price state
       setIsPrivate(false); // Reset private post setting state
       setRequireApproval(false);
-      Navigate('/')
+      Navigate("/");
     } catch (error) {
       showToast("Error", error, "error");
     } finally {
@@ -574,7 +553,7 @@ const CreateEventPage = () => {
             </Flex>
           </Grid>
           {/* location part*/}
-          <Popover style={{ minWidth: "100%" }}>
+          <Popover style={{ minWidth: "100%" }} isOpen={isVenueSettingOpen}>
             <PopoverTrigger>
               <Flex
                 bg={"gray.200"}
@@ -584,6 +563,7 @@ const CreateEventPage = () => {
                 p={3}
                 gap={2}
                 w="full"
+                onClick={() => setIsVenueSettingOpen(true)}
               >
                 <Flex flexDir={"row"} alignItems={"center"} gap={2}>
                   <CiLocationOn size={20} />
@@ -615,11 +595,6 @@ const CreateEventPage = () => {
                   <option value="Hybrid">Hybrid</option>
                 </Select>
                 {["Physical", "Hybrid"].includes(eventType) && (
-                  // <LoadScript
-                  //   style={{ width: "100%" }}
-                  //   googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY2}
-                  //   libraries={libraries}
-                  // >
                   <StandaloneSearchBox
                     onLoad={(ref) => (inputRef.current = ref)}
                     onPlacesChanged={handlePlaceChanged}
@@ -628,10 +603,9 @@ const CreateEventPage = () => {
                       type="text"
                       style={{ width: "100%" }}
                       placeholder="Venue"
-                      onChange={(e) => setVenue(e.target.value)}
+                      onChange={(e) => setVenueInput(e.target.value)}
                     />
                   </StandaloneSearchBox>
-                  // </LoadScript>
                 )}
                 {["Virtual", "Hybrid"].includes(eventType) && (
                   <>
@@ -651,7 +625,12 @@ const CreateEventPage = () => {
                     </Button>
                   </>
                 )}
-                <Button colorScheme="blue" style={{ minWidth: "100%" }}>
+
+                <Button
+                  colorScheme="blue"
+                  style={{ minWidth: "100%" }}
+                  onClick={handleSave}
+                >
                   Save
                 </Button>
               </PopoverBody>

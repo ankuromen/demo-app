@@ -27,6 +27,9 @@ const LocationSettingModal = ({
   const [location, setLocation] = useState(
     user.selectedLocation ? user.selectedLocation : ""
   );
+  const [locationInput, setLocationInput] = useState(
+    user.selectedLocation ? user.selectedLocation : ""
+  );
   const [selectedLocationLat, SetselectedLocationLat] = useState();
   const [selectedLocationLong, SetselectedLocationLong] = useState();
   const inputRef = useRef();
@@ -39,6 +42,7 @@ const LocationSettingModal = ({
       SetselectedLocationLat(place.geometry.location.lat());
       SetselectedLocationLong(place.geometry.location.lng());
       setLocation(place.formatted_address);
+      setLocationInput(place.formatted_address);
     }
   };
 
@@ -49,6 +53,10 @@ const LocationSettingModal = ({
   }, [locationSettingsOpen]);
 
   const updateSelectedLocation = async () => {
+    if (locationInput !== location) {
+      showToast("", "Please select a location from suggestions", "error");
+      return;
+    }
     try {
       const res = await axios.post("/api/users/update-selectedlocation", {
         userId: user._id,
@@ -59,7 +67,7 @@ const LocationSettingModal = ({
       localStorage.setItem("user-threads", JSON.stringify(res.data));
       setUser(res.data);
       setLocationSettingsOpen(false);
-      showToast("success", "Location Updated", "success");
+      showToast("", "Location Updated", "success");
     } catch (error) {
       showToast("error", "Error", "error");
     }
@@ -68,7 +76,7 @@ const LocationSettingModal = ({
   const closeLocation = () => {
     setLocationSettingsOpen && setLocationSettingsOpen(!locationSettingsOpen);
   };
-
+  
   return (
     <Modal isOpen={locationSettingsOpen} onClose={closeLocation} isCentered>
       <ModalOverlay />
@@ -87,8 +95,8 @@ const LocationSettingModal = ({
               type="text"
               style={{ width: "100%" }}
               placeholder="Location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              value={locationInput}
+              onChange={(e) => setLocationInput(e.target.value)}
             />
           </Autocomplete>
         </ModalBody>

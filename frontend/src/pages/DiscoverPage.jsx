@@ -314,14 +314,14 @@ const DiscoverPage = () => {
       >
         <Box>
           <MapContainer
-            center={[lat, long]}
+            center={lat && long ? [lat, long] : [51.5074, -0.1278]}
             zoom={13}
             style={{
               maxHeight: "60vh",
               height: "60vh",
               borderRadius: "5%",
             }}
-            attributionControl={false}  
+            attributionControl={false}
           >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
