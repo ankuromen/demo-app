@@ -3,6 +3,8 @@ import {
   Box,
   Button,
   Flex,
+  Grid,
+  HStack,
   Input,
   Skeleton,
   SkeletonCircle,
@@ -22,6 +24,7 @@ import {
 import userAtom from "../atoms/userAtom";
 import { useSocket } from "../context/SocketContext";
 import { useLocation } from "react-router-dom";
+import ChatDetails from "../components/ChatDetails";
 
 const ChatPage = () => {
   const [searchingUser, setSearchingUser] = useState(false);
@@ -34,10 +37,11 @@ const ChatPage = () => {
   const currentUser = useRecoilValue(userAtom);
   const showToast = useShowToast();
   const { socket, onlineUsers } = useSocket();
+
   const location = useLocation();
   const sharingPost = location?.state?.post;
   const contactUser = location?.state?.user;
-
+  const [isActivitiesOpen, setIsActivitiesOpen] = useState(false);
   useEffect(() => {
     socket?.on("messagesSeen", ({ conversationId }) => {
       setConversations((prev) => {
@@ -104,7 +108,6 @@ const ChatPage = () => {
           showToast("Error", data.error, "error");
           return;
         }
-        console.log(data);
         setConversations(data);
       } catch (error) {
         showToast("Error", error.message, "error");
@@ -119,7 +122,6 @@ const ChatPage = () => {
   const handleConversationSearch = async (e) => {
     e.preventDefault();
     setSearchingUser(true);
-    console.log("search");
     try {
       const res = await fetch(`/api/users/profile/${searchText}`);
       const searchedUser = await res.json();
@@ -175,34 +177,63 @@ const ChatPage = () => {
     <Box
       position={"absolute"}
       left={"50%"}
-      w={{ base: "100%", md: "80%", lg: "750px" }}
-      p={4}
+      w={{ base: "100%", md: "100%", lg: "100%" }}
+      h={"100%"}
       transform={"translateX(-50%)"}
     >
-      <Flex
-        gap={4}
-        flexDirection={{ base: "column", md: "row" }}
-        maxW={{
-          sm: "400px",
-          md: "full",
-        }}
+      <Grid
+        gridTemplateColumns={{ md: `1fr 2fr ${isActivitiesOpen ? "1fr" : ""}` }}
+        height={"80vh"}
         mx={"auto"}
       >
+        {/* Contacts Area */}
         <Flex
           flex={30}
           gap={2}
           flexDirection={"column"}
-          maxW={{ sm: "250px", md: "full" }}
+          p={3}
+          overflowY={"auto"}
+          sx={{
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+          }}
           mx={"auto"}
+          w={"100%"}
         >
           <Text
-            fontWeight={700}
-            color={useColorModeValue("gray.600", "gray.400")}
+            fontSize={"3xl"}
+            fontWeight={500}
+            color={useColorModeValue("gray.800", "white")}
           >
-            Your Conversations
+            Messages
           </Text>
+
+          <HStack mt={4}>
+            <Button
+              w={"50%"}
+              bg={"red.500"}
+              _hover={{
+                bg: "red.600",
+              }}
+              borderRadius={30}
+            >
+              Connections
+            </Button>
+            <Button w={"50%"} borderRadius={30}>
+              Communities
+            </Button>
+          </HStack>
+
           <form onSubmit={handleConversationSearch}>
-            <Flex alignItems={"center"} gap={2}>
+            <Flex
+              alignItems={"center"}
+              gap={2}
+              borderBottom={"0.1px solid"}
+              borderBottomColor={useColorModeValue("gray.200", "gray.800")}
+              pb={5}
+              mt={4}
+            >
               <Input
                 placeholder="Search for a user"
                 onChange={(e) => setSearchText(e.target.value)}
@@ -255,15 +286,26 @@ const ChatPage = () => {
             flexDir={"column"}
             alignItems={"center"}
             justifyContent={"center"}
-            height={"400px"}
           >
             <GiConversation size={100} />
             <Text fontSize={20}>Select a conversation to start messaging</Text>
           </Flex>
         )}
 
-        {selectedConversation._id && <MessageContainer post={sharingPost} />}
-      </Flex>
+        {/* Conversation Area */}
+        {selectedConversation._id && (
+          <MessageContainer
+            post={sharingPost}
+            isActivitiesOpen={isActivitiesOpen}
+            setIsActivitiesOpen={setIsActivitiesOpen}
+          />
+        )}
+
+        {/* Shared Area */}
+        {isActivitiesOpen && (
+          <ChatDetails setIsActivitiesOpen={setIsActivitiesOpen} />
+        )}
+      </Grid>
     </Box>
   );
 };

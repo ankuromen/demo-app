@@ -14,6 +14,7 @@ import {
   ModalOverlay,
   Spinner,
   Text,
+  useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
@@ -63,7 +64,6 @@ const MessageInput = ({ setMessages, post }) => {
         showToast("Error", data.error, "error");
         return;
       }
-      console.log(data);
       setMessages((messages) => [...messages, data]);
 
       setConversations((prevConvs) => {
@@ -90,7 +90,15 @@ const MessageInput = ({ setMessages, post }) => {
     }
   };
   return (
-    <Flex w={"full"} flexDirection={"column"}>
+    <Flex
+      w={"full"}
+      pt={5}
+      pb={5}
+      ps={2}
+      pe={2}
+      flexDirection={"column"}
+      bg={useColorModeValue("gray.200", "gray.dark")}
+    >
       {sharedPost?._id && (
         <Box
           borderWidth={"1px"}
@@ -111,20 +119,7 @@ const MessageInput = ({ setMessages, post }) => {
         </Box>
       )}
       <Flex gap={2} alignItems={"center"} w={"100%"}>
-        <form onSubmit={handleSendMessage} style={{ flex: 95 }}>
-          <InputGroup>
-            <Input
-              w={"full"}
-              placeholder="Type a message"
-              onChange={(e) => setMessageText(e.target.value)}
-              value={messageText}
-            />
-            <InputRightElement onClick={handleSendMessage} cursor={"pointer"}>
-              <IoSendSharp />
-            </InputRightElement>
-          </InputGroup>
-        </form>
-        <Flex flex={5} cursor={"pointer"}>
+        <Flex flex={5} cursor={"pointer"} ms={2}>
           <BsFillImageFill size={20} onClick={() => imageRef.current.click()} />
           <Input
             type={"file"}
@@ -133,6 +128,23 @@ const MessageInput = ({ setMessages, post }) => {
             onChange={handleImageChange}
           />
         </Flex>
+        <form onSubmit={handleSendMessage} style={{ flex: 95 }}>
+          <InputGroup>
+            <Input
+              w={"full"}
+              placeholder="Type a message"
+              onChange={(e) => setMessageText(e.target.value)}
+              value={messageText}
+              bg={useColorModeValue("gray.50", "whiteAlpha.100")}
+              borderRadius={20}
+              border={'hidden'}
+            />
+            <InputRightElement onClick={handleSendMessage} cursor={"pointer"}>
+              <IoSendSharp />
+            </InputRightElement>
+          </InputGroup>
+        </form>
+
         <Modal
           isOpen={imgUrl}
           onClose={() => {

@@ -1,4 +1,4 @@
-import { Avatar, Box, Flex, Image, Skeleton, Text } from "@chakra-ui/react";
+import { Avatar, Box, Flex, Image, Skeleton, Text, useColorModeValue } from "@chakra-ui/react";
 import { selectedConversationAtom } from "../atoms/messagesAtom";
 import { useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
@@ -29,12 +29,10 @@ const Message = ({ ownMessage, message }) => {
           {message.sharedPost?.map((post) => (
             <Box
               key={post._id}
-              borderWidth={"1px"}
               borderRadius={"lg"}
               overflow={"hidden"}
-              border={"1px"}
               maxW={"50%"}
-              borderColor={"gray.500"}
+              bg={useColorModeValue("gray.200", "gray.dark")}
               onClick={() => openEventPage(post)}
             >
               {post.img && (
@@ -64,14 +62,13 @@ const Message = ({ ownMessage, message }) => {
           ))}
           {message.text && (
             <Flex
-              bg={"green.800"}
+              bg={useColorModeValue("gray.200", "gray.dark")}
               maxW={"350px"}
               w={"fit-content"}
               p={2}
               borderRadius={"md"}
             >
               <Text
-                color={"white"}
                 style={{
                   wordWrap: "break-word",
                   maxWidth: "300px",
@@ -116,20 +113,18 @@ const Message = ({ ownMessage, message }) => {
               </Box>
             </Flex>
           )}
-
-          <Avatar src={user.profilePic} w="7" h={7} />
+          {/* 
+          <Avatar src={user.profilePic} w="7" h={7} /> */}
         </Flex>
       ) : (
         <Flex gap={2} flexDirection={"column"} alignSelf={"flex-end"}>
-          <Avatar src={selectedConversation.userProfilePic} w="7" h={7} />
+          {/* <Avatar src={selectedConversation.userProfilePic} w="7" h={7} /> */}
           {message.sharedPost?.map((post) => (
             <Box
               key={post._id}
-              borderWidth={"1px"}
               borderRadius={"lg"}
               overflow={"hidden"}
-              border={"1px"}
-              borderColor={"gray.500"}
+              bg={useColorModeValue("gray.200", "gray.dark")}
               onClick={() => openEventPage(post)}
             >
               {post.img && (
@@ -160,13 +155,11 @@ const Message = ({ ownMessage, message }) => {
 
           {message.text && (
             <Text
-              bg={"gray.400"}
+              bg={useColorModeValue("gray.200", "gray.dark")}
               p={1}
               maxW={"330px"}
               w={"fit-content"}
               borderRadius={"md"}
-              color={"black"}
-              
             >
               {message.text}
             </Text>

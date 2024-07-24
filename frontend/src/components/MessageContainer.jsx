@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  Button,
   Divider,
   Flex,
   Image,
@@ -17,11 +18,13 @@ import {
   conversationsAtom,
   selectedConversationAtom,
 } from "../atoms/messagesAtom";
+import { IoIosSearch } from "react-icons/io";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
 import { useSocket } from "../context/SocketContext.jsx";
 import messageSound from "../assets/sounds/message.mp3";
-const MessageContainer = ({ post }) => {
+import { MdOutlineMenuOpen } from "react-icons/md";
+const MessageContainer = ({ post, isActivitiesOpen, setIsActivitiesOpen }) => {
   const showToast = useShowToast();
   const selectedConversation = useRecoilValue(selectedConversationAtom);
   const [loadingMessages, setLoadingMessages] = useState(true);
@@ -122,22 +125,55 @@ const MessageContainer = ({ post }) => {
     getMessages();
   }, [showToast, selectedConversation.userId, selectedConversation.mock]);
 
-  console.log(selectedConversation);
   return (
     <Flex
       flex="70"
-      bg={useColorModeValue("gray.200", "gray.dark")}
+      h={"80vh"}
       borderRadius={"md"}
-      p={2}
       flexDirection={"column"}
+      borderStart={"0.1px solid"}
+      borderEnd={"0.1px solid"}
+      borderEndColor={useColorModeValue("gray.200", "gray.600")}
+      borderStartColor={useColorModeValue("gray.200", "gray.600")}
     >
       {/* Message header */}
-      <Flex w={"full"} h={12} alignItems={"center"} gap={2}>
-        <Avatar src={selectedConversation.userProfilePic} size={"sm"} />
-        <Text display={"flex"} alignItems={"center"}>
-          {selectedConversation.username}{" "}
-          <Image src="/verified.png" w={4} h={4} ml={1} />
-        </Text>
+      <Flex
+        w={"full"}
+        h={12}
+        alignItems={"center"}
+        justifyContent={"space-between"}
+        gap={2}
+        pt={10}
+        pb={10}
+        ps={3}
+        bg={useColorModeValue("gray.200", "gray.dark")}
+      >
+        <Flex alignItems={"center"} gap={2}>
+          <Avatar src={selectedConversation.userProfilePic} size={"sm"} />
+          <Text display={"flex"} alignItems={"center"} fontSize={"xl"}>
+            {selectedConversation.username}{" "}
+            <Image src="/verified.png" w={4} h={4} ml={1} />
+          </Text>
+        </Flex>
+        <Flex alignItems={"center"} me={2}>
+          <Button
+            bg={useColorModeValue("black", "white")}
+            _hover={{
+              bg: useColorModeValue("black", "white"),
+            }}
+            rounded="full"
+            me={5}
+          >
+            <IoIosSearch color={useColorModeValue("white", "black")} />
+          </Button>
+          {!isActivitiesOpen && (
+            <MdOutlineMenuOpen
+              size={30}
+              color="gray.500"
+              onClick={() => setIsActivitiesOpen(true)}
+            />
+          )}
+        </Flex>
       </Flex>
 
       <Divider />
@@ -147,8 +183,8 @@ const MessageContainer = ({ post }) => {
         gap={4}
         my={4}
         p={2}
-        height={"400px"}
         overflowY={"auto"}
+        flex={1}
       >
         {loadingMessages &&
           [...Array(5)].map((_, i) => (
