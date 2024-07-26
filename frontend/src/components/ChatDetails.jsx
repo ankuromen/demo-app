@@ -14,6 +14,7 @@ import { selectedConversationAtom } from "../atoms/messagesAtom";
 import useShowToast from "../hooks/useShowToast";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { IoDocumentText } from "react-icons/io5";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const ChatDetails = ({ setIsActivitiesOpen }) => {
   const selectedConversation = useRecoilValue(selectedConversationAtom);
@@ -24,9 +25,13 @@ const ChatDetails = ({ setIsActivitiesOpen }) => {
   const [messagesWithEvent, setMessagesWithEvent] = useState();
   const [messagesWithEventView, setMessagesWithEventView] = useState();
   const [loadingEvents, setLoadingEvents] = useState(true);
+  const [viewAllEvents, setViewAllEvents] = useState(false);
+  const [viewAllImages, setViewAllImages] = useState(false);
   const showToast = useShowToast();
+  const Navigate = useNavigate();
 
   const sortSharedImages = async (messages) => {
+    setLoadingImages(true);
     const messagesWithImages = await messages.reverse().filter((message) => {
       return message.img;
     });
@@ -35,6 +40,20 @@ const ChatDetails = ({ setIsActivitiesOpen }) => {
     setLoadingImages(false);
   };
 
+  const getUser = async (postedBy) => {
+    try {
+      const res = await fetch("/api/users/profile/" + postedBy);
+      const data = await res.json();
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+      return data;
+    } catch (error) {
+      showToast("Error", error.message, "error");
+      setPostUser(null);
+    }
+  };
   const sortSharedEvents = async (messages) => {
     const messagesWithEvent = await messages.filter((message) => {
       return message.sharedPost.length > 0;
@@ -66,6 +85,16 @@ const ChatDetails = ({ setIsActivitiesOpen }) => {
     getMessages();
   }, [selectedConversation.userId, selectedConversation.mock]);
 
+  const navigateToEvent = async (event) => {
+    console.log(event[0].postedBy);
+    try {
+      const user = await getUser(event[0].postedBy);
+      Navigate(`/${user.username}/post/${event[0]._id}`);
+    } catch {
+      showToast("", "Something went wrong", "error");
+    }
+  };
+
   useEffect(() => {
     sortSharedImages(messages);
     sortSharedEvents(messages);
@@ -79,6 +108,7 @@ const ChatDetails = ({ setIsActivitiesOpen }) => {
       p={3}
       h={"100%"}
       w={"100%"}
+      overflowY={"scroll"}
       bg={useColorModeValue("gray.200", "gray.dark")}
     >
       <Flex alignItems={"center"} justifyContent={"space-between"}>
@@ -93,22 +123,39 @@ const ChatDetails = ({ setIsActivitiesOpen }) => {
       </Flex>
 
       {/* SharedImages Part*/}
-      <Flex flexDirection={"column"} mt={10}>
-        <Flex alignItems={"center"} justifyContent={"space-between"} mb={5}>
-          <Text fontSize={"lg"} fontWeight={500}>
-            Shared Images
-          </Text>
-          <ArrowForwardIcon boxSize={4} />
-        </Flex>
-        {loadingImages && <Spinner />}
-        {messagesWithImagesView?.length > 0 && !loadingImages ? (
-          <Grid
-            gridTemplateColumns={{ base: "1fr 1fr", md: "1fr 1fr 1fr" }}
-            w={"100%"}
-            gap={3}
-          >
-            {messagesWithImagesView &&
-              messagesWithImagesView.map((message) => {
+      {!viewAllEvents && (
+        <Flex flexDirection={"column"} mt={10}>
+          <Flex alignItems={"center"} justifyContent={"space-between"} mb={5}>
+            <Text fontSize={"lg"} fontWeight={500}>
+              Shared Images
+            </Text>
+            {viewAllImages ? (
+              <IoCloseOutline
+                onClick={() => {
+                  setViewAllImages(false);
+                }}
+              />
+            ) : (
+              <ArrowForwardIcon
+                boxSize={4}
+                onClick={() => {
+                  setViewAllImages(true);
+                }}
+              />
+            )}
+          </Flex>
+          {loadingImages && <Spinner />}
+          {messagesWithImages?.length > 0 && !loadingImages ? (
+            <Grid
+              gridTemplateColumns={{ base: "1fr 1fr", md: "1fr 1fr 1fr" }}
+              w={"100%"}
+              gap={3}
+              overflow={"auto"}
+            >
+              {(viewAllImages
+                ? messagesWithImages
+                : messagesWithImagesView
+              ).map((message) => {
                 return (
                   <Box
                     key={message._id}
@@ -127,56 +174,77 @@ const ChatDetails = ({ setIsActivitiesOpen }) => {
                   </Box>
                 );
               })}
-          </Grid>
-        ) : (
-          <Text>No Image Found</Text>
-        )}
-      </Flex>
-      {/* SharedEvents Part*/}
-      <Flex flexDirection={"column"}>
-        <Flex alignItems={"center"} justifyContent={"space-between"} mb={5}>
-          <Text fontSize={"lg"} fontWeight={500}>
-            Shared Events
-          </Text>
-          <ArrowForwardIcon boxSize={4} />
+            </Grid>
+          ) : (
+            <Text>No Image Found</Text>
+          )}
         </Flex>
-        {loadingImages && <Spinner />}
-        {messagesWithEventView?.length > 0 && !loadingEvents ? (
-          messagesWithEventView?.map((message) => {
-            return (
-              <Flex
-                key={message.conversationId}
-                h={12}
-                w={"100%"}
-                overflow={"hidden"}
-                rounded={"lg"}
-                alignItems={"center"}
-                p={2}
-                gap={2}
-              >
-                <Flex
-                  borderRadius={"full"}
-                  bg={useColorModeValue("gray.dark", "white")}
-                  h={10}
-                  w={10}
-                  alignItems={"center"}
-                  justifyContent={"center"}
-                >
-                  <IoDocumentText
-                    size={24}
-                    color={useColorModeValue("white", "black")}
-                  />
-                </Flex>
-                <Text color={useColorModeValue("black", "white")}>
-                  {message.sharedPost[0].name}
-                </Text>
-              </Flex>
-            );
-          })
-        ) : (
-          <Text>No Events Found</Text>
-        )}
-      </Flex>
+      )}
+
+      {/* SharedEvents Part*/}
+      {!viewAllImages && (
+        <Flex flexDirection={"column"} mt={2}>
+          <Flex alignItems={"center"} justifyContent={"space-between"} mb={5}>
+            <Text fontSize={"lg"} fontWeight={500}>
+              Shared Events
+            </Text>
+            {viewAllEvents ? (
+              <IoCloseOutline
+                onClick={() => {
+                  setViewAllEvents(false);
+                }}
+              />
+            ) : (
+              <ArrowForwardIcon
+                boxSize={4}
+                onClick={() => {
+                  setViewAllEvents(true);
+                }}
+              />
+            )}
+          </Flex>
+          {loadingImages && <Spinner />}
+          {messagesWithEvent?.length > 0 && !loadingEvents ? (
+            (viewAllEvents ? messagesWithEvent : messagesWithEventView)?.map(
+              (message) => {
+                return (
+                  <Flex
+                    key={message.conversationId}
+                    h={12}
+                    w={"100%"}
+                    overflow={"hidden"}
+                    rounded={"lg"}
+                    alignItems={"center"}
+                    p={2}
+                    gap={2}
+                    cursor={"pointer"}
+                    onClick={() => navigateToEvent(message.sharedPost)}
+                  >
+                    <Flex
+                      borderRadius={"full"}
+                      bg={useColorModeValue("gray.dark", "white")}
+                      h={10}
+                      w={10}
+                      alignItems={"center"}
+                      justifyContent={"center"}
+                    >
+                      <IoDocumentText
+                        size={24}
+                        color={useColorModeValue("white", "black")}
+                      />
+                    </Flex>
+                    <Text color={useColorModeValue("black", "white")}>
+                      {message.sharedPost[0].name}
+                    </Text>
+                  </Flex>
+                );
+              }
+            )
+          ) : (
+            <Text>No Events Found</Text>
+          )}
+        </Flex>
+      )}
     </Flex>
   );
 };

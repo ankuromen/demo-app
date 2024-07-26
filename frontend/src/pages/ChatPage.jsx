@@ -178,7 +178,7 @@ const ChatPage = () => {
       position={"absolute"}
       left={"50%"}
       w={{ base: "100%", md: "100%", lg: "100%" }}
-      h={"100%"}
+      h={"80vh"}
       transform={"translateX(-50%)"}
     >
       <Grid
@@ -217,10 +217,16 @@ const ChatPage = () => {
                 bg: "red.600",
               }}
               borderRadius={30}
+              color={"white"}
             >
               Connections
             </Button>
-            <Button w={"50%"} borderRadius={30}>
+            <Button
+              w={"50%"}
+              borderRadius={30}
+              bg={useColorModeValue("gray.200", "gray.dark")}
+              color={useColorModeValue("black", "white")}
+            >
               Communities
             </Button>
           </HStack>

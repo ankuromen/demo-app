@@ -133,8 +133,8 @@ const MessageContainer = ({ post, isActivitiesOpen, setIsActivitiesOpen }) => {
       flexDirection={"column"}
       borderStart={"0.1px solid"}
       borderEnd={"0.1px solid"}
-      borderEndColor={useColorModeValue("gray.200", "gray.600")}
-      borderStartColor={useColorModeValue("gray.200", "gray.600")}
+      borderEndColor={useColorModeValue("gray.300", "gray.600")}
+      borderStartColor={useColorModeValue("gray.300", "gray.600")}
     >
       {/* Message header */}
       <Flex
