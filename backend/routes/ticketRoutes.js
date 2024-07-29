@@ -1,10 +1,39 @@
 import express from "express";
-import mongoose from "mongoose"; // Ensure mongoose is imported
+import mongoose from "mongoose"; 
+import nodemailer from "nodemailer";
 import Ticket from "../models/ticketModel.js";
 import EventAnalytics from "../models/eventAnalyticsModel.js";
 import Post from "../models/postModel.js";
 
 const router = express.Router();
+
+
+const transporter = nodemailer.createTransport({
+  service: "gmail", // Use your email service
+  auth: {
+    user: "your-email@gmail.com",
+    pass: "your-email-password",
+  },
+});
+
+
+// Function to send email
+const sendTicketEmail = async (email, ticketDetails) => {
+  const mailOptions = {
+    from: "your-email@gmail.com",
+    to: email,
+    subject: "Your Ticket Details",
+    text: `Here are your ticket details:\n${JSON.stringify(ticketDetails, null, 2)}`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Email sent successfully");
+  } catch (error) {
+    console.error("Error sending email:", error);
+  }
+};
+
 
 // Route for creating a ticket
 router.post("/createTicket", async (req, res) => {
@@ -49,12 +78,15 @@ router.post("/createTicket", async (req, res) => {
 
     if (post.capacity >= 9999) {
       await ticket.save();
+      await sendTicketEmail(email, ticket.ticketDetails); // Send email with ticket details
       return res.status(201).json({ message: "Ticket created successfully" });
     }
+
     const availableTickets = post.capacity - eventAnalytics[0].totalSales;
 
     if (availableTickets > tickets && post.capacity < 9999) {
       await ticket.save();
+      await sendTicketEmail(email, ticket.ticketDetails); // Send email with ticket details
       return res.status(201).json({ message: "Ticket created successfully" });
     } else {
       return res.status(400).json({ message: `${availableTickets} Tickets left` });
