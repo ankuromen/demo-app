@@ -7,6 +7,7 @@ import {
   Image,
   Spinner,
   Text,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import useGetUserProfile from "../hooks/useGetUserProfile";
@@ -61,7 +62,6 @@ const PostPage = (post) => {
       console.log("currentEventCapacity:", currentEventCapacity);
     }
   }, [currentPost, postAnalytics]);
-
 
   useEffect(() => {
     const getPost = async () => {
@@ -138,7 +138,7 @@ const PostPage = (post) => {
           )}
           <Box display={{ base: "none", lg: "block" }}>
             <Text
-              color={"gray.500"}
+              color={useColorModeValue("gray.500", "whiteAlpha.800")}
               pt={5}
               pb={2}
               fontSize={"sm"}
@@ -152,7 +152,7 @@ const PostPage = (post) => {
               <Avatar
                 src={user.profilePic}
                 size={"xs"}
-                name="Mark Zuckerberg"
+                name={user.username}
                 onClick={(e) => {
                   e.preventDefault();
                   navigate(`/${user.username}`);
@@ -161,7 +161,7 @@ const PostPage = (post) => {
               <Text
                 fontSize={20}
                 fontWeight={"500"}
-                color={"gray.600"}
+                color={useColorModeValue("gray.600", "whiteAlpha.800")}
                 onClick={(e) => {
                   e.preventDefault();
                   navigate(`/${user.username}`);
@@ -173,7 +173,7 @@ const PostPage = (post) => {
           </Box>
           <Box pb={5} display={{ base: "none", lg: "block" }}>
             <Text
-              color={"gray.500"}
+              color={useColorModeValue("gray.500", "whiteAlpha.800")}
               pt={5}
               pb={2}
               fontSize={"sm"}
@@ -202,7 +202,10 @@ const PostPage = (post) => {
                 ms={-2}
               />
             </Flex>
-            <Text fontSize={"xs"} color={"gray.400"}>
+            <Text
+              fontSize={"xs"}
+              color={useColorModeValue("gray.400", "whiteAlpha.800")}
+            >
               Alejandro, Azia To and 70 others
             </Text>
           </Box>
@@ -210,10 +213,10 @@ const PostPage = (post) => {
             <Text
               pt={2}
               fontWeight={500}
-              color={"gray.400"}
+              color={useColorModeValue("gray.400", "whiteAlpha.700")}
               transition={"ease-in-out 0.5s"}
               _hover={{
-                color: "gray.500",
+                color: useColorModeValue("gray.500", "whiteAlpha.800"),
               }}
               onClick={handleContactHost}
             >
@@ -222,10 +225,10 @@ const PostPage = (post) => {
             <Text
               pt={2}
               fontWeight={500}
-              color={"gray.400"}
+              color={useColorModeValue("gray.400", "whiteAlpha.700")}
               transition={"ease-in-out 0.5s"}
               _hover={{
-                color: "gray.500",
+                color: useColorModeValue("gray.500", "whiteAlpha.800"),
               }}
             >
               Report Event
@@ -238,7 +241,7 @@ const PostPage = (post) => {
         <Flex w="100%" ps={3} direction={"column"}>
           <Text
             fontSize={{ base: "35", md: 48 }}
-            color={"gray.700"}
+            color={useColorModeValue("gray.700", "whiteAlpha.900")}
             fontWeight={600}
             wordBreak={"break-word"}
           >
@@ -249,21 +252,25 @@ const PostPage = (post) => {
             gap={{ base: 5, md: "none" }}
           >
             {" "}
-            <Flex gap={5} color={"gray.600"} pt={1}>
+            <Flex
+              gap={5}
+              color={useColorModeValue("gray.600", "whiteAlpha.800")}
+              pt={1}
+            >
               <Box
                 w={"2.5em"}
                 h={"2.5em"}
                 borderRadius={8}
                 border={"1px solid"}
-                borderColor={"gray.300"}
+                borderColor={useColorModeValue("gray.300", "whiteAlpha.800")}
                 overflow={"hidden"}
-                color={"gray.600"}
+                color={useColorModeValue("gray.600", "whiteAlpha.900")}
               >
                 <Text
                   fontSize={"2xs"}
                   fontWeight={"bold"}
                   h={"fit-content"}
-                  bg={"gray.300"}
+                  bg={useColorModeValue("gray.300", "whiteAlpha.700")}
                   textAlign={"center"}
                 >
                   {new Date(currentPost.startDate).toLocaleDateString([], {
@@ -285,15 +292,19 @@ const PostPage = (post) => {
                 <Text fontSize={15}>{currentPost.startTime}</Text>
               </Box>
             </Flex>
-            <Flex gap={5} color={"gray.600"} pt={1}>
+            <Flex
+              gap={5}
+              color={useColorModeValue("gray.600", "whiteAlpha.800")}
+              pt={1}
+            >
               <Box
                 w={"2.5em"}
                 h={"2.5em"}
                 borderRadius={8}
                 border={"1px solid"}
-                borderColor={"gray.300"}
+                borderColor={useColorModeValue("gray.300", "whiteAlpha.800")}
                 overflow={"hidden"}
-                color={"gray.600"}
+                color={useColorModeValue("gray.600", "whiteAlpha.800")}
                 display={"flex"}
                 justifyContent={"center"}
                 alignItems={"center"}
@@ -313,17 +324,17 @@ const PostPage = (post) => {
 
           <Box
             border={"2px solid"}
-            borderColor={"gray.200"}
+            borderColor={useColorModeValue("gray.200", "whiteAlpha.200")}
             borderRadius={10}
             mt={10}
             overflow={"hidden"}
           >
             <Text
-              bg={"gray.200"}
+              bg={useColorModeValue("gray.200", "whiteAlpha.200")}
               ps={2}
               pt={1}
               pb={1}
-              color={"gray.500"}
+              color={useColorModeValue("gray.500", "whiteAlpha.800")}
               fontWeight={"500"}
             >
               Registration
@@ -397,7 +408,7 @@ const PostPage = (post) => {
 
           <Box>
             <Text
-              color={"gray.500"}
+              color={useColorModeValue("gray.500", "whiteAlpha.800")}
               pt={5}
               pb={2}
               fontSize={"sm"}
@@ -415,7 +426,7 @@ const PostPage = (post) => {
 
           <Box>
             <Text
-              color={"gray.500"}
+              color={useColorModeValue("gray.500", "whiteAlpha.800")}
               pt={5}
               pb={2}
               fontSize={"sm"}
@@ -425,7 +436,12 @@ const PostPage = (post) => {
             >
               Location
             </Text>
-            <Text color={"gray.600"} pb={3} fontWeight={400} fontSize={25}>
+            <Text
+              color={useColorModeValue("gray.600", "whiteAlpha.900")}
+              pb={3}
+              fontWeight={400}
+              fontSize={25}
+            >
               {currentPost?.venue}
             </Text>
             <Box borderRadius={10} overflow={"hidden"} mt={2} mb={4}>

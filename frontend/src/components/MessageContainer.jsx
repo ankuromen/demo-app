@@ -1,6 +1,5 @@
 import {
   Avatar,
-  Box,
   Button,
   Divider,
   Flex,
@@ -24,7 +23,14 @@ import userAtom from "../atoms/userAtom";
 import { useSocket } from "../context/SocketContext.jsx";
 import messageSound from "../assets/sounds/message.mp3";
 import { MdOutlineMenuOpen } from "react-icons/md";
-const MessageContainer = ({ post, isActivitiesOpen, setIsActivitiesOpen }) => {
+import { ChevronLeftIcon } from "@chakra-ui/icons";
+
+const MessageContainer = ({
+  post,
+  isActivitiesOpen,
+  setIsActivitiesOpen,
+  setSelectedConversation,
+}) => {
   const showToast = useShowToast();
   const selectedConversation = useRecoilValue(selectedConversationAtom);
   const [loadingMessages, setLoadingMessages] = useState(true);
@@ -127,7 +133,7 @@ const MessageContainer = ({ post, isActivitiesOpen, setIsActivitiesOpen }) => {
 
   return (
     <Flex
-      flex="70"
+      display={{ base: `${isActivitiesOpen ? "none" : "flex"}`, lg: "flex" }}
       h={"80vh"}
       borderRadius={"md"}
       flexDirection={"column"}
@@ -149,6 +155,18 @@ const MessageContainer = ({ post, isActivitiesOpen, setIsActivitiesOpen }) => {
         bg={useColorModeValue("gray.200", "gray.dark")}
       >
         <Flex alignItems={"center"} gap={2}>
+          <ChevronLeftIcon
+            display={{ md: "none" }}
+            boxSize={8}
+            onClick={() =>
+              setSelectedConversation({
+                _id: "",
+                userId: "",
+                username: "",
+                userProfilePic: "",
+              })
+            }
+          />
           <Avatar src={selectedConversation.userProfilePic} size={"sm"} />
           <Text display={"flex"} alignItems={"center"} fontSize={"xl"}>
             {selectedConversation.username}{" "}
@@ -178,14 +196,7 @@ const MessageContainer = ({ post, isActivitiesOpen, setIsActivitiesOpen }) => {
 
       <Divider />
 
-      <Flex
-        flexDir={"column"}
-        gap={4}
-        my={4}
-        p={2}
-        overflowY={"auto"}
-        flex={1}
-      >
+      <Flex flexDir={"column"} gap={4} my={4} p={2} overflowY={"auto"} flex={1}>
         {loadingMessages &&
           [...Array(5)].map((_, i) => (
             <Flex

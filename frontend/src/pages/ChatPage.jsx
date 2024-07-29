@@ -42,6 +42,7 @@ const ChatPage = () => {
   const sharingPost = location?.state?.post;
   const contactUser = location?.state?.user;
   const [isActivitiesOpen, setIsActivitiesOpen] = useState(false);
+
   useEffect(() => {
     socket?.on("messagesSeen", ({ conversationId }) => {
       setConversations((prev) => {
@@ -182,12 +183,20 @@ const ChatPage = () => {
       transform={"translateX(-50%)"}
     >
       <Grid
-        gridTemplateColumns={{ md: `1fr 2fr ${isActivitiesOpen ? "1fr" : ""}` }}
+        gridTemplateColumns={{
+          base: "1fr",
+          md: "1fr 2fr",
+          lg: `1fr 2fr ${isActivitiesOpen ? "1fr" : ""}`,
+        }}
         height={"80vh"}
         mx={"auto"}
       >
         {/* Contacts Area */}
         <Flex
+          display={{
+            base: `${selectedConversation?._id ? "none" : "flex"}`,
+            md: "flex",
+          }}
           flex={30}
           gap={2}
           flexDirection={"column"}
@@ -288,6 +297,7 @@ const ChatPage = () => {
           <Flex
             flex={70}
             borderRadius={"md"}
+            display={{ base: "none", md: "flex" }}
             p={2}
             flexDir={"column"}
             alignItems={"center"}
@@ -301,15 +311,20 @@ const ChatPage = () => {
         {/* Conversation Area */}
         {selectedConversation._id && (
           <MessageContainer
+            display={{ md: `$isActivitiesOpen?'none'` }}
             post={sharingPost}
             isActivitiesOpen={isActivitiesOpen}
+            setSelectedConversation={setSelectedConversation}
             setIsActivitiesOpen={setIsActivitiesOpen}
           />
         )}
 
         {/* Shared Area */}
         {isActivitiesOpen && (
-          <ChatDetails setIsActivitiesOpen={setIsActivitiesOpen} />
+          <ChatDetails
+            setIsActivitiesOpen={setIsActivitiesOpen}
+            isActivitiesOpen={isActivitiesOpen}
+          />
         )}
       </Grid>
     </Box>

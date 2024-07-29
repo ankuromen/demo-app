@@ -16,7 +16,7 @@ import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { IoDocumentText } from "react-icons/io5";
 import { Navigate, useNavigate } from "react-router-dom";
 
-const ChatDetails = ({ setIsActivitiesOpen }) => {
+const ChatDetails = ({ setIsActivitiesOpen ,isActivitiesOpen}) => {
   const selectedConversation = useRecoilValue(selectedConversationAtom);
   const [loadingImages, setLoadingImages] = useState(true);
   const [messages, setMessages] = useState([]);
@@ -102,6 +102,7 @@ const ChatDetails = ({ setIsActivitiesOpen }) => {
 
   return (
     <Flex
+      display={{ sm: `${!isActivitiesOpen ? "none" : "flex"}`, lg: "flex" }}
       flex={30}
       gap={2}
       flexDirection={"column"}
