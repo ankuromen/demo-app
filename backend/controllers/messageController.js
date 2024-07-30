@@ -102,5 +102,21 @@ async function getConversations(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
+async function searchMessages(req, res) {
+  const { conversationId } = req.params;
+  const { query } = req.query;
 
-export { sendMessage, getMessages, getConversations };
+  try {
+    // Find messages in the specified conversation that contain the query text
+    const messages = await Message.find({
+      conversationId,
+      text: { $regex: query, $options: "i" }, // case-insensitive search
+    });
+
+    res.status(200).json(messages);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+export { sendMessage, getMessages, getConversations, searchMessages };

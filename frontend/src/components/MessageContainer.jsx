@@ -4,26 +4,24 @@ import {
   Divider,
   Flex,
   Image,
+  Input,
   Skeleton,
   SkeletonCircle,
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { useEffect, useRef, useState } from "react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { IoIosSearch } from "react-icons/io";
+import { MdOutlineMenuOpen } from "react-icons/md";
+import { ChevronLeftIcon } from "@chakra-ui/icons";
 import Message from "./Message";
 import MessageInput from "./MessageInput";
-import { useEffect, useRef, useState } from "react";
 import useShowToast from "../hooks/useShowToast";
-import {
-  conversationsAtom,
-  selectedConversationAtom,
-} from "../atoms/messagesAtom";
-import { IoIosSearch } from "react-icons/io";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { conversationsAtom, selectedConversationAtom } from "../atoms/messagesAtom";
 import userAtom from "../atoms/userAtom";
 import { useSocket } from "../context/SocketContext.jsx";
 import messageSound from "../assets/sounds/message.mp3";
-import { MdOutlineMenuOpen } from "react-icons/md";
-import { ChevronLeftIcon } from "@chakra-ui/icons";
 
 const MessageContainer = ({
   post,
@@ -35,6 +33,9 @@ const MessageContainer = ({
   const selectedConversation = useRecoilValue(selectedConversationAtom);
   const [loadingMessages, setLoadingMessages] = useState(true);
   const [messages, setMessages] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchVisible, setSearchVisible] = useState(false);
   const currentUser = useRecoilValue(userAtom);
   const { socket } = useSocket();
   const setConversations = useSetRecoilState(conversationsAtom);
@@ -46,7 +47,6 @@ const MessageContainer = ({
         setMessages((prev) => [...prev, message]);
       }
 
-      // make a sound if the window is not focused
       if (!document.hasFocus()) {
         const sound = new Audio(messageSound);
         sound.play();
@@ -74,8 +74,7 @@ const MessageContainer = ({
 
   useEffect(() => {
     const lastMessageIsFromOtherUser =
-      messages.length &&
-      messages[messages.length - 1].sender !== currentUser?._id;
+      messages.length && messages[messages.length - 1].sender !== currentUser?._id;
     if (lastMessageIsFromOtherUser) {
       socket.emit("markMessagesAsSeen", {
         conversationId: selectedConversation._id,
@@ -112,9 +111,7 @@ const MessageContainer = ({
       try {
         if (selectedConversation.mock) return;
         if (selectedConversation.userId) {
-          const res = await fetch(
-            `/api/messages/${selectedConversation.userId}`
-          );
+          const res = await fetch(`/api/messages/${selectedConversation.userId}`);
           const data = await res.json();
           if (data.error) {
             showToast("Error", data.error, "error");
@@ -130,6 +127,36 @@ const MessageContainer = ({
     };
     getMessages();
   }, [showToast, selectedConversation.userId, selectedConversation.mock]);
+
+  useEffect(() => {
+    if (searchQuery) {
+      searchMessages(searchQuery);
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchQuery]);
+
+  const searchMessages = async (query) => {
+    if (!selectedConversation._id) return;
+
+    try {
+      const res = await fetch(
+        `/api/messages/search/${selectedConversation._id}?query=${query}`
+      );
+      const data = await res.json();
+      if (data.error) {
+        console.error("Error:", data.error);
+      } else {
+        setSearchResults(data);
+      }
+    } catch (error) {
+      console.error("Error:", error.message);
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
 
   return (
     <Flex
@@ -181,6 +208,7 @@ const MessageContainer = ({
             }}
             rounded="full"
             me={5}
+            onClick={() => setSearchVisible(!searchVisible)}
           >
             <IoIosSearch color={useColorModeValue("white", "black")} />
           </Button>
@@ -195,6 +223,25 @@ const MessageContainer = ({
       </Flex>
 
       <Divider />
+
+      {searchVisible && (
+        <Flex flexDirection="column" p={4}>
+          <Input
+            placeholder="Search messages..."
+            value={searchQuery}
+            onChange={handleSearchChange}
+          />
+          <Flex flexDirection="column" mt={2}>
+            {searchResults.map((result) => (
+              <Message
+                key={result._id}
+                message={result}
+                ownMessage={currentUser._id === result.sender}
+              />
+            ))}
+          </Flex>
+        </Flex>
+      )}
 
       <Flex flexDir={"column"} gap={4} my={4} p={2} overflowY={"auto"} flex={1}>
         {loadingMessages &&
