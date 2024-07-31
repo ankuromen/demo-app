@@ -14,7 +14,7 @@ import { selectedConversationAtom } from "../atoms/messagesAtom";
 import useShowToast from "../hooks/useShowToast";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { IoDocumentText } from "react-icons/io5";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const ChatDetails = ({ setIsActivitiesOpen ,isActivitiesOpen}) => {
   const selectedConversation = useRecoilValue(selectedConversationAtom);
@@ -86,7 +86,6 @@ const ChatDetails = ({ setIsActivitiesOpen ,isActivitiesOpen}) => {
   }, [selectedConversation.userId, selectedConversation.mock]);
 
   const navigateToEvent = async (event) => {
-    console.log(event[0].postedBy);
     try {
       const user = await getUser(event[0].postedBy);
       Navigate(`/${user.username}/post/${event[0]._id}`);

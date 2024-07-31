@@ -10,8 +10,9 @@ import userAtom from "../atoms/userAtom";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import useFollowUnfollow from "../hooks/useFollowUnfollow";
 import { AtSignIcon } from "@chakra-ui/icons";
-import { AiFillCompass, AiFillFlag, AiTwotoneHeart } from "react-icons/ai";
+import { AiFillCompass, AiTwotoneHeart } from "react-icons/ai";
 import { FaLinkedinIn, FaTiktok, FaXTwitter, FaYoutube } from "react-icons/fa6";
+import { RxDotsHorizontal } from "react-icons/rx";
 
 const UserHeader = ({ user }) => {
   const toast = useToast();
@@ -51,7 +52,6 @@ const UserHeader = ({ user }) => {
                 <Text fontSize={"sm"}>{user.location}</Text>
               </>
             )}
-
             {/* <AiFillFlag />
             <Text fontSize={"sm"}>{user.nationality}</Text> */}
           </Flex>
@@ -59,23 +59,15 @@ const UserHeader = ({ user }) => {
             <AiTwotoneHeart />
             <Text fontSize={"sm"}>{user.interests.join(", ")}</Text>
           </Flex>
-          <Text fontSize="xl" color={"gray.500"}>
-            Bio
-          </Text>
-          <Box
-            border={"2px"}
-            borderRadius={"md"}
-            w="100%"
-            borderColor={"gray.200"}
-            p={4}
-          >
+
+          <Box borderRadius={"md"} w="100%" borderColor={"gray.200"}>
             <Text fontSize={"sm"} fontStyle={"italic"}>
               {" "}
               {user.bio}
             </Text>
           </Box>
         </Box>
-        <Box>
+        <Flex flexDir={"column"}>
           {user.profilePic && (
             <Avatar
               name={user.name}
@@ -96,14 +88,31 @@ const UserHeader = ({ user }) => {
               }}
             />
           )}
-        </Box>
+          <Menu>
+            <MenuButton marginLeft={"auto"} mr={4} mt={3}>
+              <RxDotsHorizontal />
+            </MenuButton>
+            <MenuList>
+              <MenuItem>
+                {currentUser?._id === user._id && (
+                  <Link
+                    as={RouterLink}
+                    to="/update"
+                    textDecoration={"none"}
+                    fontWeight={"500"}
+                  >
+                    Update Profile
+                  </Link>
+                )}
+              </MenuItem>
+              <MenuItem onClick={copyURL} fontWeight={"500"}>
+                Copy link
+              </MenuItem>
+            </MenuList>
+          </Menu>
+        </Flex>
       </Flex>
 
-      {currentUser?._id === user._id && (
-        <Link as={RouterLink} to="/update">
-          <Button size={"sm"}>Update Profile</Button>
-        </Link>
-      )}
       {currentUser?._id !== user._id && (
         <Button size={"sm"} onClick={handleFollowUnfollow} isLoading={updating}>
           {following ? "Unfollow" : "Follow"}
@@ -148,7 +157,7 @@ const UserHeader = ({ user }) => {
               <BsGlobe2 size={24} cursor={"pointer"} />
             </Link>
           </Box>
-          <Box className="icon-container">
+          {/* <Box className="icon-container">
             <Menu>
               <MenuButton>
                 <CgMoreO size={24} cursor={"pointer"} />
@@ -161,7 +170,7 @@ const UserHeader = ({ user }) => {
                 </MenuList>
               </Portal>
             </Menu>
-          </Box>
+          </Box> */}
         </Flex>
       </Flex>
       {currentUser?._id === user._id && (
