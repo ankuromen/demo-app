@@ -55,7 +55,7 @@ const UserPage = () => {
         </Flex>
       )}
       <Grid
-        gridTemplateColumns={"1fr 1fr 1fr "}
+        gridTemplateColumns={{ base: "1fr 1fr", md: "1fr 1fr 1fr " }}
         pb={2}
         w={"80%"}
         m={"auto"}
@@ -66,10 +66,6 @@ const UserPage = () => {
           <EventsCard key={post._id} post={post} postedBy={post.postedBy} />
         ))}
       </Grid>
-
-      {/* {posts.map((post) => (
-        <Post key={post._id} post={post} postedBy={post.postedBy} />
-      ))} */}
     </>
   );
 };
