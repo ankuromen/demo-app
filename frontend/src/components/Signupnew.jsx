@@ -23,18 +23,69 @@ import { useSetRecoilState } from "recoil";
 import authScreenAtom from "../atoms/authAtom";
 import useShowToast from "../hooks/useShowToast";
 import userAtom from "../atoms/userAtom";
-
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 
 const Signupnew = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [otp, setOtp] = useState("");
   const setAuthScreen = useSetRecoilState(authScreenAtom);
   const showToast = useShowToast();
   const setUser = useSetRecoilState(userAtom);
   const placesRef = useRef(null);
+
   const handleTogglePassword = () => setShowPassword(!showPassword);
 
+  const sendOtp = async (email) => {
+    try {
+      const res = await fetch("/api/users/send-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+      setOtpSent(true);
+      showToast("Success", "OTP sent to your email", "success");
+    } catch (error) {
+      showToast("Error", error.message, "error");
+    }
+  };
+
+  const verifyOtp = async (email) => {
+    try {
+      const res = await fetch("/api/users/verify-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, otp }),
+      });
+      const data = await res.json();
+
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+      setOtpVerified(true);
+      showToast("Success", "OTP verified successfully", "success");
+    } catch (error) {
+      showToast("Error", error.message, "error");
+    }
+  };
+
   const handleSignup = async (values) => {
+    if (!otpVerified) {
+      showToast("Error", "Please verify the OTP", "error");
+      return;
+    }
     if (values.location !== values.locationInput) {
       showToast("", "Select a Location", "error");
       return;
@@ -58,7 +109,7 @@ const Signupnew = () => {
       setUser(data);
       showToast("Success", "Account Created Successfully", "success");
     } catch (error) {
-      showToast("Error", error, "error");
+      showToast("Error", error.message, "error");
     }
   };
 
@@ -79,6 +130,8 @@ const Signupnew = () => {
       .min(8, "Password must be at least 8 characters")
       .required("Password is required"),
   });
+
+
   return (
     <Flex maxW="md" mx="auto" flexDir={"column"}>
       <Heading as="h1" size="xl" textAlign="center" mb={6}>
@@ -137,7 +190,7 @@ const Signupnew = () => {
                     style={{ color: "red" }}
                   />
                 </FormControl>
-                <FormControl id="email">
+                 <FormControl id="email">
                   <FormLabel>Email</FormLabel>
                   <Field as={Input} type="email" name="email" />
                   <ErrorMessage
@@ -145,7 +198,33 @@ const Signupnew = () => {
                     component="div"
                     style={{ color: "red" }}
                   />
+                  <Button
+                    mt={2}
+                    onClick={() => sendOtp(values.email)}
+                    isDisabled={otpSent}
+                  >
+                    {otpSent ? "OTP Sent" : "Send OTP"}
+                  </Button>
                 </FormControl>
+
+                {otpSent && (
+                  <FormControl id="otp">
+                    <FormLabel>Enter OTP</FormLabel>
+                    <Field as={Input} type="text" name="otp" onChange={(e) => setOtp(e.target.value)} />
+                    <Button
+                      mt={2}
+                      onClick={() => verifyOtp(values.email)}
+                      isDisabled={otpVerified}
+                    >
+                      {otpVerified ? "OTP Verified" : "Verify OTP"}
+                    </Button>
+                    <ErrorMessage
+                      name="otp"
+                      component="div"
+                      style={{ color: "red" }}
+                    />
+                  </FormControl>
+                )}
                 <FormControl>
                   <FormLabel>Are you a Solo Organizer?</FormLabel>
                   <Field name="soloOrganizer">

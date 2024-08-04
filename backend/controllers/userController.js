@@ -9,7 +9,7 @@ import nodemailer from "nodemailer";
 import { ObjectId } from "mongodb";
 import { stringSimilarity } from "string-similarity-js";
 const bcryptsalt = await bcrypt.genSalt(10);
-
+const otpStore = new Map();
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select("-password -updatedAt").lean();
@@ -61,12 +61,26 @@ const signupUser = async (req, res) => {
       password,
       notificationsEnabled,
       soloOrganizer,
+      otp,
     } = req.body;
-    const user = await User.findOne({ $or: [{ email }, { username }] });
 
-    if (user) {
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+
+    if (existingUser) {
       return res.status(400).json({ error: "User already exists" });
     }
+
+    const storedOtp = otpStore.get(email);
+    if (!storedOtp) {
+      return res.status(400).json({ error: "OTP not requested or expired" });
+    }
+
+    if (otp !== storedOtp) {
+      return res.status(400).json({ error: "Invalid OTP" });
+    }
+
+    otpStore.delete(email);
+
     const hashedPassword = await bcrypt.hash(password, bcryptsalt);
 
     const newUser = new User({
@@ -84,42 +98,62 @@ const signupUser = async (req, res) => {
       soloOrganizer,
     });
     await newUser.save();
-    const currentUser = await User.find({ $or: [{ email }, { username }] });
-    console.log(currentUser[0]._id);
-    await new UserSetting({ userid: currentUser[0]._id }).save();
+    await new UserSetting({ userid: newUser._id }).save();
 
-    if (newUser) {
-      generateTokenAndSetCookie(newUser._id, res);
+    generateTokenAndSetCookie(newUser._id, res);
 
-      res.status(201).json({
-        _id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        username: newUser.username,
-        dob: newUser.dob,
-        gender: newUser.gender,
-        location: newUser.location,
-        interests: newUser.interests,
-        course: newUser.course,
-        occupation: newUser.occupation,
-        instagram: newUser.instagram,
-        linkedin: newUser.linkedin,
-        twitter: newUser.twitter,
-        youtube: newUser.youtube,
-        tiktok: newUser.tiktok,
-        website: newUser.website,
-        bio: newUser.bio,
-        profilePic: newUser.profilePic,
-        notificationsEnabled: newUser.notificationsEnabled,
-        soloOrganizer: newUser.soloOrganizer,
-        selectedLocation: newUser.selectedLocation,
-      });
-    } else {
-      res.status(400).json({ error: "Invalid user data" });
-    }
+    res.status(201).json({
+      _id: newUser._id,
+      name: newUser.name,
+      email: newUser.email,
+      username: newUser.username,
+      dob: newUser.dob,
+      gender: newUser.gender,
+      location: newUser.location,
+      interests: newUser.interests,
+      occupation: newUser.occupation,
+      instagram: newUser.instagram,
+      notificationsEnabled: newUser.notificationsEnabled,
+      soloOrganizer: newUser.soloOrganizer,
+      profilePic: newUser.profilePic,
+      selectedLocation: newUser.selectedLocation,
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
     console.log("Error in signupUser: ", err.message);
+  }
+};
+
+const sendOTP = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    otpStore.set(email, otp);
+    setTimeout(() => otpStore.delete(email), 300000); // OTP expires after 5 minutes
+
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: email,
+      subject: "OTP for Email Verification",
+      text: `Your OTP for email verification is ${otp}. It is valid for 5 minutes.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: "OTP sent to email successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+    console.log("Error in sendOTP: ", error.message);
   }
 };
 
@@ -576,4 +610,5 @@ export {
   updateSelectedLocation,
   updateUserEmail,
   updateUserPassword,
+  sendOTP,
 };

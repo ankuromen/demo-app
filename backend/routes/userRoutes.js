@@ -18,6 +18,7 @@ import {
   updateSelectedLocation,
   updateUserEmail,
   updateUserPassword,
+  sendOTP,
 } from "../controllers/userController.js";
 import protectRoute from "../middlewares/protectRoute.js";
 
@@ -41,6 +42,7 @@ router.get("/settings", protectRoute, getSettings);
 router.post("/add-admins", protectRoute, addAdmins);
 router.post("/remove-admins", protectRoute, removeAdmins);
 router.post("/update-selectedlocation", protectRoute, updateSelectedLocation);
+router.post("/send-otp", sendOTP);
 
 
 export default router;
