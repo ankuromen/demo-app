@@ -19,6 +19,7 @@ import {
   updateUserEmail,
   updateUserPassword,
   sendOTP,
+  googleLogin
 } from "../controllers/userController.js";
 import protectRoute from "../middlewares/protectRoute.js";
 
@@ -43,6 +44,6 @@ router.post("/add-admins", protectRoute, addAdmins);
 router.post("/remove-admins", protectRoute, removeAdmins);
 router.post("/update-selectedlocation", protectRoute, updateSelectedLocation);
 router.post("/send-otp", sendOTP);
-
+router.post("/google-login", googleLogin);
 
 export default router;

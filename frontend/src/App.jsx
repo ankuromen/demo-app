@@ -22,11 +22,12 @@ import EvntiqPlus from "./components/Settings/EvntiqPlus";
 import DiscoverPage from "./pages/DiscoverPage";
 import AccountSettings from "./components/Settings/AccountSettings";
 import CreateEventButton from "./components/CreateEventButton";
-
+import { GoogleOAuthProvider } from "@react-oauth/google";
 function App() {
   const user = useRecoilValue(userAtom);
   const { pathname } = useLocation();
   return (
+    <GoogleOAuthProvider clientId={"15341200802-g06se7feje9do51deoqftv4ua7tq9l7s.apps.googleusercontent.com"}>
     <Box position={"relative"} w={"full"}>
       <Container maxW={"full"}>
         <Header />
@@ -106,6 +107,7 @@ function App() {
         </Routes>
       </Container>
     </Box>
+    </GoogleOAuthProvider>
   );
 }
 

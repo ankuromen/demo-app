@@ -19,7 +19,14 @@ const userSchema = mongoose.Schema(
     password: {
       type: String,
       minlength: 6,
-      required: true,
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true, 
+    },
+    profilePicture: {
+      type: String,
     },
     dob: {
       type: Date,

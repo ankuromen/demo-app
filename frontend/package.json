@@ -22,6 +22,7 @@
     "@fullcalendar/react": "^6.1.11",
     "@fullcalendar/timegrid": "^6.1.11",
     "@react-google-maps/api": "^2.19.3",
+    "@react-oauth/google": "^0.12.1",
     "axios": "^1.6.8",
     "backend": "file:..",
     "chart.js": "^4.4.3",

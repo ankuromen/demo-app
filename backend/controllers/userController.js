@@ -8,8 +8,41 @@ import mongoose from "mongoose";
 import nodemailer from "nodemailer";
 import { ObjectId } from "mongodb";
 import { stringSimilarity } from "string-similarity-js";
+import { OAuth2Client } from "google-auth-library";
 const bcryptsalt = await bcrypt.genSalt(10);
 const otpStore = new Map();
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+export const googleLogin = async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    // Verify the Google token
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const { sub, email, name, picture } = ticket.getPayload();
+    
+    // Find or create user
+    let user = await User.findOne({ googleId: sub });
+    if (!user) {
+      user = await User.create({
+        name,
+        email,
+        googleId: sub,
+        profilePicture: picture,
+      });
+    }
+
+    // Generate a token and set cookie
+    generateTokenAndSetCookie(user._id, res);
+
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    res.status(400).json({ success: false, message: "Google login failed", error });
+  }
+};
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select("-password -updatedAt").lean();
