@@ -309,8 +309,8 @@ const CreateEventPage = () => {
   return (
     <>
       <Grid
-        gridTemplateColumns={{ base: "1fr", md: "1fr 2fr" }}
-        maxW={{ base: "95%", lg: "55%" }}
+        gridTemplateColumns={{ base: "1fr", lg: "1fr 2fr" }}
+        maxW={{ base: "95%", md: "90%" }}
         margin={"auto"}
         alignItems={"start"}
       >

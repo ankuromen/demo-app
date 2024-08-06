@@ -106,10 +106,11 @@ const ChatDetails = ({ setIsActivitiesOpen ,isActivitiesOpen}) => {
       gap={2}
       flexDirection={"column"}
       p={3}
-      h={"100%"}
+      h={"100vh"}
       w={"100%"}
       overflowY={"scroll"}
       bg={useColorModeValue("gray.200", "gray.dark")}
+      transition={'0.5'}
     >
       <Flex alignItems={"center"} justifyContent={"space-between"}>
         <Text

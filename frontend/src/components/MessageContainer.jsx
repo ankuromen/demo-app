@@ -161,7 +161,7 @@ const MessageContainer = ({
   return (
     <Flex
       display={{ base: `${isActivitiesOpen ? "none" : "flex"}`, lg: "flex" }}
-      h={"80vh"}
+      h={"100vh"}
       borderRadius={"md"}
       flexDirection={"column"}
       borderStart={"0.1px solid"}

@@ -68,7 +68,7 @@ const TicketsPage = () => {
   };
   console.log(tickets);
   return (
-    <Flex w={"100%"} flexDirection={"column"} alignItems={"center"} gap={"4"}>
+    <Flex w={"100%"} flexDirection={"column"} alignItems={"center"} gap={"4"} mt={10}>
       <Heading size={"lg"}>My Tickets</Heading>
       {tickets.length < 1 ? (
         <Text>No Tickets Found</Text>
@@ -79,7 +79,7 @@ const TicketsPage = () => {
             bgGradient="linear(to-r,#ad5389, #3c1053)"
             h={"fit-content"}
             p={3}
-            w={{ sm: "90%", md: "80%", lg: "60%" }}
+            w={{ base: "90%", md: "80%", lg: "60%" }}
             borderRadius={"md"}
             justifyContent={"space-between"}
             onClick={() => handleOpenTicket(ticket)}

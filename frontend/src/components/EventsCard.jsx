@@ -39,7 +39,7 @@ const EventsCard = ({ post }) => {
           aspectRatio={
             isMediumScreen ? "16/15" : isSmallScreen ? "16/16" : "16/12"
           }
-          bg={!post.img && "gray.700"}
+          // bg={!post.img && "gray.700"}
           alignItems={"flex-end"}
           backgroundSize={"cover"}
           backgroundPosition={"center"}
@@ -47,24 +47,27 @@ const EventsCard = ({ post }) => {
           onClick={() => navigateToEvent(post)}
           borderRadius={"10"}
           overflow={"hidden"}
+          position="relative"
         >
           {post.img && (
-            <Image
-              src={post.img && `${post.img}`}
-              w={"100%"}
-              h={"100%"}
-              style={{
-                filter: "brightness(0.8)",
-              }}
-            />
+            <Image src={post.img && `${post.img}`} w={"100%"} h={"100%"} />
           )}
-
+          <Box
+            position="absolute"
+            top={0}
+            left={0}
+            right={0}
+            bottom={0}
+            background="linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.8))" // Change this to your desired gradient
+            zIndex={1} 
+          />
           <Box
             position={"absolute"}
             color={"gray.200"}
             ps={4}
             pb={4}
             fontSize={"smaller"}
+            zIndex={2}
           >
             <Text
               style={{
@@ -76,7 +79,7 @@ const EventsCard = ({ post }) => {
                   : "200px",
                 whiteSpace: "pre-line",
               }}
-              fontSize={isMediumScreen || isSmallScreen ? "small" : "medium"}
+              fontSize={isMediumScreen || isSmallScreen ? "medium" : "large"}
               fontWeight={"500"}
             >
               {post.name}

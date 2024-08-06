@@ -175,20 +175,13 @@ const ChatPage = () => {
   };
 
   return (
-    <Box
-      position={"absolute"}
-      left={"50%"}
-      w={{ base: "100%", md: "100%", lg: "100%" }}
-      h={"80vh"}
-      transform={"translateX(-50%)"}
-    >
+    <Box>
       <Grid
         gridTemplateColumns={{
           base: "1fr",
           md: "1fr 2fr",
           lg: `1fr 2fr ${isActivitiesOpen ? "1fr" : ""}`,
         }}
-        height={"80vh"}
         mx={"auto"}
       >
         {/* Contacts Area */}
@@ -199,6 +192,7 @@ const ChatPage = () => {
           }}
           flex={30}
           gap={2}
+          height={"100vh"}
           flexDirection={"column"}
           p={3}
           overflowY={"auto"}
@@ -302,6 +296,7 @@ const ChatPage = () => {
             flexDir={"column"}
             alignItems={"center"}
             justifyContent={"center"}
+            height={"100vh"}
           >
             <GiConversation size={100} />
             <Text fontSize={20}>Select a conversation to start messaging</Text>

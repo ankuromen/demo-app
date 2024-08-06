@@ -82,7 +82,6 @@ const Header = () => {
           >
             <FaAngleDown />
             <Text>
-              {" "}
               {user?.selectedLocation
                 ? user.selectedLocation
                 : "Select Location"}

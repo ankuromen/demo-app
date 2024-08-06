@@ -181,7 +181,6 @@ const DiscoverPage = () => {
 
     setFilteredPosts(filteredPosts);
   };
-  console.log("Posts", filteredPosts);
 
   useEffect(() => {
     const cities = [];
@@ -220,9 +219,9 @@ const DiscoverPage = () => {
   ]);
 
   return (
-    <Box mx="auto" width="80%" textAlign="center">
+    <Box mx="auto" width="80%" textAlign="center" mt={10}>
       <SearchPostComponent user={user} />
-      <Flex gap={10} mt={2} alignItems={"center"}>
+      <Grid gap={10} mt={2} alignItems={"center"} gridTemplateColumns={{sm:"1fr"}}>
         <Text fontWeight={"bold"} color={"red"}>
           Start
         </Text>
@@ -304,7 +303,7 @@ const DiscoverPage = () => {
             </option>
           ))}
         </Select>
-      </Flex>
+      </Grid>
 
       <Grid
         gridTemplateColumns={{ base: "1fr", md: "1fr 2fr" }}

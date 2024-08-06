@@ -33,7 +33,7 @@ const UserHeader = ({ user }) => {
     });
   };
   return (
-    <VStack gap={4} alignItems={"start"} w={"80%"} m={"auto"}>
+    <VStack gap={4} alignItems={"start"} w={"80%"} mt={10} mx={"auto"}>
       <Flex justifyContent={"space-between"} w={"full"}>
         <Box>
           <Text fontSize={"2xl"}>{user.name}</Text>
@@ -194,10 +194,11 @@ const UserHeader = ({ user }) => {
       <Flex w={"full"}>
         <Flex
           flex={1}
-          borderBottom={"1.5px solid white"}
+          borderBottom={"1.5px solid"}
+          borderColor={"gray.500"}
           justifyContent={"center"}
           pb="3"
-          cursor={"pointer"}
+          cursor={"pointer"}  
         >
           {currentUser?._id === user._id ? (
             <Text fontWeight={"bold"}> Your Events</Text>

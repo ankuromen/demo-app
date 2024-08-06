@@ -63,8 +63,8 @@ export const SettingsPage = () => {
   ];
   return (
     <Grid
-      w={{ base: "full", md: "60%" }}
-      justifyContent={"center"}
+      w={{ base: "full", md: "80%" }}
+      justifyContent={"start"}
       m={"auto"}
       gridTemplateColumns={{ base: "1fr", md: "1fr 3fr" }}
     >
