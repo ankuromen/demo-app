@@ -45,7 +45,7 @@ const UserPage = () => {
   if (!user && !loading) return <h1>User not found</h1>;
 
   return (
-    <Box>
+    <Box minHeight={"100vh"}>
       <UserHeader user={user} />
       {!fetchingPosts && posts.length === 0 && <h1>User has not posts.</h1>}
       {fetchingPosts && (
@@ -58,7 +58,7 @@ const UserPage = () => {
         pb={2}
         w={"80%"}
         mt={"2em"}
-        mx={'auto'}
+        mx={"auto"}
         gap={4}
       >
         {posts.map((post) => (

@@ -58,6 +58,7 @@ const Navbar = () => {
           base: "blur(15px) saturate(1.5)",
           md: "blur(0)",
         }}
+        transition={showMobileMenu ? "all 0.3s ease-in-out" : "none"}
         width={{ md: "50px 1fr", lg: "200px 1fr" }}
         minW={
           isLargeScreen
@@ -70,6 +71,11 @@ const Navbar = () => {
               : "fit-content"
             : ""
         }
+        minHeight={
+          isSmallScreen && showMobileMenu
+            ? "-webkit-fill-available"
+            : "fit-content"
+        }
         p={4}
         justifyContent={isSmallScreen ? "flex-start" : "space-between"}
         h={isSmallScreen ? (showMobileMenu ? "100vh" : "fit-content") : "100vh"}
@@ -81,9 +87,9 @@ const Navbar = () => {
           display={isSmallScreen ? "block" : "none"}
         >
           {showMobileMenu ? (
-            <AiOutlineClose size={24} />
+            <AiOutlineClose size={20} />
           ) : (
-            <CiMenuFries size={24} />
+            <CiMenuFries size={16} />
           )}
         </Box>
         <Flex

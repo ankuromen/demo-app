@@ -77,7 +77,14 @@ const HomePage = () => {
   };
 
   return (
-    <Flex direction="column" w="80%" m={{md:"auto"}} mt={10} maxW={'100vw'}>
+    <Flex
+      direction="column"
+      w="80%"
+      m={{ md: "auto" }}
+      mt={{ base: 10, md: 15 }}
+      maxW={"100vw"}
+      minHeight={"100vh"}
+    >
       {/* Search bar */}
       <Input
         placeholder="Search users by name or username"

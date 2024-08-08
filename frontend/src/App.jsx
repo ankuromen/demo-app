@@ -1,8 +1,7 @@
-import { Box, Container, Grid, useColorModeValue, useMediaQuery } from "@chakra-ui/react";
+import { Box, Container, Grid, useMediaQuery } from "@chakra-ui/react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import UserPage from "./pages/UserPage";
 import PostPage from "./pages/PostPage";
-import Header from "./components/Header";
 import HomePage from "./pages/HomePage";
 import AuthPage from "./pages/AuthPage";
 import { useRecoilValue } from "recoil";
@@ -46,10 +45,7 @@ function App() {
             display={{ base: "block", md: "grid", lg: "grid" }}
             width={isSmallScreen && "100vw"}
           >
-            <Box
-              borderRight={"1px solid"}
-              borderColor={"gray.400"}
-            >
+            <Box borderRight={"1px solid"} borderColor={"gray.400"}>
               <Navbar />
             </Box>
 

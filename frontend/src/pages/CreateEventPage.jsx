@@ -23,6 +23,7 @@ import {
   Text,
   VStack,
   border,
+  useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
 import { RiGitRepositoryPrivateFill } from "react-icons/ri";
@@ -313,6 +314,7 @@ const CreateEventPage = () => {
         maxW={{ base: "95%", md: "90%" }}
         margin={"auto"}
         alignItems={"start"}
+        minHeight={"100vh"}
       >
         {/* Image Part */}
         <Flex w="100%" direction={"column"} p={3}>
@@ -371,9 +373,13 @@ const CreateEventPage = () => {
                 <Button
                   size={"xs"}
                   gap={2}
-                  bg="rgba(218, 218, 218, 0.77)"
+                  bg={useColorModeValue(
+                    "rgba(218, 218, 218, 0.77)",
+                    "whiteAlpha.300"
+                  )}
                   _hover={{ bg: "blue.600", color: "white" }}
                   onClick={() => setIsEventTypeOpen(true)}
+                  cursor={"pointer"}
                 >
                   {isPrivate ? (
                     <>
@@ -397,7 +403,7 @@ const CreateEventPage = () => {
                     p={1}
                     gap={2}
                     borderRadius={"lg"}
-                    _hover={{ bg: "gray.100" }}
+                    _hover={{ bg: useColorModeValue("gray.100", "gray.600") }}
                     onClick={() => {
                       handlePrivacyClick(false);
                     }}
@@ -411,7 +417,7 @@ const CreateEventPage = () => {
                     p={1}
                     borderRadius={"lg"}
                     gap={2}
-                    _hover={{ bg: "gray.100" }}
+                    _hover={{ bg: useColorModeValue("gray.100", "gray.600") }}
                     onClick={() => {
                       handlePrivacyClick(true);
                     }}
@@ -437,7 +443,12 @@ const CreateEventPage = () => {
           />
           {/* Date Part */}
           <Grid gridTemplateColumns={{ base: "1fr", md: "3fr 1fr" }} gap={2}>
-            <Flex bg={"gray.200"} borderRadius={"md"} gap={2} p={1}>
+            <Flex
+              bg={useColorModeValue("gray.200", "whiteAlpha.200")}
+              borderRadius={"md"}
+              gap={2}
+              p={1}
+            >
               <Flex
                 alignItems={"center"}
                 justifyContent={"space-around"}
@@ -525,13 +536,13 @@ const CreateEventPage = () => {
             </Flex>
 
             <Flex
-              bg={"gray.200"}
+              bg={useColorModeValue("gray.200", "whiteAlpha.200")}
               borderRadius={"md"}
               flexDirection={"column"}
               justifyContent={"center"}
             >
               <Select
-                bg={"gray.200"}
+                bg={useColorModeValue("gray.200", "whiteAlpha.200")}
                 borderRadius={"md"}
                 value={timeZone}
                 variant="flushed"
@@ -556,7 +567,7 @@ const CreateEventPage = () => {
           <Popover style={{ minWidth: "100%" }} isOpen={isVenueSettingOpen}>
             <PopoverTrigger>
               <Flex
-                bg={"gray.200"}
+                bg={useColorModeValue("gray.200", "whiteAlpha.200")}
                 borderRadius={"md"}
                 mt={2}
                 flexDir={"column"}
@@ -610,14 +621,14 @@ const CreateEventPage = () => {
                 {["Virtual", "Hybrid"].includes(eventType) && (
                   <>
                     <Button
-                      _hover={{ bg: "gray.100" }}
+                      _hover={{ bg: useColorModeValue("gray.100", "gray.800") }}
                       bg="none"
                       style={{ width: "100%" }}
                     >
                       Create Zoom Meeting
                     </Button>
                     <Button
-                      _hover={{ bg: "gray.100" }}
+                      _hover={{ bg: useColorModeValue("gray.100", "gray.800") }}
                       bg="none"
                       style={{ width: "100%" }}
                     >
@@ -637,7 +648,7 @@ const CreateEventPage = () => {
             </PopoverContent>
           </Popover>
           <Flex
-            bg={"gray.200"}
+            bg={useColorModeValue("gray.200", "whiteAlpha.200")}
             borderRadius={"md"}
             mt={2}
             flexDir={"column"}
@@ -673,7 +684,7 @@ const CreateEventPage = () => {
           </Flex>
           {/* description */}
           <Flex
-            bg={"gray.200"}
+            bg={useColorModeValue("gray.200", "whiteAlpha.200")}
             borderRadius={"md"}
             mt={2}
             flexDir={"column"}
@@ -731,7 +742,7 @@ const CreateEventPage = () => {
 
           {/* Tickets */}
           <Flex
-            bg={"gray.200"}
+            bg={useColorModeValue("gray.200", "whiteAlpha.200")}
             borderRadius={"md"}
             mt={2}
             flexDir={"row"}
@@ -780,7 +791,7 @@ const CreateEventPage = () => {
 
           {/* Require Approval */}
           <Flex
-            bg={"gray.200"}
+            bg={useColorModeValue("gray.200", "whiteAlpha.200")}
             borderRadius={"md"}
             mt={2}
             flexDir={"row"}
@@ -805,7 +816,7 @@ const CreateEventPage = () => {
 
           {/* Capacity */}
           <Flex
-            bg={"gray.200"}
+            bg={useColorModeValue("gray.200", "whiteAlpha.200")}
             borderRadius={"md"}
             mt={2}
             flexDir={"row"}
@@ -879,7 +890,9 @@ const CreateEventPage = () => {
           </Flex>
 
           <Button
-            colorScheme="purple"
+            bg={"purple.600"}
+            color={"white"}
+            _hover={{bg:"purple.500"}}
             mt={3}
             p={2}
             size={"lg"}

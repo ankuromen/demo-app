@@ -7,6 +7,7 @@ import {
   Button,
   Flex,
   Grid,
+  HStack,
   Input,
   Select,
   Spinner,
@@ -219,47 +220,61 @@ const DiscoverPage = () => {
   ]);
 
   return (
-    <Box mx="auto" width="80%" textAlign="center" mt={10}>
+    <Box mx="auto" width="80%" textAlign="center" mt={10} minH={"100vh"}>
       <SearchPostComponent user={user} />
-      <Grid gap={10} mt={2} alignItems={"center"} gridTemplateColumns={{sm:"1fr"}}>
-        <Text fontWeight={"bold"} color={"red"}>
-          Start
-        </Text>
-        <Input
-          type="date"
-          w={"60%"}
-          value={startDate}
-          min={new Date().toISOString().split("T")[0]}
-          onChange={(e) => setStartDate(e.target.value)}
-        />
-        <Input
-          type="time"
-          w={"40%"}
-          value={startTime}
-          defaultValue={"00:00"}
-          onChange={(e) => setStartTime(e.target.value)}
-        />
-        <Text fontWeight={"bold"} color={"red"}>
-          End
-        </Text>
-        <Input
-          type="date"
-          value={endDate}
-          min={startDate}
-          w={"60%"}
-          onChange={(e) => setEndDate(e.target.value)}
-        />
-        <Input
-          type="time"
-          value={endTime}
-          w={"40%"}
-          onChange={(e) => setEndTime(e.target.value)}
-        />
+      <Grid
+        gap={{ base: 2, md: 5 }}
+        mt={2}
+        alignItems={"center"}
+        gridTemplateColumns={{
+          base: "1fr",
+          md: "repeat(3, 1fr)",
+          lg: "repeat(6, 1fr)",
+        }}
+      >
+        <HStack>
+          <Text fontWeight={"bold"} color={"red"}>
+            Start
+          </Text>
+          <Input
+            type="date"
+            w={"60%"}
+            value={startDate}
+            min={new Date().toISOString().split("T")[0]}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+          <Input
+            type="time"
+            w={"40%"}
+            value={startTime}
+            defaultValue={"00:00"}
+            onChange={(e) => setStartTime(e.target.value)}
+          />
+        </HStack>
+        <HStack>
+          <Text fontWeight={"bold"} color={"red"}>
+            End
+          </Text>
+          <Input
+            type="date"
+            value={endDate}
+            min={startDate}
+            w={"60%"}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+          <Input
+            type="time"
+            value={endTime}
+            w={"40%"}
+            onChange={(e) => setEndTime(e.target.value)}
+          />
+        </HStack>
+
         <Select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
         >
-          <option value="">Select Event Category</option>
+          <option value="">Category</option>
           {categories.map((category) => (
             <option key={category} value={category}>
               {category}
@@ -280,7 +295,7 @@ const DiscoverPage = () => {
           ))}
         </Select>
         <Select
-          placeholder="Select State"
+          placeholder="State"
           filled
           value={selectedState}
           onChange={(e) => setSelectedState(e.target.value)}
@@ -292,7 +307,7 @@ const DiscoverPage = () => {
           ))}
         </Select>
         <Select
-          placeholder="Select Country"
+          placeholder="Country"
           filled
           value={selectedCountry}
           onChange={(e) => setSelectedCountry(e.target.value)}
@@ -327,7 +342,7 @@ const DiscoverPage = () => {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
             {posts.map(
-              (marker, idx) =>
+              (marker, idx) => 
                 marker?.venueCord && (
                   <Marker
                     key={idx}
